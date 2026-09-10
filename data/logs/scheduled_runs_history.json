@@ -1,0 +1,248 @@
+[
+  {
+    "run_id": "SCR_LIVE_1788944716",
+    "timestamp": "2026-09-09 14:35:16",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788943643",
+    "timestamp": "2026-09-09 14:17:23",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "DEL-BOM"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788943641",
+    "timestamp": "2026-09-09 14:17:21",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "DEL-BOM"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788942769",
+    "timestamp": "2026-09-09 14:02:49",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788942288",
+    "timestamp": "2026-09-09 13:54:48",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788936064",
+    "timestamp": "2026-09-09 12:11:04",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788935728",
+    "timestamp": "2026-09-09 12:05:28",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788934848",
+    "timestamp": "2026-09-09 11:50:48",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "LKO-UDR"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788934834",
+    "timestamp": "2026-09-09 11:50:34",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-LKO"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788934582",
+    "timestamp": "2026-09-09 11:46:22",
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "routes": [
+      "UDR-BLR"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15,
+      30
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "run_id": "SCR_LIVE_1788934454",
+    "timestamp": "2026-09-09 11:44:14",
+    "platforms": [
+      "google_flights"
+    ],
+    "routes": [
+      "BOM-GOI"
+    ],
+    "lead_times": [
+      1,
+      7
+    ],
+    "status": "SUCCESS",
+    "message": "Real flight observations scraped and integrated into Master Ledger & APIx index."
+  },
+  {
+    "iteration": 1,
+    "start_timestamp": "2026-09-09 11:00:39",
+    "end_timestamp": "2026-09-09 11:00:46",
+    "duration_seconds": 7.26,
+    "scraped_observations": 68,
+    "latest_apix_index": null,
+    "status": "ERROR",
+    "error": "name 'pd' is not defined"
+  },
+  {
+    "iteration": 1,
+    "start_timestamp": "2026-09-09 11:01:01",
+    "end_timestamp": "2026-09-09 11:01:08",
+    "duration_seconds": 7.6,
+    "scraped_observations": 76,
+    "latest_apix_index": 198.29,
+    "status": "SUCCESS",
+    "error": null
+  },
+  {
+    "iteration": 1,
+    "start_timestamp": "2026-09-09 11:44:26",
+    "end_timestamp": "2026-09-09 11:44:41",
+    "duration_seconds": 15.46,
+    "scraped_observations": 38,
+    "latest_apix_index": 150.19,
+    "status": "SUCCESS",
+    "error": null
+  }
+]
