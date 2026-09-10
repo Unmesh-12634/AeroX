@@ -1703,3 +1703,429 @@ input[type="range"]::-webkit-slider-thumb:active {
     transform: none !important;
   }
 }
+
+/* =========================================================================
+   Live Flight Metasearch Price Comparison Accordion & Cards (SIH26056)
+   Apple Glassmorphic Fluid Design - Zero Purple Palette
+   ========================================================================= */
+
+.flight-group-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.flight-group-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08);
+}
+
+.flight-group-card.is-best-deal {
+  border-color: #86EFAC;
+  background: #F0FDF4;
+}
+
+.flight-group-card.expanded {
+  border-color: #93C5FD;
+  box-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.12);
+}
+
+.flight-group-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: wrap;
+  transition: background 0.15s ease;
+}
+
+.flight-group-main:hover {
+  background: rgba(241, 245, 249, 0.6);
+}
+
+.flight-group-card.is-best-deal .flight-group-main:hover {
+  background: rgba(220, 252, 231, 0.5);
+}
+
+/* Carrier Column */
+.flight-carrier-col {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 175px;
+}
+
+.airline-badge-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.flight-airline-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flight-meta-sub {
+  font-size: 11.5px;
+  color: #64748B;
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.pill-badge {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pill-lowest {
+  background: #22C55E;
+  color: #FFFFFF;
+}
+
+.pill-fastest {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+/* Timings Column */
+.flight-timings-col {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 230px;
+}
+
+.flight-time-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.flight-time-block.left {
+  text-align: right;
+}
+
+.flight-time-block.right {
+  text-align: left;
+}
+
+.flight-time-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.flight-date-pill {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0284C7;
+  margin: 1px 0;
+}
+
+.flight-date-pill.neutral {
+  color: #64748B;
+}
+
+.flight-airport-code {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.flight-route-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+}
+
+.flight-duration-label {
+  font-size: 10.5px;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.flight-route-line {
+  width: 60px;
+  height: 2px;
+  background: #CBD5E1;
+  position: relative;
+  margin: 4px 0;
+  border-radius: 999px;
+}
+
+.route-plane-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0284C7;
+  top: -2px;
+  right: 0;
+}
+
+.flight-stop-label {
+  font-size: 9.5px;
+  color: #10B981;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Price Column */
+.flight-price-col {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 170px;
+  justify-content: flex-end;
+}
+
+.price-header-wrap {
+  text-align: right;
+}
+
+.best-price-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: block;
+}
+
+.best-price-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+}
+
+.flight-group-card.is-best-deal .best-price-value {
+  color: #16A34A;
+}
+
+.portal-compare-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+
+.flight-group-card.expanded .portal-compare-badge {
+  background: #E0F2FE;
+  border-color: #BAE6FD;
+  color: #0284C7;
+}
+
+.chevron-icon {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flight-group-card.expanded .chevron-icon {
+  transform: rotate(180deg);
+}
+
+/* Expandable Dropdown Metasearch Section */
+.price-comparison-dropdown {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  background: #F8FAFC;
+  border-top: 1px solid transparent;
+}
+
+.flight-group-card.expanded .price-comparison-dropdown {
+  max-height: 600px;
+  opacity: 1;
+  border-top: 1px solid #E2E8F0;
+}
+
+.price-comp-inner {
+  padding: 16px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.price-comp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #E2E8F0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.price-comp-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.price-comp-title svg {
+  color: #0284C7;
+}
+
+.price-comp-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.portal-quotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.portal-quote-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+  transition: all 0.15s ease;
+}
+
+.portal-quote-row:hover {
+  border-color: #CBD5E1;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.portal-quote-row.is-cheapest-quote {
+  border-color: #86EFAC;
+  background: #F0FDF4;
+}
+
+.portal-info-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.portal-name-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1E293B;
+  background: #F1F5F9;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.portal-cheapest-tag {
+  font-size: 10px;
+  font-weight: 800;
+  background: #DCFCE7;
+  color: #166534;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.portal-diff-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748B;
+  background: #F1F5F9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.portal-fare-breakdown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #64748B;
+  min-width: 170px;
+}
+
+.portal-fare-breakdown .fare-sep {
+  color: #CBD5E1;
+}
+
+.portal-final-fare {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+  min-width: 90px;
+  text-align: right;
+}
+
+.portal-quote-row.is-cheapest-quote .portal-final-fare {
+  color: #16A34A;
+}
+
+.portal-cta-block {
+  display: flex;
+  align-items: center;
+  min-width: 95px;
+  justify-content: flex-end;
+}
+
+.btn-portal-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #0F172A;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-portal-select:hover {
+  background: #0284C7;
+  border-color: #0284C7;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
