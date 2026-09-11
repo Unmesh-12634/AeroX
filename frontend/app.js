@@ -1214,16 +1214,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isNs = f.is_nonstop === true || f.stops_count === 0;
       const sCount = f.stops_count !== undefined ? f.stops_count : (isNs ? 0 : 1);
-      const sInfo = f.stop_info || (isNs ? 'Non-Stop' : `${sCount} Stop`);
-
+      
       let stopBadgeHtml = '';
-      if (isNs) {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #059669; background: #ECFDF5; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #A7F3D0;">Non-Stop</span>`;
+      if (isNs || sCount === 0) {
+        stopBadgeHtml = `<span class="flight-stop-pill nonstop">Non-stop</span>`;
       } else if (sCount === 1) {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #D97706; background: #FFFBEB; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #FDE68A;">${sInfo}</span>`;
+        stopBadgeHtml = `<span class="flight-stop-pill onestop">1 stop</span>`;
       } else {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #6366F1; background: #EEF2FF; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #C7D2FE;">${sInfo}</span>`;
+        stopBadgeHtml = `<span class="flight-stop-pill multistop">${sCount} stops</span>`;
       }
+
+      const cleanDuration = String(f.duration || '2h 15m')
+        .replace(/\s*hours?\s*/i, 'h ')
+        .replace(/\s*hrs?\s*/i, 'h ')
+        .replace(/\s*minutes?\s*/i, 'm')
+        .replace(/\s*mins?\s*/i, 'm')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const rawFlightNum = f.flight_number || (carrierLogo + ' 876');
+      const cleanFlightNum = rawFlightNum.replace(/^Flight\s+/i, '');
 
       const bookingUrl = f.booking_url || window.generateFlightBookingUrl(f);
       const airlineDirectUrl = f.airline_url || window.generateAirlineDirectBookingUrl(f);
@@ -1245,76 +1255,80 @@ document.addEventListener('DOMContentLoaded', () => {
         airline_url: f.airline_url || airlineDirectUrl
       }));
 
-      const qualityBadgeHtml = (f.is_live || f.data_quality === 'REAL_TIME_SCRAPED')
-        ? `<span style="font-size: 9.5px; font-weight: 700; background: #ECFDF5; color: #059669; padding: 2px 7px; border-radius: 4px; border: 1px solid #A7F3D0;">🟢 Live Fare</span>`
-        : `<span style="font-size: 9.5px; font-weight: 700; background: #EFF6FF; color: #2563EB; padding: 2px 7px; border-radius: 4px; border: 1px solid #BFDBFE;">🔵 Scraped Benchmark</span>`;
+      const isLive = f.is_live || f.data_quality === 'REAL_TIME_SCRAPED';
+      const qualityBadgeHtml = isLive
+        ? `<span class="deal-quality-pill live"><span class="pill-dot">●</span> Live Fare</span>`
+        : `<span class="deal-quality-pill benchmark"><span class="pill-dot">●</span> Scraped Benchmark</span>`;
 
       const airlineLogoUrl = window.getAirlineLogoUrl(f.airline);
-      const platformLogoUrl = window.getPlatformLogoUrl(f.source_platform);
 
       return `
         <div class="live-flight-card" onclick="window.bookFlightTicket(JSON.parse(decodeURIComponent('${fEncoded}')))">
           
-          <!-- Carrier & Flight Meta -->
+          <!-- Left: Carrier Info -->
           <div class="flight-carrier-col">
             <div class="carrier-logo-badge">
               <img src="${airlineLogoUrl}" alt="${f.airline}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-              <div class="carrier-logo-fallback" style="display:none; background:${badgeColor}; width:100%; height:100%; align-items:center; justify-content:center; color:#fff; font-weight:800;">${carrierLogo}</div>
+              <div class="carrier-logo-fallback" style="display:none; background:${badgeColor}; width:100%; height:100%; align-items:center; justify-content:center; color:#fff; font-weight:800; border-radius:8px;">${carrierLogo}</div>
             </div>
             <div class="carrier-details">
               <div class="carrier-name">${f.airline}</div>
-              <div class="carrier-sub">Flight ${f.flight_number || (carrierLogo + ' 204')} &bull; <span class="cabin-tag">${f.cabin_class || 'Economy'}</span></div>
+              <div class="carrier-sub">${cleanFlightNum} &bull; ${f.cabin_class || 'Economy'}</div>
             </div>
           </div>
 
-          <!-- Departure, Duration Timeline, Stoppage & Arrival -->
+          <!-- Center: Flight Route & Journey Timeline -->
           <div class="flight-schedule-col">
             <div class="schedule-point dep">
-              <div class="time-val">${f.departure_time}</div>
-              <div class="airport-code">${f.origin}</div>
+              <div class="time-val">${f.departure_time || '08:30'}</div>
+              <div class="airport-code">${f.origin || 'DEL'}</div>
             </div>
             <div class="schedule-timeline">
-              <span class="timeline-duration">${f.duration}</span>
-              <div class="timeline-track ${isNs ? 'nonstop' : 'stop'}">
-                <span class="timeline-plane">✈</span>
+              <span class="timeline-duration">${cleanDuration}</span>
+              <div class="timeline-track-wrap">
+                <span class="track-dot start"></span>
+                <div class="track-line"></div>
+                <span class="track-plane">✈</span>
+                <div class="track-line"></div>
+                <span class="track-dot end"></span>
               </div>
               <div class="timeline-badge-wrap">${stopBadgeHtml}</div>
             </div>
             <div class="schedule-point arr">
-              <div class="time-val">${f.arrival_time}</div>
-              <div class="airport-code">${f.dest}</div>
+              <div class="time-val">${f.arrival_time || '10:45'}</div>
+              <div class="airport-code">${f.dest || 'BOM'}</div>
             </div>
           </div>
 
-          <!-- Source Platform Badge & Quality Badge -->
-          <div class="flight-source-col">
-            <span class="platform-card-badge" title="Scraped live from ${portalLabel}">
-              <img src="${platformLogoUrl}" alt="${portalLabel}">
-              <span>${portalLabel}</span>
-            </span>
-            ${qualityBadgeHtml}
+          <!-- Divider -->
+          <div class="flight-card-divider"></div>
+
+          <!-- Right: Price & Benchmark Breakdown -->
+          <div class="flight-fare-col">
+            <div class="fare-badge-row">
+              ${qualityBadgeHtml}
+            </div>
+            <div class="fare-price-val">₹${Math.round(f.total_fare_inr).toLocaleString()}</div>
+            <div class="fare-taxes-sub">Base ₹${Math.round(f.base_fare_inr || (f.total_fare_inr * 0.78)).toLocaleString()} &bull; Taxes ₹${Math.round(f.taxes_fees_inr || (f.total_fare_inr * 0.22)).toLocaleString()}</div>
           </div>
 
-          <!-- Live Real Fare & Taxes Breakdown -->
-          <div class="flight-price-col">
-            <div class="price-val">₹${Math.round(f.total_fare_inr).toLocaleString()}</div>
-            <div class="price-tax">Base: ₹${Math.round(f.base_fare_inr || (f.total_fare_inr * 0.78)).toLocaleString()} + Tax: ₹${Math.round(f.taxes_fees_inr || (f.total_fare_inr * 0.22)).toLocaleString()}</div>
-          </div>
-
-          <!-- Direct Book Action Buttons Group -->
-          <div class="flight-actions-col" onclick="event.stopPropagation();">
+          <!-- Far Right: Stacked Action Buttons -->
+          <div class="flight-actions-stacked" onclick="event.stopPropagation();">
             <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer"
-               class="btn-book-deal"
+               class="btn-book-deal-primary"
                title="Search this fare on ${portalLabel}: ${f.origin} → ${f.dest}"
                onclick="window.showToast('✈️ Opening ${portalLabel} for ${f.origin} → ${f.dest}...', 'success'); event.stopPropagation();">
-              <img src="${platformLogoUrl}" style="width:13px; height:13px; object-fit:contain; border-radius:2px; vertical-align:middle; margin-right:3px;" />
-              <span>Book Deal ↗</span>
+              Book Deal ↗
             </a>
             <a href="${airlineDirectUrl}" target="_blank" rel="noopener noreferrer"
-               class="btn-airline-link"
+               class="btn-airline-official"
                title="Book directly on ${f.airline} official website"
                onclick="window.showToast('✈️ Opening ${f.airline} official site...', 'info'); event.stopPropagation();">
-              <img src="${airlineLogoUrl}" style="width:13px; height:13px; object-fit:contain; border-radius:2px; vertical-align:middle; margin-right:3px;" />
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:5px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
               <span>Official</span>
             </a>
           </div>
