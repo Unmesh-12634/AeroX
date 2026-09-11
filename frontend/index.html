@@ -320,46 +320,74 @@
                     <div class="u-s77">Select Airline Fleet:</div>
                     <div class="city-picker-list">
                       <div class="city-picker-item" onclick="window.selectAirline('ALL', 'All Airlines', 'IndiGo, Air India, SpiceJet, Akasa', 'ALL'); event.stopPropagation();">
-                        <div>
-                          <strong>All Airlines</strong>
-                          <div class="u-s78">Full Domestic Carrier Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0F172A; color:#FFF; font-size:11px; font-weight:800;">ALL</div>
+                          <div>
+                            <strong>All Airlines</strong>
+                            <div class="u-s78">Full Domestic Carrier Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s79">ALL</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('IndiGo', 'IndiGo', '62% Domestic Share · 6E', '6E'); event.stopPropagation();">
-                        <div>
-                          <strong>IndiGo (6E)</strong>
-                          <div class="u-s78">A320 / A321neo Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/indigo.png" class="picker-logo-img" alt="IndiGo">
+                          <div>
+                            <strong>IndiGo (6E)</strong>
+                            <div class="u-s78">A320 / A321neo Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s80">6E</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Air India', 'Air India', 'Tata Flagship Carrier · AI', 'AI'); event.stopPropagation();">
-                        <div>
-                          <strong>Air India (AI)</strong>
-                          <div class="u-s78">Full Service Carrier</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindia.jpg" class="picker-logo-img" alt="Air India">
+                          <div>
+                            <strong>Air India (AI)</strong>
+                            <div class="u-s78">Full Service Carrier</div>
+                          </div>
                         </div>
                         <span class="u-s81">AI</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('SpiceJet', 'SpiceJet', 'Domestic &amp; Regional · SG', 'SG'); event.stopPropagation();">
-                        <div>
-                          <strong>SpiceJet (SG)</strong>
-                          <div class="u-s78">B737 / Q400 Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/spicejet.png" class="picker-logo-img" alt="SpiceJet">
+                          <div>
+                            <strong>SpiceJet (SG)</strong>
+                            <div class="u-s78">B737 / Q400 Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s82">SG</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Akasa Air', 'Akasa Air', 'Next-Gen B737 MAX · QP', 'QP'); event.stopPropagation();">
-                        <div>
-                          <strong>Akasa Air (QP)</strong>
-                          <div class="u-s78">B737 MAX Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/Akasaair.png" class="picker-logo-img" alt="Akasa Air">
+                          <div>
+                            <strong>Akasa Air (QP)</strong>
+                            <div class="u-s78">B737 MAX Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s83">QP</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Air India Express', 'AI Express', 'Low-Cost Carrier · IX', 'IX'); event.stopPropagation();">
-                        <div>
-                          <strong>Air India Express (IX)</strong>
-                          <div class="u-s78">Point-to-Point Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindiaexpress.jpeg" class="picker-logo-img" alt="Air India Express">
+                          <div>
+                            <strong>Air India Express (IX)</strong>
+                            <div class="u-s78">Point-to-Point Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s84">IX</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectAirline('Vistara', 'Vistara', 'Tata &amp; SIA Carrier · UK', 'UK'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/vistara.webp" class="picker-logo-img" alt="Vistara">
+                          <div>
+                            <strong>Vistara (UK)</strong>
+                            <div class="u-s78">Full Service Network</div>
+                          </div>
+                        </div>
+                        <span class="u-s84">UK</span>
                       </div>
                     </div>
                   </div>
@@ -382,32 +410,54 @@
                     <div class="u-s77">Select Source Platform:</div>
                     <div class="city-picker-list">
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('ALL', 'All Portals', 'Compare GF, MMT, EMT', 'ALL'); event.stopPropagation();">
-                        <div>
-                          <strong>All Sources (Market Basket)</strong>
-                          <div class="u-s78">Cross-Engine Jevons Index</div>
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0F172A; color:#FFF; font-size:11px; font-weight:800;">ALL</div>
+                          <div>
+                            <strong>All Sources (Market Basket)</strong>
+                            <div class="u-s78">Cross-Engine Jevons Index</div>
+                          </div>
                         </div>
                         <span class="u-s79">ALL</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('google_flights', 'Google Flights', 'Direct Metasearch Engine', 'GF'); event.stopPropagation();">
-                        <div>
-                          <strong>Google Flights (GF)</strong>
-                          <div class="u-s78">Direct Global Metasearch</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/googleairline.png" class="picker-logo-img" alt="Google Flights">
+                          <div>
+                            <strong>Google Flights (GF)</strong>
+                            <div class="u-s78">Direct Global Metasearch</div>
+                          </div>
                         </div>
                         <span class="u-s85">GF</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('makemytrip', 'MakeMyTrip', 'Primary Domestic OTA', 'MMT'); event.stopPropagation();">
-                        <div>
-                          <strong>MakeMyTrip (MMT)</strong>
-                          <div class="u-s78">India No. 1 OTA Portal</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/makemytrip.webp" class="picker-logo-img" alt="MakeMyTrip">
+                          <div>
+                            <strong>MakeMyTrip (MMT)</strong>
+                            <div class="u-s78">India No. 1 OTA Portal</div>
+                          </div>
                         </div>
                         <span class="u-s86">MMT</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('easemytrip', 'EaseMyTrip', 'Zero Surcharge OTA', 'EMT'); event.stopPropagation();">
-                        <div>
-                          <strong>EaseMyTrip (EMT)</strong>
-                          <div class="u-s78">Zero Convenience Fee OTA</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/easemytrip.png" class="picker-logo-img" alt="EaseMyTrip">
+                          <div>
+                            <strong>EaseMyTrip (EMT)</strong>
+                            <div class="u-s78">Zero Convenience Fee OTA</div>
+                          </div>
                         </div>
                         <span class="u-s80">EMT</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ixigo', 'Ixigo', 'Direct Travel Metasearch', 'IXI'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/ixogo.png" class="picker-logo-img" alt="Ixigo">
+                          <div>
+                            <strong>Ixigo (IXI)</strong>
+                            <div class="u-s78">OTA Aggregator &amp; App</div>
+                          </div>
+                        </div>
+                        <span class="u-s85">IXI</span>
                       </div>
                     </div>
                   </div>
@@ -1737,18 +1787,93 @@
                 <tbody id="tableAirlinePerformanceBody">
                   <tr>
                     <td>
-                      <span class="u-s178">
-                        <span class="logo-icon-svg indigo">6E</span>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/indigo.png" class="table-carrier-logo" alt="IndiGo">
                         <strong>IndiGo</strong>
                       </span>
                     </td>
                     <td>10,084</td>
-                    <td>₹5,690</td>
+                    <td><strong>₹5,690</strong></td>
                     <td>₹5,420</td>
                     <td>₹2,170</td>
                     <td>₹22,551</td>
                     <td><span class="badge stable">Low (12.1%)</span></td>
                     <td>98.5% (48/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/airindia.jpg" class="table-carrier-logo" alt="Air India">
+                        <strong>Air India</strong>
+                      </span>
+                    </td>
+                    <td>6,450</td>
+                    <td><strong>₹7,140</strong></td>
+                    <td>₹6,890</td>
+                    <td>₹2,850</td>
+                    <td>₹28,400</td>
+                    <td><span class="badge elevated">Medium (18.4%)</span></td>
+                    <td>86.0% (43/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/Akasaair.png" class="table-carrier-logo" alt="Akasa Air">
+                        <strong>Akasa Air</strong>
+                      </span>
+                    </td>
+                    <td>3,210</td>
+                    <td><strong>₹5,380</strong></td>
+                    <td>₹5,100</td>
+                    <td>₹2,190</td>
+                    <td>₹18,900</td>
+                    <td><span class="badge stable">Low (11.8%)</span></td>
+                    <td>52.0% (26/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/spicejet.png" class="table-carrier-logo" alt="SpiceJet">
+                        <strong>SpiceJet</strong>
+                      </span>
+                    </td>
+                    <td>2,980</td>
+                    <td><strong>₹5,980</strong></td>
+                    <td>₹5,750</td>
+                    <td>₹2,450</td>
+                    <td>₹21,800</td>
+                    <td><span class="badge critical">High (22.3%)</span></td>
+                    <td>48.0% (24/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/airindiaexpress.jpeg" class="table-carrier-logo" alt="Air India Express">
+                        <strong>Air India Express</strong>
+                      </span>
+                    </td>
+                    <td>2,150</td>
+                    <td><strong>₹5,210</strong></td>
+                    <td>₹4,950</td>
+                    <td>₹2,050</td>
+                    <td>₹16,700</td>
+                    <td><span class="badge stable">Low (13.5%)</span></td>
+                    <td>38.0% (19/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/vistara.webp" class="table-carrier-logo" alt="Vistara">
+                        <strong>Vistara</strong>
+                      </span>
+                    </td>
+                    <td>1,003</td>
+                    <td><strong>₹7,890</strong></td>
+                    <td>₹7,450</td>
+                    <td>₹3,200</td>
+                    <td>₹29,900</td>
+                    <td><span class="badge elevated">Medium (17.2%)</span></td>
+                    <td>72.0% (36/50 routes)</td>
                   </tr>
                 </tbody>
               </table>

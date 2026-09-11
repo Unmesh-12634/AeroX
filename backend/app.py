@@ -65,6 +65,9 @@ app.include_router(backtest_router, prefix=settings.API_V1_PREFIX)
 # Static Frontend Mounts
 if settings.FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(settings.FRONTEND_DIR)), name="static")
+    logos_dir = settings.FRONTEND_DIR / "logos"
+    if logos_dir.exists():
+        app.mount("/logos", StaticFiles(directory=str(logos_dir)), name="logos")
 
 @app.get("/")
 def serve_index():
