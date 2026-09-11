@@ -17,7 +17,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
-  <link rel="stylesheet" href="/static/style.css?v=5.2">
+  <link rel="stylesheet" href="/static/style.css?v=5.4">
 </head>
 <body>
   <div class="app-container">
@@ -406,19 +406,94 @@
                   <div class="mmt-field-sub" id="mmtPortalSub">Compare GF, MMT, EMT</div>
 
                   <!-- Portal Popover -->
-                  <div class="city-picker-popover u-s5" id="mmtPortalPopover"  onclick="event.stopPropagation()">
+                  <div class="city-picker-popover u-s5" id="mmtPortalPopover" style="max-height: 380px; overflow-y: auto;" onclick="event.stopPropagation()">
                     <div class="u-s77">Select Source Platform:</div>
                     <div class="city-picker-list">
-                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ALL', 'All Portals', 'Compare GF, MMT, EMT', 'ALL'); event.stopPropagation();">
+                      <!-- Basket Groups -->
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ALL', 'All Sources', 'DGCA / MoSPI Basket', 'ALL'); event.stopPropagation();">
                         <div class="picker-logo-wrap">
                           <div class="carrier-mini-pill" style="background:#0F172A; color:#FFF; font-size:11px; font-weight:800;">ALL</div>
                           <div>
-                            <strong>All Sources (Market Basket)</strong>
-                            <div class="u-s78">Cross-Engine Jevons Index</div>
+                            <strong>All Sources (DGCA Basket)</strong>
+                            <div class="u-s78">Direct Airlines + OTAs Jevons Index</div>
                           </div>
                         </div>
                         <span class="u-s79">ALL</span>
                       </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRLINES', 'Direct Airlines', 'IndiGo, AI, Akasa, SpiceJet', 'AIR'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0284C7; color:#FFF; font-size:11px; font-weight:800;">✈️</div>
+                          <div>
+                            <strong>Direct Airlines Only</strong>
+                            <div class="u-s78">Direct Carrier Booking Engines</div>
+                          </div>
+                        </div>
+                        <span class="u-s80">AIR</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('OTAS', 'Major OTAs', 'GF, MMT, EMT, Yatra, Ixigo', 'OTA'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#059669; color:#FFF; font-size:11px; font-weight:800;">🌐</div>
+                          <div>
+                            <strong>Major OTAs Only</strong>
+                            <div class="u-s78">Commercial Metasearch Portals</div>
+                          </div>
+                        </div>
+                        <span class="u-s85">OTA</span>
+                      </div>
+
+                      <!-- Direct Carrier Engines -->
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('INDIGO', 'IndiGo Direct', 'goindigo.in Direct Engine', '6E'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/indigo.png" class="picker-logo-img" alt="IndiGo Direct">
+                          <div>
+                            <strong>IndiGo Direct (6E)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s80">6E</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRINDIA', 'Air India Direct', 'airindia.com Direct Engine', 'AI'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindia.jpg" class="picker-logo-img" alt="Air India Direct">
+                          <div>
+                            <strong>Air India Direct (AI)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s81">AI</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AKASA', 'Akasa Air Direct', 'akasaair.com Direct Engine', 'QP'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/Akasaair.png" class="picker-logo-img" alt="Akasa Air Direct">
+                          <div>
+                            <strong>Akasa Air Direct (QP)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s83">QP</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('SPICEJET', 'SpiceJet Direct', 'spicejet.com Direct Engine', 'SG'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/spicejet.png" class="picker-logo-img" alt="SpiceJet Direct">
+                          <div>
+                            <strong>SpiceJet Direct (SG)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">SG</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRINDIAEXPRESS', 'AI Express Direct', 'airindiaexpress.com Engine', 'IX'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindiaexpress.jpeg" class="picker-logo-img" alt="AI Express Direct">
+                          <div>
+                            <strong>Air India Express (IX)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s84">IX</span>
+                      </div>
+
+                      <!-- OTA Portals -->
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('google_flights', 'Google Flights', 'Direct Metasearch Engine', 'GF'); event.stopPropagation();">
                         <div class="picker-logo-wrap">
                           <img src="logos/googleairline.png" class="picker-logo-img" alt="Google Flights">
@@ -448,6 +523,16 @@
                           </div>
                         </div>
                         <span class="u-s80">EMT</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('yatra', 'Yatra', 'Corporate & Leisure OTA', 'YTR'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/yatra.png" class="picker-logo-img" alt="Yatra">
+                          <div>
+                            <strong>Yatra (YTR)</strong>
+                            <div class="u-s78">Major Domestic OTA</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">YTR</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('ixigo', 'Ixigo', 'Direct Travel Metasearch', 'IXI'); event.stopPropagation();">
                         <div class="picker-logo-wrap">
@@ -3006,6 +3091,6 @@
   </div>
 
   <!-- Main JavaScript Controller -->
-  <script src="/static/app.js?v=5.2"></script>
+  <script src="/static/app.js?v=5.4"></script>
 </body>
 </html>

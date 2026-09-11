@@ -915,6 +915,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (p.includes('easemytrip') || p.includes('emt')) return '/logos/easemytrip.png';
     if (p.includes('ixigo') || p.includes('ixi')) return '/logos/ixogo.png';
     if (p.includes('yatra')) return '/logos/yatra.png';
+    if (p.includes('indigo')) return '/logos/indigo.png';
+    if (p.includes('airindiaexpress') || p.includes('aix')) return '/logos/airindiaexpress.jpeg';
+    if (p.includes('airindia')) return '/logos/airindia.jpg';
+    if (p.includes('akasa')) return '/logos/Akasaair.png';
+    if (p.includes('spicejet')) return '/logos/spicejet.png';
     if (p.includes('google') || p.includes('gf')) return '/logos/googleairline.png';
     return '/logos/googleairline.png';
   };
@@ -1139,9 +1144,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetPlat = state.source.toLowerCase();
       filtered = filtered.filter(f => {
         const plat = (f.source_platform || '').toLowerCase();
+        if (targetPlat === 'airlines' || targetPlat === 'direct' || targetPlat === 'airline_direct') {
+          return plat.includes('direct') || plat.includes('indigo') || plat.includes('air_india') || plat.includes('airindia') || plat.includes('akasa') || plat.includes('spicejet');
+        }
+        if (targetPlat === 'otas' || targetPlat === 'ota') {
+          return plat.includes('google') || plat.includes('makemytrip') || plat.includes('easemytrip') || plat.includes('yatra') || plat.includes('ixigo');
+        }
         if (targetPlat === 'gf' || targetPlat === 'google_flights') return plat.includes('google');
         if (targetPlat === 'mmt' || targetPlat === 'makemytrip') return plat.includes('makemytrip');
         if (targetPlat === 'emt' || targetPlat === 'easemytrip') return plat.includes('easemytrip');
+        if (targetPlat === 'ytr' || targetPlat === 'yatra') return plat.includes('yatra');
+        if (targetPlat === 'ixi' || targetPlat === 'ixigo') return plat.includes('ixigo');
+        if (targetPlat === 'indigo' || targetPlat === '6e') return plat.includes('indigo');
+        if (targetPlat === 'airindia' || targetPlat === 'air_india' || targetPlat === 'ai') return plat.includes('air_india') || plat.includes('airindia');
+        if (targetPlat === 'akasa' || targetPlat === 'qp') return plat.includes('akasa');
+        if (targetPlat === 'spicejet' || targetPlat === 'sg') return plat.includes('spicejet');
+        if (targetPlat === 'airindiaexpress' || targetPlat === 'aix' || targetPlat === 'ix') return plat.includes('express');
         return plat.includes(targetPlat);
       });
     }
