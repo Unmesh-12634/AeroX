@@ -897,25 +897,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Official Airline & OTA Platform Logo Resolvers
   // =========================================================================
   window.getAirlineLogoUrl = function(carrierName) {
-    if (!carrierName) return 'logos/indigo.png';
-    const c = String(carrierName).toLowerCase();
-    if (c.includes('air india express') || c.includes('aix') || c.includes('express')) return 'logos/airindiaexpress.jpeg';
-    if (c.includes('air india') || c === 'ai') return 'logos/airindia.jpg';
-    if (c.includes('akasa') || c === 'qp') return 'logos/Akasaair.png';
-    if (c.includes('spicejet') || c === 'sg') return 'logos/spicejet.png';
-    if (c.includes('vistara') || c === 'uk') return 'logos/vistara.webp';
-    if (c.includes('indigo') || c === '6e') return 'logos/indigo.png';
-    return 'logos/indigo.png';
+    if (!carrierName) return '/logos/indigo.png';
+    const c = String(carrierName).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (c.includes('airindiaexpress') || c.includes('aix') || c === 'ix') return '/logos/airindiaexpress.jpeg';
+    if (c.includes('airindia') || c === 'ai') return '/logos/airindia.jpg';
+    if (c.includes('akasa') || c === 'qp') return '/logos/Akasaair.png';
+    if (c.includes('spicejet') || c.includes('spice') || c === 'sg') return '/logos/spicejet.png';
+    if (c.includes('vistara') || c === 'uk') return '/logos/vistara.webp';
+    if (c.includes('indigo') || c === '6e') return '/logos/indigo.png';
+    return '/logos/indigo.png';
   };
 
   window.getPlatformLogoUrl = function(plat) {
-    if (!plat) return 'logos/googleairline.png';
-    const p = String(plat).toLowerCase();
-    if (p.includes('makemytrip') || p.includes('mmt')) return 'logos/makemytrip.webp';
-    if (p.includes('easemytrip') || p.includes('emt')) return 'logos/easemytrip.png';
-    if (p.includes('ixigo') || p.includes('ixi')) return 'logos/ixogo.png';
-    if (p.includes('google') || p.includes('gf')) return 'logos/googleairline.png';
-    return 'logos/googleairline.png';
+    if (!plat) return '/logos/googleairline.png';
+    const p = String(plat).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (p.includes('makemytrip') || p.includes('mmt')) return '/logos/makemytrip.webp';
+    if (p.includes('easemytrip') || p.includes('emt')) return '/logos/easemytrip.png';
+    if (p.includes('ixigo') || p.includes('ixi')) return '/logos/ixogo.png';
+    if (p.includes('google') || p.includes('gf')) return '/logos/googleairline.png';
+    return '/logos/googleairline.png';
   };
 
   window.generateFlightBookingUrl = function(f) {
@@ -2907,9 +2907,10 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = airlines.map(a => `
       <div class="kpi-card" style="border-left: 4px solid ${a.color || '#0284C7'};">
         <div class="kpi-label">
-          <span style="display:flex; align-items:center; gap:7px;">
-            <span class="logo-icon-svg ${a.class_name || 'indigo'}">${a.code}</span>
-            <strong>${a.airline}</strong>
+          <span style="display:flex; align-items:center; gap:8px;">
+            <img src="${window.getAirlineLogoUrl(a.airline || a.code)}" class="table-carrier-logo" alt="${a.airline || a.code}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="carrier-mini-pill" style="display:none; background:#0F172A; color:#FFF; font-size:10px; font-weight:800;">${a.code}</span>
+            <strong style="font-size:13.5px; color:#0F172A;">${a.airline}</strong>
           </span>
           <span class="badge info">${a.market_share_pct}% Share</span>
         </div>
@@ -2929,9 +2930,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = airlines.map(a => `
       <tr>
         <td>
-          <span style="display:inline-flex; align-items:center; gap:6px;">
-            <span class="logo-icon-svg ${a.class_name || 'indigo'}">${a.code}</span>
-            <strong>${a.airline}</strong>
+          <span style="display:inline-flex; align-items:center; gap:8px;">
+            <img src="${window.getAirlineLogoUrl(a.airline || a.code)}" class="table-carrier-logo" alt="${a.airline || a.code}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="carrier-mini-pill" style="display:none; background:#0F172A; color:#FFF; font-size:10px; font-weight:800;">${a.code}</span>
+            <strong style="font-size:13px; color:#0F172A;">${a.airline}</strong>
           </span>
         </td>
         <td>${a.observations_count.toLocaleString()}</td>

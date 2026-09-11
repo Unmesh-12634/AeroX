@@ -73,7 +73,14 @@ if settings.FRONTEND_DIR.exists():
 def serve_index():
     index_path = settings.FRONTEND_DIR / "index.html"
     if index_path.exists():
-        return FileResponse(index_path)
+        return FileResponse(
+            index_path,
+            headers={
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0"
+            }
+        )
     return JSONResponse({
         "project": settings.PROJECT_NAME,
         "version": settings.VERSION,
