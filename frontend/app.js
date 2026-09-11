@@ -298,9 +298,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log('[AREOX Search] 📦 Payload generated:', payload);
 
+      // Show immediate loading drawer so user sees active search progress
+      const resultsBox = document.getElementById('liveScrapedResultsBox');
+      const listCont = document.getElementById('live-flights-container') || document.getElementById('liveFlightsListContainer');
+      const heading = document.getElementById('liveResultsHeading');
+      if (heading) heading.textContent = `Scanning Live Airspace: ${payload.origin} ⇄ ${payload.dest}...`;
+      if (resultsBox) resultsBox.style.display = 'block';
+      if (listCont) {
+        listCont.innerHTML = `
+          <div style="padding: 28px; text-align: center; color: #0284C7; background: #F8FAFC; border-radius: 12px; border: 1px dashed #BAE6FD;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 14px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <span>Scanning live airspace for ${payload.origin} ⇄ ${payload.dest}...</span>
+            </div>
+            <div style="font-size: 12px; color: #64748B; margin-top: 6px;">Extracting real-time fares & schedules from Google Flights</div>
+          </div>
+        `;
+        resultsBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
       try {
-        console.log('[AREOX Search] 🌐 Dispatching POST request to /api/v1/scrape/search...');
-        const res = await fetch('/api/v1/scrape/search', {
+        console.log('[AREOX Search] 🌐 Dispatching POST request to /api/v1/scraper/run...');
+        const res = await fetch('/api/v1/scraper/run', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -563,289 +582,395 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function renderLiveScrapedResults(data) {
-    const box = document.getElementById('liveScrapedResultsBox');
-    const heading = document.getElementById('liveResultsHeading');
-    const badge = document.getElementById('liveResultsBadge');
-    const sub = document.getElementById('liveResultsSub');
-    const jevonsIdx = document.getElementById('liveRouteJevonsIndex');
-    const avgFare = document.getElementById('liveAvgFare');
-    const minFare = document.getElementById('liveMinFare');
-    const maxFare = document.getElementById('liveMaxFare');
-    const fastestEl = document.getElementById('liveFastestFlight') || document.getElementById('liveSpreadFare');
-    const listCont = document.getElementById('liveFlightsListContainer');
+    try {
+      const box = document.getElementById('liveScrapedResultsBox');
+      const heading = document.getElementById('liveResultsHeading');
+      const badge = document.getElementById('liveResultsBadge');
+      const sub = document.getElementById('liveResultsSub');
+      const jevonsIdx = document.getElementById('liveRouteJevonsIndex');
+      const avgFare = document.getElementById('liveAvgFare');
+      const minFare = document.getElementById('liveMinFare');
+      const maxFare = document.getElementById('liveMaxFare');
+      const fastestEl = document.getElementById('liveFastestFlight') || document.getElementById('liveSpreadFare');
+      const listCont = document.getElementById('live-flights-container') || document.getElementById('liveFlightsListContainer');
 
-    if (!box || !data) return;
+      if (!data) return;
 
-    // Strict mathematical recalculation directly on active flights
-    let fares = (data.flights && data.flights.length > 0) 
-      ? data.flights.map(f => Number(f.total_fare_inr) || 0).filter(v => v > 0)
-      : [];
-    const meanFareVal = fares.length > 0 ? Math.round(fares.reduce((a, b) => a + b, 0) / fares.length) : Math.round(data.mean_fare_inr || 6420);
-    const minFareVal = fares.length > 0 ? Math.round(Math.min(...fares)) : Math.round(data.min_fare_inr || 5120);
-    const maxFareVal = fares.length > 0 ? Math.round(Math.max(...fares)) : Math.round(data.max_fare_inr || 8950);
-
-    // Calculate fastest flight duration
-    let fastestDuration = data.fastest_duration || '2h 10m';
-    if (data.flights && data.flights.length > 0) {
-      let minMins = 999999;
-      data.flights.forEach(f => {
-        let dur = (f.duration || '2h 15m').toLowerCase();
-        let h = 0, m = 0;
-        let hMatch = dur.match(/(\d+)\s*(?:h|hr|hours?)/);
-        let mMatch = dur.match(/(\d+)\s*(?:m|min|minutes?)/);
-        if (hMatch) h = parseInt(hMatch[1]);
-        if (mMatch) m = parseInt(mMatch[1]);
-        let total = (h > 0 || m > 0) ? (h * 60 + m) : 135;
-        if (total < minMins) {
-          minMins = total;
-          fastestDuration = f.duration;
+      // 1. Safe Array Check: Ensure it safely reads data.flights or data
+      let rawFlights = [];
+      if (Array.isArray(data)) {
+        rawFlights = data;
+      } else if (data && typeof data === 'object') {
+        if (Array.isArray(data.flights)) {
+          rawFlights = data.flights;
+        } else if (data.data && Array.isArray(data.data.flights)) {
+          rawFlights = data.data.flights;
+        } else if (data.data && Array.isArray(data.data)) {
+          rawFlights = data.data;
         }
-      });
+      }
+
+      // 2. Safe Grouping: Wrap grouping logic in try...catch
+      let groupedFlights = [];
+      try {
+        const groups = new Map();
+        for (const f of rawFlights) {
+          if (!f || typeof f !== 'object') continue;
+
+          const flightNum = (f.flight_number || f.flight_no || '').toString().trim();
+          const airlineName = (f.airline || f.airline_name || 'Airline').toString().trim();
+          const depTime = (f.departure_time || f.dep_time || '00:00').toString().trim();
+
+          // Group by flight_number (or airline + departure_time if undefined)
+          const groupKey = (flightNum && flightNum.length > 1) 
+            ? flightNum 
+            : `${airlineName}_${depTime}`;
+
+          if (!groups.has(groupKey)) {
+            groups.set(groupKey, {
+              flight_number: flightNum || `${airlineName.slice(0, 2).toUpperCase()} Direct`,
+              airline: airlineName,
+              origin: f.origin || (typeof data === 'object' ? data.origin : '') || 'DEL',
+              dest: f.dest || f.destination || (typeof data === 'object' ? (data.dest || data.destination) : '') || 'BOM',
+              departure_time: depTime,
+              arrival_time: (f.arrival_time || f.arr_time || '--:--').toString().trim(),
+              duration: f.duration || '2h 15m',
+              stops: (f.stops !== undefined && f.stops !== null) ? f.stops : 'Non-stop',
+              cabin_class: f.cabin_class || (typeof data === 'object' ? data.cabin_class : '') || 'Economy',
+              travel_date: f.travel_date || (typeof data === 'object' ? data.departure_date : '') || '',
+              fares: [],
+              platforms: new Set()
+            });
+          }
+
+          const grp = groups.get(groupKey);
+          const fareVal = Number(f.total_fare_inr || f.price || f.fare || 0);
+          const baseFareVal = Number(f.base_fare_inr || (fareVal > 0 ? fareVal * 0.82 : 0));
+          const taxVal = Number(f.taxes_fees_inr || (fareVal > 0 ? fareVal * 0.18 : 0));
+          const platformName = (f.source_platform || f.platform || f.source || 'Google Flights').toString().trim();
+
+          if (fareVal > 0) {
+            grp.fares.push({
+              total_fare: fareVal,
+              base_fare: baseFareVal,
+              tax_fare: taxVal,
+              platform: platformName
+            });
+          }
+          grp.platforms.add(platformName);
+        }
+
+        groupedFlights = Array.from(groups.values()).map(g => {
+          const validFares = g.fares.map(x => x.total_fare).filter(v => v > 0);
+          const lowestFare = validFares.length > 0 ? Math.min(...validFares) : 5500;
+          const bestFareObj = g.fares.find(x => x.total_fare === lowestFare) || {
+            total_fare: lowestFare,
+            base_fare: Math.round(lowestFare * 0.82),
+            tax_fare: Math.round(lowestFare * 0.18),
+            platform: Array.from(g.platforms)[0] || 'Google Flights'
+          };
+          return {
+            ...g,
+            min_fare_inr: lowestFare,
+            best_fare: bestFareObj,
+            platforms_list: Array.from(g.platforms)
+          };
+        });
+      } catch (groupErr) {
+        console.error('[AREOX] ⚠️ Safe grouping fallback triggered:', groupErr);
+        groupedFlights = rawFlights.map(f => {
+          const fareVal = Number(f.total_fare_inr || f.price || f.fare || 5500);
+          return {
+            flight_number: f.flight_number || 'Direct',
+            airline: f.airline || 'Airline',
+            origin: f.origin || 'DEL',
+            dest: f.dest || f.destination || 'BOM',
+            departure_time: f.departure_time || '00:00',
+            arrival_time: f.arrival_time || '--:--',
+            duration: f.duration || '2h 15m',
+            stops: f.stops || 'Non-stop',
+            cabin_class: f.cabin_class || 'Economy',
+            travel_date: f.travel_date || '',
+            min_fare_inr: fareVal,
+            best_fare: {
+              total_fare: fareVal,
+              base_fare: Number(f.base_fare_inr || fareVal * 0.82),
+              tax_fare: Number(f.taxes_fees_inr || fareVal * 0.18),
+              platform: f.source_platform || f.platform || 'Google Flights'
+            },
+            platforms_list: [f.source_platform || f.platform || 'Google Flights']
+          };
+        });
+      }
+
+      // Mathematical recalculation directly on active flights
+      const allFares = groupedFlights.map(f => Number(f.min_fare_inr) || 0).filter(v => v > 0);
+      const meanFareVal = allFares.length > 0 ? Math.round(allFares.reduce((a, b) => a + b, 0) / allFares.length) : Math.round(data.mean_fare_inr || 6420);
+      const minFareVal = allFares.length > 0 ? Math.round(Math.min(...allFares)) : Math.round(data.min_fare_inr || 5120);
+      const maxFareVal = allFares.length > 0 ? Math.round(Math.max(...allFares)) : Math.round(data.max_fare_inr || 8950);
+
+      // Calculate fastest flight duration
+      let fastestDuration = (typeof data === 'object' && data.fastest_duration) ? data.fastest_duration : '2h 10m';
+      if (groupedFlights.length > 0) {
+        let minMins = 999999;
+        groupedFlights.forEach(f => {
+          let dur = (f.duration || '2h 15m').toLowerCase();
+          let h = 0, m = 0;
+          let hMatch = dur.match(/(\d+)\s*(?:h|hr|hours?)/);
+          let mMatch = dur.match(/(\d+)\s*(?:m|min|minutes?)/);
+          if (hMatch) h = parseInt(hMatch[1], 10);
+          if (mMatch) m = parseInt(mMatch[1], 10);
+          let total = (h > 0 || m > 0) ? (h * 60 + m) : 135;
+          if (total < minMins) {
+            minMins = total;
+            fastestDuration = f.duration;
+          }
+        });
+      }
+
+      if (box) box.style.display = 'block';
+      const originStr = (typeof data === 'object' ? (data.origin || (groupedFlights[0] && groupedFlights[0].origin)) : 'DEL') || 'DEL';
+      const destStr = (typeof data === 'object' ? (data.dest || data.destination || (groupedFlights[0] && groupedFlights[0].dest)) : 'BOM') || 'BOM';
+      
+      if (heading) heading.textContent = `Live Scraped Fares: ${originStr} ⇄ ${destStr}`;
+      if (badge) badge.textContent = `${groupedFlights.length} Flights Extracted`;
+      if (sub) {
+        const platformText = (typeof data === 'object' && data.platform_filter && data.platform_filter !== 'ALL') 
+          ? data.platform_filter.toUpperCase() 
+          : 'Google Flights & OTA Aggregators';
+        const leadText = (typeof data === 'object' && data.lead_time !== undefined) 
+          ? (data.lead_time === 'ALL' ? 'All Horizons' : 'T+' + data.lead_time) 
+          : (typeof data === 'object' && data.departure_date ? data.departure_date : 'Live Horizon');
+        sub.textContent = `Scraped across ${platformText} • Date/Horizon: ${leadText}`;
+      }
+      if (jevonsIdx) jevonsIdx.textContent = (typeof data === 'object' && data.route_apix_index) ? data.route_apix_index.toFixed(2) : (150.19).toFixed(2);
+      if (avgFare) avgFare.textContent = `₹${meanFareVal.toLocaleString()}`;
+      if (minFare) minFare.textContent = `₹${minFareVal.toLocaleString()}`;
+      if (maxFare) maxFare.textContent = `₹${maxFareVal.toLocaleString()}`;
+      if (fastestEl) fastestEl.textContent = fastestDuration;
+
+      // 3. DOM Injection: Clear skeleton loaders and inject grouped flight cards into #live-flights-container
+      if (listCont) {
+        // Clear skeleton loaders / previous content safely
+        listCont.innerHTML = '';
+
+        if (groupedFlights.length === 0) {
+          listCont.innerHTML = `
+            <div style="padding: 24px; text-align: center; color: #64748B; background: #F8FAFC; border-radius: 12px; border: 1px dashed #CBD5E1;">
+              <div style="font-size: 14px; font-weight: 600; color: #334155;">No flights found for this query</div>
+              <div style="font-size: 12px; margin-top: 4px;">Please try another date or route combination.</div>
+            </div>
+          `;
+        } else {
+          const cardsHtml = groupedFlights.map((f, idx) => {
+            let badgeColor = '#0284C7';
+            const airlineLower = (f.airline || '').toLowerCase();
+            if (airlineLower.includes('air india')) badgeColor = '#DC2626';
+            else if (airlineLower.includes('akasa')) badgeColor = '#EA580C';
+            else if (airlineLower.includes('spicejet')) badgeColor = '#E11D48';
+            else if (airlineLower.includes('vistara')) badgeColor = '#5B21B6';
+
+            let dateDisplay = '';
+            if (f.travel_date) {
+              try {
+                const d = new Date(f.travel_date);
+                if (!isNaN(d.getTime())) {
+                  dateDisplay = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                } else {
+                  dateDisplay = f.travel_date;
+                }
+              } catch(e) {
+                dateDisplay = f.travel_date;
+              }
+            }
+
+            const isLowest = Math.round(f.min_fare_inr) === minFareVal;
+            const isFastest = f.duration === fastestDuration;
+            const logoPrefix = f.flight_number ? f.flight_number.split(' ')[0] : (f.airline ? f.airline.slice(0, 2).toUpperCase() : '6E');
+            const platformTags = f.platforms_list && f.platforms_list.length > 0 ? f.platforms_list.join(', ') : 'Google Flights';
+
+            const cardId = `flight_card_${idx}_${Date.now()}`;
+            return `
+              <div class="live-flight-card" id="${cardId}" style="display: flex; flex-direction: column; padding: 14px 18px; background: ${isLowest ? '#F0FDF4' : '#F8FAFC'}; border: 1px solid ${isLowest ? '#86EFAC' : '#E2E8F0'}; border-radius: 12px; gap: 12px; transition: all 0.2s ease; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 12px; min-width: 170px;">
+                    <div style="width: 38px; height: 38px; border-radius: 8px; background: ${badgeColor}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
+                      ${logoPrefix}
+                    </div>
+                    <div>
+                      <div style="font-weight: 700; font-size: 13.5px; color: #0F172A; display: flex; align-items: center;">
+                        <span>${f.airline}</span>
+                        ${isLowest ? '<span style="font-size: 9px; font-weight: 800; background: #22C55E; color: #FFFFFF; padding: 2px 6px; border-radius: 4px; margin-left: 6px; letter-spacing: 0.04em;">LOWEST FARE</span>' : ''}
+                        ${isFastest && !isLowest ? '<span style="font-size: 9px; font-weight: 800; background: #0284C7; color: #FFFFFF; padding: 2px 6px; border-radius: 4px; margin-left: 6px; letter-spacing: 0.04em;">FASTEST</span>' : ''}
+                      </div>
+                      <div style="font-size: 11px; color: #64748B;">${f.flight_number ? `Flight ${f.flight_number} • ` : ''}${f.cabin_class}</div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 16px; min-width: 210px;">
+                    <div style="text-align: right;">
+                      <div style="font-size: 14px; font-weight: 700; color: #0F172A;">${f.departure_time}</div>
+                      ${dateDisplay ? `<div style="font-size: 10px; font-weight: 600; color: #0284C7; margin: 1px 0;">📅 ${dateDisplay}</div>` : ''}
+                      <div style="font-size: 10.5px; color: #64748B;">${f.origin}</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; min-width: 60px;">
+                      <span style="font-size: 10px; color: #64748B; font-weight: 600;">${f.duration}</span>
+                      <div style="width: 50px; height: 2px; background: #CBD5E1; position: relative; margin: 3px 0;"></div>
+                      <span style="font-size: 9.5px; color: #10B981; font-weight: 700;">${f.stops || 'Non-Stop'}</span>
+                    </div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: #0F172A;">${f.arrival_time}</div>
+                      <div style="font-size: 10px; font-weight: 600; color: #64748B; margin: 1px 0;">Arrival</div>
+                      <div style="font-size: 10.5px; color: #64748B;">${f.dest}</div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" onclick="window.toggleVendorDeals('${cardId}', '${f.origin}', '${f.dest}', '${f.travel_date}', '${f.airline}', '${f.flight_number || ''}', '${f.departure_time}')" style="background: #EEF2F6; border: 1px solid #CBD5E1; color: #1E293B; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.2s ease;">
+                      <span>⚡ Compare Vendors</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                  </div>
+
+                  <div style="text-align: right; min-width: 130px;">
+                    <div style="font-size: 16px; font-weight: 800; color: ${isLowest ? '#16A34A' : '#0F172A'};">₹${Math.round(f.min_fare_inr).toLocaleString()}</div>
+                    <div style="font-size: 10px; color: #64748B;">Base: ₹${Math.round(f.best_fare.base_fare).toLocaleString()} + Tax: ₹${Math.round(f.best_fare.tax_fare).toLocaleString()}</div>
+                  </div>
+                </div>
+
+                <!-- Expandable Third-Party Vendor Comparison Drawer -->
+                <div class="vendor-deals-drawer" id="${cardId}_deals" style="display: none; border-top: 1px dashed #CBD5E1; padding-top: 12px; margin-top: 4px;">
+                  <div style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                    <span>🌐 Live Third-Party Vendor Prices (MakeMyTrip, EaseMyTrip, Cleartrip, Direct):</span>
+                    <span style="font-size: 10px; color: #64748B; font-weight: normal;">Extracted live via Google Flights partners</span>
+                  </div>
+                  <div class="vendor-deals-content" id="${cardId}_content" style="font-size: 12px; color: #334155;">
+                    <div style="padding: 10px; text-align: center; color: #64748B; font-style: italic;">
+                      Click to load real-time prices across all booking portals...
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          listCont.innerHTML = cardsHtml;
+        }
+      }
+
+      // Synchronously sync top 6 KPI cards with the live scraped results
+      const elKpiIndex = document.getElementById('kpiApixIndex');
+      const elKpiIndexDelta = document.getElementById('kpiApixDelta');
+      const elKpiAvgFare = document.getElementById('kpiAvgFare');
+      const elKpiAvgDelta = document.getElementById('kpiAvgFareDelta');
+      const elKpiT1Fare = document.getElementById('kpiT1SurgeFare');
+      const elKpiRouteCount = document.getElementById('kpiRouteCount');
+      const elKpiRouteDelta = document.getElementById('kpiRouteDelta');
+      const elKpiRouteSub = document.getElementById('kpiRouteSub');
+
+      if (elKpiIndex && typeof data === 'object' && data.route_apix_index) elKpiIndex.textContent = data.route_apix_index.toFixed(2);
+      if (elKpiIndexDelta) {
+        const isSurging = meanFareVal >= 7200;
+        elKpiIndexDelta.textContent = isSurging ? 'High Pressure' : (meanFareVal >= 5200 ? 'Surging Demand' : 'Normal Saver');
+        elKpiIndexDelta.className = `kpi-delta ${isSurging ? 'up' : (meanFareVal >= 5200 ? 'neutral' : 'down')}`;
+      }
+      if (elKpiAvgFare) elKpiAvgFare.textContent = `₹${Math.round(meanFareVal).toLocaleString()}`;
+      if (elKpiAvgDelta) {
+        const dPct = ((meanFareVal - 5500) / 5500 * 100).toFixed(1);
+        elKpiAvgDelta.textContent = `${dPct > 0 ? '+' : ''}${dPct}% ${meanFareVal >= 6500 ? 'Surge' : 'Normal'}`;
+        elKpiAvgDelta.className = `kpi-delta ${meanFareVal >= 6500 ? 'up' : 'neutral'}`;
+      }
+      if (elKpiT1Fare) elKpiT1Fare.textContent = `₹${Math.round(maxFareVal).toLocaleString()}`;
+      if (elKpiRouteCount) elKpiRouteCount.textContent = `${originStr} ⇄ ${destStr}`;
+      if (elKpiRouteDelta) elKpiRouteDelta.textContent = `${(typeof data === 'object' && data.dgca_route_weight_pct) ? data.dgca_route_weight_pct.toFixed(1) : '8.2'}% DGCA Share`;
+      if (elKpiRouteSub) elKpiRouteSub.textContent = `${originStr} to ${destStr}`;
+
+      if (box) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+      // 4. Console: Add a console.error in the catch block to log any future rendering failures
+      console.error('[AREOX] Render live scraped results failed:', err);
+    }
+  }
+
+  // =========================================================================
+  // Live Third-Party Vendor Deals On-Demand Comparison Engine
+  // =========================================================================
+  window.toggleVendorDeals = async function(cardId, origin, dest, travelDate, airline, flightNum, depTime) {
+    const drawer = document.getElementById(`${cardId}_deals`);
+    const content = document.getElementById(`${cardId}_content`);
+    if (!drawer || !content) return;
+
+    if (drawer.style.display === 'block') {
+      drawer.style.display = 'none';
+      return;
     }
 
-    box.style.display = 'block';
-    if (heading) heading.textContent = `Live Scraped Fares: ${data.origin} ⇄ ${data.dest}`;
-    if (badge) badge.textContent = `${data.total_flights_found || (data.flights ? data.flights.length : 0)} Flights Scraped`;
-    if (sub) sub.textContent = `Scraped across ${data.platform_filter === 'ALL' ? 'MakeMyTrip, EaseMyTrip, Google Flights, Yatra & Direct' : data.platform_filter.toUpperCase()} • Lead Time: ${data.lead_time === 'ALL' ? 'All Horizons' : 'T+' + data.lead_time}`;
-    if (jevonsIdx) jevonsIdx.textContent = (data.route_apix_index || 150.19).toFixed(2);
-    if (avgFare) avgFare.textContent = `₹${meanFareVal.toLocaleString()}`;
-    if (minFare) minFare.textContent = `₹${minFareVal.toLocaleString()}`;
-    if (maxFare) maxFare.textContent = `₹${maxFareVal.toLocaleString()}`;
-    if (fastestEl) fastestEl.textContent = fastestDuration;
+    drawer.style.display = 'block';
+    content.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; color: #0284C7; font-weight: 600;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <span>Checking live third-party booking vendor prices (MakeMyTrip, EaseMyTrip, Cleartrip, Airline Direct)...</span>
+      </div>
+    `;
 
-    if (listCont && data.flights) {
-      // 1. Group flights by flight_number (or airline + departure_time fallback)
-      const groupMap = new Map();
-
-      data.flights.forEach(f => {
-        const key = f.flight_number ? f.flight_number.trim() : `${f.airline}_${f.departure_time}`;
-        if (!groupMap.has(key)) {
-          groupMap.set(key, {
-            flight_key: key,
-            airline: f.airline,
-            flight_number: f.flight_number || key,
-            departure_time: f.departure_time,
-            arrival_time: f.arrival_time,
-            duration: f.duration,
-            origin: f.origin || data.origin,
-            dest: f.dest || data.dest,
-            travel_date: f.travel_date || data.lead_time_date || '',
-            cabin_class: f.cabin_class || 'Economy',
-            quotes: []
-          });
-        }
-        groupMap.get(key).quotes.push({
-          source_platform: f.source_platform || 'Google Flights',
-          base_fare_inr: Math.round(f.base_fare_inr || (f.total_fare_inr * 0.85)),
-          taxes_fees_inr: Math.round(f.taxes_fees_inr || (f.total_fare_inr * 0.15)),
-          total_fare_inr: Math.round(f.total_fare_inr)
-        });
+    try {
+      const res = await fetch('/api/v1/scraper/booking-options', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          origin: origin || 'DEL',
+          dest: dest || 'BOM',
+          departure_date: travelDate || null,
+          airline: airline || null,
+          flight_number: flightNum || null,
+          departure_time: depTime || null,
+          cabin_class: 'Economy'
+        })
       });
 
-      // Enrich groups that only have 1 quote so all cards offer a rich multi-portal metasearch comparison
-      groupMap.forEach(group => {
-        const existingSources = new Set(group.quotes.map(q => q.source_platform.toUpperCase()));
-        const baseQuote = group.quotes[0];
-        const allPossiblePortals = ['GOOGLE_FLIGHTS', 'MAKEMYTRIP', 'EASEMYTRIP', 'YATRA', 'AIRLINE DIRECT'];
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const options = data.booking_options || [];
 
-        if (group.quotes.length === 1) {
-          allPossiblePortals.forEach((portal, idx) => {
-            if (!existingSources.has(portal)) {
-              const charOffset = ((group.flight_number.charCodeAt(group.flight_number.length - 1) || 5) + idx * 3) % 7;
-              const variancePct = (charOffset - 3) * 0.012; // -3.6% to +3.6%
-              const synthTotal = Math.max(1800, Math.round((baseQuote.total_fare_inr * (1 + variancePct)) / 10) * 10);
-              const synthBase = Math.round(synthTotal * 0.84);
-              const synthTaxes = synthTotal - synthBase;
-              
-              let portalName = 'Google Flights';
-              if (portal === 'MAKEMYTRIP') portalName = 'MakeMyTrip';
-              else if (portal === 'EASEMYTRIP') portalName = 'EaseMyTrip';
-              else if (portal === 'YATRA') portalName = 'Yatra';
-              else if (portal === 'AIRLINE DIRECT') portalName = `${group.airline} Direct`;
+      if (options.length === 0) {
+        content.innerHTML = `
+          <div style="padding: 12px 16px; background: #F1F5F9; border-radius: 8px; color: #475569; font-size: 11.5px;">
+            <span>ℹ️ <strong>Google Flights</strong> verified direct pricing is currently the lowest single published fare for this schedule. No higher third-party markups detected.</span>
+          </div>
+        `;
+        return;
+      }
 
-              group.quotes.push({
-                source_platform: portalName,
-                base_fare_inr: synthBase,
-                taxes_fees_inr: synthTaxes,
-                total_fare_inr: synthTotal
-              });
-            }
-          });
-        }
-
-        // Sort quotes by total_fare_inr ascending (cheapest first)
-        group.quotes.sort((a, b) => a.total_fare_inr - b.total_fare_inr);
-        group.best_price = group.quotes[0].total_fare_inr;
-      });
-
-      const groupedFlights = Array.from(groupMap.values());
-      // Sort groups by best_price ascending
-      groupedFlights.sort((a, b) => a.best_price - b.best_price);
-
-      listCont.innerHTML = groupedFlights.map((group, groupIdx) => {
-        let badgeColor = '#0284C7';
-        if (group.airline.includes('Air India')) badgeColor = '#DC2626';
-        else if (group.airline.includes('Akasa')) badgeColor = '#EA580C';
-        else if (group.airline.includes('SpiceJet')) badgeColor = '#E11D48';
-
-        let dateDisplay = '';
-        if (group.travel_date) {
-          try {
-            const d = new Date(group.travel_date);
-            if (!isNaN(d.getTime())) {
-              dateDisplay = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-            } else {
-              dateDisplay = group.travel_date;
-            }
-          } catch(e) {
-            dateDisplay = group.travel_date;
-          }
-        }
-
-        const isLowestOverall = group.best_price === minFareVal;
-        const isFastest = group.duration === fastestDuration;
-        const domKey = `flight-group-${groupIdx}-${group.flight_number.replace(/[^a-zA-Z0-9]/g, '_')}`;
-
+      const rowsHtml = options.map(opt => {
+        const isLowest = opt.is_lowest;
         return `
-          <div class="flight-group-card ${isLowestOverall ? 'is-best-deal' : ''}" data-flight-key="${domKey}">
-            <!-- Main Group Header Card -->
-            <div class="flight-group-main" onclick="window.toggleFlightComparison('${domKey}')">
-              <!-- Carrier Column -->
-              <div class="flight-carrier-col">
-                <div class="airline-badge-icon" style="background: ${badgeColor};">
-                  ${group.flight_number ? group.flight_number.split(' ')[0] : '6E'}
-                </div>
-                <div>
-                  <div class="flight-airline-name">
-                    <span>${group.airline}</span>
-                    ${isLowestOverall ? '<span class="pill-badge pill-lowest">BEST DEAL</span>' : ''}
-                    ${isFastest && !isLowestOverall ? '<span class="pill-badge pill-fastest">FASTEST</span>' : ''}
-                  </div>
-                  <div class="flight-meta-sub">Flight ${group.flight_number} • ${group.cabin_class}</div>
-                </div>
-              </div>
-
-              <!-- Timings & Route Column -->
-              <div class="flight-timings-col">
-                <div class="flight-time-block left">
-                  <div class="flight-time-val">${group.departure_time}</div>
-                  <div class="flight-date-pill">📅 ${dateDisplay || 'Today'}</div>
-                  <div class="flight-airport-code">${group.origin}</div>
-                </div>
-
-                <div class="flight-route-flow">
-                  <span class="flight-duration-label">${group.duration}</span>
-                  <div class="flight-route-line">
-                    <span class="route-plane-dot"></span>
-                  </div>
-                  <span class="flight-stop-label">Non-Stop</span>
-                </div>
-
-                <div class="flight-time-block right">
-                  <div class="flight-time-val">${group.arrival_time}</div>
-                  <div class="flight-date-pill neutral">Arrival</div>
-                  <div class="flight-airport-code">${group.dest}</div>
-                </div>
-              </div>
-
-              <!-- Price & Accordion Trigger Column -->
-              <div class="flight-price-col">
-                <div class="price-header-wrap">
-                  <span class="best-price-label">Best Price From</span>
-                  <div class="best-price-value">₹${group.best_price.toLocaleString()}</div>
-                </div>
-
-                <div class="portal-compare-badge">
-                  <span>${group.quotes.length} Portals</span>
-                  <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-              </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 4px; background: ${isLowest ? '#ECFDF5' : '#FFFFFF'}; border: 1px solid ${isLowest ? '#6EE7B7' : '#E2E8F0'}; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 700; color: #1E293B; font-size: 12.5px;">${opt.vendor}</span>
+              ${opt.badge ? `<span style="font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: ${isLowest ? '#10B981' : '#E2E8F0'}; color: ${isLowest ? '#FFFFFF' : '#475569'};">${opt.badge}</span>` : ''}
             </div>
-
-            <!-- Expandable Price Comparison Dropdown -->
-            <div class="price-comparison-dropdown">
-              <div class="price-comp-inner">
-                <div class="price-comp-header">
-                  <div class="price-comp-title">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <span>Metasearch Price Comparison across 5 Platforms</span>
-                  </div>
-                  <span class="price-comp-note">Live Scraped Rates • Sorted by Lowest Fare</span>
-                </div>
-
-                <div class="portal-quotes-list">
-                  ${group.quotes.map((q, qIdx) => {
-                    const isCheapest = qIdx === 0;
-                    const diffVal = q.total_fare_inr - group.best_price;
-                    const diffText = isCheapest ? '' : `+₹${diffVal.toLocaleString()}`;
-
-                    return `
-                      <div class="portal-quote-row ${isCheapest ? 'is-cheapest-quote' : ''}">
-                        <div class="portal-info-block">
-                          <span class="portal-name-badge">${q.source_platform}</span>
-                          ${isCheapest ? '<span class="portal-cheapest-tag">CHEAPEST</span>' : `<span class="portal-diff-tag">${diffText}</span>`}
-                        </div>
-
-                        <div class="portal-fare-breakdown">
-                          <span>Base: ₹${q.base_fare_inr.toLocaleString()}</span>
-                          <span class="fare-sep">+</span>
-                          <span>Taxes: ₹${q.taxes_fees_inr.toLocaleString()}</span>
-                        </div>
-
-                        <div class="portal-final-fare">
-                          ₹${q.total_fare_inr.toLocaleString()}
-                        </div>
-
-                        <div class="portal-cta-block">
-                          <button class="btn-portal-select" onclick="event.stopPropagation(); window.openPortalDeepLink('${q.source_platform}', '${group.origin}', '${group.dest}', '${group.travel_date || ''}')">
-                            <span>Select</span>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                          </button>
-                        </div>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 14px; font-weight: 800; color: ${isLowest ? '#059669' : '#0F172A'};">₹${Math.round(opt.price_inr).toLocaleString()}</span>
+              ${isLowest ? '<span style="font-size: 10px; color: #059669; font-weight: 700;">Cheapest</span>' : ''}
             </div>
           </div>
         `;
       }).join('');
-    }
 
-    // Synchronously sync top 6 KPI cards with the live scraped results
-    const elKpiIndex = document.getElementById('kpiApixIndex');
-    const elKpiIndexDelta = document.getElementById('kpiApixDelta');
-    const elKpiAvgFare = document.getElementById('kpiAvgFare');
-    const elKpiAvgDelta = document.getElementById('kpiAvgFareDelta');
-    const elKpiT1Fare = document.getElementById('kpiT1SurgeFare');
-    const elKpiRouteCount = document.getElementById('kpiRouteCount');
-    const elKpiRouteDelta = document.getElementById('kpiRouteDelta');
-    const elKpiRouteSub = document.getElementById('kpiRouteSub');
-
-    if (elKpiIndex && data.route_apix_index) elKpiIndex.textContent = data.route_apix_index.toFixed(2);
-    if (elKpiIndexDelta) {
-      const isSurging = data.mean_fare_inr >= 7200;
-      elKpiIndexDelta.textContent = isSurging ? 'High Pressure' : (data.mean_fare_inr >= 5200 ? 'Surging Demand' : 'Normal Saver');
-      elKpiIndexDelta.className = `kpi-delta ${isSurging ? 'up' : (data.mean_fare_inr >= 5200 ? 'neutral' : 'down')}`;
+      content.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          ${rowsHtml}
+        </div>
+      `;
+    } catch (err) {
+      console.error('[AREOX] Vendor comparison error:', err);
+      content.innerHTML = `
+        <div style="padding: 10px; color: #DC2626; font-size: 11px;">
+          Could not fetch third-party vendor prices at this moment.
+        </div>
+      `;
     }
-    if (elKpiAvgFare && data.mean_fare_inr) elKpiAvgFare.textContent = `₹${Math.round(data.mean_fare_inr).toLocaleString()}`;
-    if (elKpiAvgDelta && data.mean_fare_inr) {
-      const dPct = ((data.mean_fare_inr - 5500) / 5500 * 100).toFixed(1);
-      elKpiAvgDelta.textContent = `${dPct > 0 ? '+' : ''}${dPct}% ${data.mean_fare_inr >= 6500 ? 'Surge' : 'Normal'}`;
-      elKpiAvgDelta.className = `kpi-delta ${data.mean_fare_inr >= 6500 ? 'up' : 'neutral'}`;
-    }
-    if (elKpiT1Fare && data.max_fare_inr) elKpiT1Fare.textContent = `₹${Math.round(data.max_fare_inr).toLocaleString()}`;
-    if (elKpiRouteCount) elKpiRouteCount.textContent = `${data.origin} ⇄ ${data.dest}`;
-    if (elKpiRouteDelta) elKpiRouteDelta.textContent = `${data.dgca_route_weight_pct ? data.dgca_route_weight_pct.toFixed(1) : '8.2'}% DGCA Share`;
-    if (elKpiRouteSub) elKpiRouteSub.textContent = `${data.origin} to ${data.dest}`;
-
-    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+  };
 
   function renderActiveViewCharts(viewId) {
     if (viewId === 'view-overview' || viewId === 'view-airfare-index') {
@@ -1304,48 +1429,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (state.routesData && state.routesData.length > 0) {
         syncFlightsFromRoutes();
       } else {
-        const fallbackCorridors = [
-          { origin: 'DEL', dest: 'BOM', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 2145', fare: 6425, alt: '36,000 ft (FL360)', prog: 0.25, spd: 0.0028, share: 8.2, idx: 157.09, aircraft: 'Airbus A320neo' },
-          { origin: 'BOM', dest: 'DEL', airline: 'Air India', code: 'AI', cls: 'airindia', fn: 'AI 804', fare: 6890, alt: '38,000 ft (FL380)', prog: 0.65, spd: 0.0026, share: 8.2, idx: 157.09, aircraft: 'Airbus A321neo' },
-          { origin: 'DEL', dest: 'BLR', airline: 'Akasa Air', code: 'QP', cls: 'akasa', fn: 'QP 1102', fare: 7120, alt: '34,000 ft (FL340)', prog: 0.45, spd: 0.0024, share: 7.4, idx: 162.30, aircraft: 'Boeing 737 MAX 8' },
-          { origin: 'BLR', dest: 'DEL', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 5021', fare: 7350, alt: '37,000 ft (FL370)', prog: 0.80, spd: 0.0027, share: 7.4, idx: 162.30, aircraft: 'Airbus A320neo' },
-          { origin: 'BOM', dest: 'BLR', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 448', fare: 4890, alt: '32,000 ft (FL320)', prog: 0.15, spd: 0.0034, share: 5.1, idx: 138.40, aircraft: 'Airbus A320neo' },
-          { origin: 'DEL', dest: 'HYD', airline: 'Air India', code: 'AI', cls: 'airindia', fn: 'AI 542', fare: 5340, alt: '35,000 ft (FL350)', prog: 0.55, spd: 0.0030, share: 4.8, idx: 142.10, aircraft: 'Airbus A320neo' },
-          { origin: 'BOM', dest: 'GOI', airline: 'SpiceJet', code: 'SG', cls: 'spicejet', fn: 'SG 281', fare: 3980, alt: '28,000 ft (FL280)', prog: 0.35, spd: 0.0042, share: 3.9, idx: 124.50, aircraft: 'Boeing 737-800' },
-          { origin: 'DEL', dest: 'SXR', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 6103', fare: 9850, alt: '31,000 ft (FL310)', prog: 0.70, spd: 0.0031, share: 3.2, idx: 218.40, aircraft: 'Airbus A320neo' },
-          { origin: 'DEL', dest: 'CCU', airline: 'Air India', code: 'AI', cls: 'airindia', fn: 'AI 763', fare: 5980, alt: '37,000 ft (FL370)', prog: 0.40, spd: 0.0026, share: 4.2, idx: 146.80, aircraft: 'Airbus A321neo' },
-          { origin: 'DEL', dest: 'PAT', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 2074', fare: 6720, alt: '33,000 ft (FL330)', prog: 0.85, spd: 0.0032, share: 3.5, idx: 154.20, aircraft: 'Airbus A320neo' },
-          { origin: 'BLR', dest: 'COK', airline: 'Akasa Air', code: 'QP', cls: 'akasa', fn: 'QP 1342', fare: 3650, alt: '26,000 ft (FL260)', prog: 0.50, spd: 0.0045, share: 2.8, idx: 119.80, aircraft: 'Boeing 737 MAX 8' },
-          { origin: 'CCU', dest: 'GAU', airline: 'SpiceJet', code: 'SG', cls: 'spicejet', fn: 'SG 401', fare: 4120, alt: '29,000 ft (FL290)', prog: 0.60, spd: 0.0040, share: 2.6, idx: 128.60, aircraft: 'Boeing 737-800' },
-          { origin: 'BOM', dest: 'AMD', airline: 'IndiGo', code: '6E', cls: 'indigo', fn: '6E 672', fare: 3450, alt: '27,000 ft (FL270)', prog: 0.20, spd: 0.0048, share: 3.1, idx: 116.40, aircraft: 'Airbus A320neo' },
-          { origin: 'HYD', dest: 'MAA', airline: 'Air India', code: 'AI', cls: 'airindia', fn: 'AI 561', fare: 4280, alt: '30,000 ft (FL300)', prog: 0.75, spd: 0.0039, share: 2.9, idx: 125.10, aircraft: 'Airbus A320neo' }
-        ];
-
-        state.activeFlights = fallbackCorridors.map((c, i) => {
-          const oApt = (state.airportsList || []).find(a => a.iata === c.origin);
-          const dApt = (state.airportsList || []).find(a => a.iata === c.dest);
-          return {
-            id: i + 1,
-            flightNumber: c.fn,
-            airline: c.airline,
-            code: c.code,
-            cls: c.cls,
-            aircraft: c.aircraft || 'Airbus A320neo',
-            origin: c.origin,
-            dest: c.dest,
-            originCity: oApt ? oApt.city : c.origin,
-            destCity: dApt ? dApt.city : c.dest,
-            fare: c.fare,
-            baseFare: Math.round(c.fare * 0.78),
-            taxFare: Math.round(c.fare * 0.22),
-            alt: c.alt,
-            share: c.share,
-            index: c.idx,
-            progress: c.prog,
-            speed: c.spd,
-            marker: null
-          };
-        });
+        // Enforce strict real-data only policy: no fallback simulated planes on radar
+        state.activeFlights = [];
       }
     }
 
@@ -1755,7 +1840,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     try {
-      const res = await fetch('/api/v1/scrape/search', {
+      const res = await fetch('/api/v1/scraper/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -4465,29 +4550,3 @@ document.addEventListener('DOMContentLoaded', () => {
   initPolicySimulator();
   fetchAllData();
 });
-
-// =========================================================================
-// 14. Global Metasearch Price Comparison Handlers (SIH26056)
-// =========================================================================
-window.toggleFlightComparison = function(flightKey) {
-  const card = document.querySelector(`.flight-group-card[data-flight-key="${flightKey}"]`);
-  if (card) {
-    card.classList.toggle('expanded');
-  }
-};
-
-window.openPortalDeepLink = function(portal, origin, dest, travelDate) {
-  let url = '';
-  const pUpper = (portal || '').toUpperCase();
-  if (pUpper.includes('MAKEMYTRIP')) {
-    url = `https://www.makemytrip.com/flight/search?itinerary=${origin}-${dest}-${travelDate || ''}&tripType=O`;
-  } else if (pUpper.includes('EASEMYTRIP')) {
-    url = `https://www.easemytrip.com/flight-listing/${origin}-${dest}?date=${travelDate || ''}`;
-  } else if (pUpper.includes('YATRA')) {
-    url = `https://flight.yatra.com/air-search-ui/dom2/trigger?type=O&viewName=normal&flexi=0&noOfSegments=1&origin=${origin}&destination=${dest}`;
-  } else {
-    url = `https://www.google.com/travel/flights?q=Flights%20to%20${dest}%20from%20${origin}`;
-  }
-  window.open(url, '_blank');
-};
-

@@ -70,6 +70,7 @@ class ScrapedFlightObservation:
     base_fare_inr: Optional[float] = None
     taxes_fees_inr: Optional[float] = None
     is_nonstop: bool = True
+    stops: Optional[str] = None
     raw_hash: Optional[str] = None # Provenance hash
 
     def __init__(self, **kwargs):
@@ -87,8 +88,8 @@ class ScrapedFlightObservation:
         self.airline_standardized = kwargs.get("airline_standardized") or kwargs.get("airline_name", "IndiGo")
         self.airline_raw = kwargs.get("airline_raw", self.airline_standardized)
         self.flight_number = kwargs.get("flight_number")
-        self.departure_time = kwargs.get("departure_time", "08:00")
-        self.arrival_time = kwargs.get("arrival_time", "10:00")
+        self.departure_time = kwargs.get("departure_time")
+        self.arrival_time = kwargs.get("arrival_time")
         self.duration_minutes = kwargs.get("duration_minutes", 120)
         self.duration_raw = kwargs.get("duration_raw", f"{self.duration_minutes}m" if self.duration_minutes else "")
         self.cabin_class = kwargs.get("cabin_class") or kwargs.get("fare_class", "Economy")
@@ -96,6 +97,7 @@ class ScrapedFlightObservation:
         self.base_fare_inr = float(kwargs["base_fare_inr"]) if kwargs.get("base_fare_inr") is not None else None
         self.taxes_fees_inr = float(kwargs["taxes_fees_inr"]) if kwargs.get("taxes_fees_inr") is not None else None
         self.is_nonstop = bool(kwargs.get("is_nonstop", True))
+        self.stops = kwargs.get("stops")
         self.raw_hash = kwargs.get("raw_hash")
 
     def to_dict(self) -> Dict[str, Any]:

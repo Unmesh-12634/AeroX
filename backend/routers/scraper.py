@@ -10,8 +10,10 @@ import math
 import hashlib
 import numpy as np
 import pandas as pd
+import concurrent.futures
 from datetime import datetime, timedelta
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, BackgroundTasks, Query, HTTPException
+from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 from backend.config import settings
 from backend.db.models import ScrapeRequest, LiveSearchRequest
@@ -19,6 +21,7 @@ from backend.db.database import db
 from backend.index_engine.weights import get_route_weight
 from backend.index_engine.formulas import jevons_index
 from scripts.scrapers.scraper_orchestrator import ScraperOrchestrator
+from scripts.scrapers.google_flights_scraper import GoogleFlightsScraper
 
 router = APIRouter(tags=["Scraper Execution & Scheduler"])
 
@@ -87,6 +90,278 @@ def trigger_scrape(req: ScrapeRequest, background_tasks: BackgroundTasks) -> Dic
         "lead_times": req.lead_times
     }
 
+class DirectScrapeRequest(BaseModel):
+    origin: Optional[str] = "DEL"
+    destination: Optional[str] = None
+    dest: Optional[str] = None
+    departure_date: Optional[str] = None
+    lead_time_days: Optional[int] = None
+    cabin_class: Optional[str] = "Economy"
+
+def _execute_live_google_flights(
+    origin: str = "DEL",
+    dest: str = "BOM",
+    departure_date: Optional[str] = None,
+    lead_time_days: Optional[int] = None,
+    cabin_class: str = "Economy"
+) -> Dict[str, Any]:
+    """
+    Direct synchronous live scraper execution via Playwright.
+    Always returns fresh live data from Google Flights — NEVER cached or read from DB/CSV.
+    """
+    origin_iata = origin.strip().upper() if origin else "DEL"
+    dest_iata = dest.strip().upper() if dest else "BOM"
+    route_str = f"{origin_iata}-{dest_iata}"
+    
+    today = datetime.now().date()
+    if departure_date and str(departure_date).strip():
+        travel_date_str = str(departure_date).strip()
+        try:
+            t_obj = datetime.strptime(travel_date_str, "%Y-%m-%d").date()
+            lead_time = (t_obj - today).days
+        except Exception:
+            lead_time = 7
+    elif lead_time_days is not None:
+        lead_time = int(lead_time_days)
+        travel_date_str = (today + timedelta(days=lead_time)).strftime("%Y-%m-%d")
+    else:
+        lead_time = 7
+        travel_date_str = (today + timedelta(days=7)).strftime("%Y-%m-%d")
+
+    t_start = time.time()
+    
+    def _scrape_worker():
+        scraper = GoogleFlightsScraper(headless=True)
+        return scraper.search_route(
+            origin_iata=origin_iata,
+            dest_iata=dest_iata,
+            travel_date_str=travel_date_str,
+            cabin_class=cabin_class
+        )
+
+    # Enforce strict 30-second timeout
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_scrape_worker)
+            scraped_observations = future.result(timeout=30.0)
+    except concurrent.futures.TimeoutError:
+        raise HTTPException(
+            status_code=504,
+            detail=f"Live scrape operation timed out after 30 seconds for route {route_str} on {travel_date_str}"
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Live Google Flights scraper execution failed: {str(exc)}"
+        )
+
+    t_end = time.time()
+    exec_dur = round(t_end - t_start, 2)
+    now_utc = datetime.utcnow()
+    
+    flight_list = []
+    fares = []
+    carrier_counts = {}
+    
+    for idx, obs in enumerate(scraped_observations):
+        fare = float(obs.total_fare_inr)
+        fares.append(fare)
+        carrier = obs.airline_standardized or "IndiGo"
+        carrier_counts[carrier] = carrier_counts.get(carrier, 0) + 1
+        
+        base_f = round(fare * 0.78, 2)
+        taxes_f = round(fare - base_f, 2)
+        
+        carrier_code_map = {
+            "IndiGo": "6E",
+            "Air India": "AI",
+            "Akasa Air": "QP",
+            "SpiceJet": "SG",
+            "Air India Express": "IX",
+            "AIX Connect": "IX",
+            "AirAsia India": "IX",
+            "Vistara": "UK"
+        }
+        expected_code = carrier_code_map.get(carrier, "6E")
+        
+        raw_fn = obs.flight_number
+        if raw_fn and (raw_fn.upper().startswith(expected_code + " ") or raw_fn.upper().startswith(expected_code)):
+            flight_num = raw_fn
+        else:
+            flight_num = None
+        
+        flight_list.append({
+            "record_id": obs.record_id or f"SCR_GF_{int(t_start)}_{idx+1:03d}",
+            "airline": carrier,
+            "airline_raw": obs.airline_raw or carrier,
+            "flight_number": flight_num,
+            "origin": obs.origin_iata or origin_iata,
+            "dest": obs.dest_iata or dest_iata,
+            "route": route_str,
+            "departure_time": obs.departure_time,
+            "arrival_time": obs.arrival_time,
+            "duration": obs.duration_raw or "2h 15m",
+            "duration_minutes": obs.duration_minutes or 135,
+            "is_nonstop": obs.is_nonstop,
+            "cabin_class": obs.cabin_class or cabin_class,
+            "base_fare_inr": base_f,
+            "taxes_fees_inr": taxes_f,
+            "total_fare_inr": fare,
+            "price": int(round(fare)),
+            "stops": getattr(obs, "stops", None),
+            "currency": "INR",
+            "source_platform": "GOOGLE_FLIGHTS",
+            "travel_date": travel_date_str,
+            "lead_time_days": lead_time,
+            "raw_hash": obs.raw_hash,
+            "estimated_fields": ["base_fare_inr", "taxes_fees_inr", "cabin_class"]
+        })
+
+    mean_fare = round(float(np.mean(fares)), 2) if fares else 0.0
+    min_fare = round(float(np.min(fares)), 2) if fares else 0.0
+    max_fare = round(float(np.max(fares)), 2) if fares else 0.0
+    
+    fastest_dur = "2h 15m"
+    if flight_list:
+        fastest_flt = min(flight_list, key=lambda f: f.get("duration_minutes", 999))
+        fastest_dur = fastest_flt.get("duration", "2h 15m")
+
+    return {
+        "status": "success",
+        "live_realtime": True,
+        "source": "google_flights_live_playwright",
+        "scrape_timestamp_utc": now_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        "scrape_timestamp_ist": (now_utc + timedelta(hours=5, minutes=30)).strftime("%Y-%m-%d %H:%M:%S IST"),
+        "route": route_str,
+        "origin": origin_iata,
+        "destination": dest_iata,
+        "departure_date": travel_date_str,
+        "lead_time_days": lead_time,
+        "cabin_class": cabin_class,
+        "execution_time_seconds": exec_dur,
+        "execution_duration_sec": exec_dur,
+        "total_flights_found": len(flight_list),
+        "total_flights_scraped": len(flight_list),
+        "summary_metrics": {
+            "mean_fare_inr": mean_fare,
+            "min_fare_inr": min_fare,
+            "max_fare_inr": max_fare,
+            "fastest_flight_duration": fastest_dur,
+            "carrier_breakdown": carrier_counts
+        },
+        "flights": flight_list
+    }
+
+@router.post("/scraper/run")
+@router.post("/scrape/run")
+def run_live_scraper_post(
+    req: Optional[LiveSearchRequest] = None,
+    origin: Optional[str] = Query(None),
+    destination: Optional[str] = Query(None),
+    dest: Optional[str] = Query(None),
+    departure_date: Optional[str] = Query(None),
+    lead_time_days: Optional[int] = Query(None),
+    cabin_class: Optional[str] = Query("Economy")
+) -> Dict[str, Any]:
+    """
+    On-Demand Live Google Flights Scraper Endpoint (POST).
+    Runs real Playwright in headless mode, extracts live airfares and returns freshly scraped data.
+    Accepts both LiveSearchRequest (from search UI) and DirectScrapeRequest-style query params.
+    """
+    o = (req.origin if req and req.origin else None) or origin or "DEL"
+    d = (req.dest if req and req.dest else None) or destination or dest or "BOM"
+    dep_date = (req.departure_date or req.travel_date if req else None) or departure_date
+    cab = (req.cabin_class if req and req.cabin_class else None) or cabin_class or "Economy"
+    # lead_time from frontend is a string like "ALL", "1", "7"; convert to int if possible
+    lt = None
+    if req and req.lead_time and req.lead_time != "ALL":
+        try:
+            lt = int(req.lead_time)
+        except Exception:
+            lt = None
+    if lt is None:
+        lt = lead_time_days
+    return _execute_live_google_flights(o, d, dep_date, lt, cab)
+
+@router.get("/scraper/run")
+@router.get("/scrape/run")
+def run_live_scraper_get(
+    origin: str = Query("DEL", description="Origin IATA code (e.g. DEL)"),
+    destination: Optional[str] = Query(None, description="Destination IATA code (e.g. BOM)"),
+    dest: Optional[str] = Query(None, description="Destination IATA code alias (e.g. BOM)"),
+    departure_date: Optional[str] = Query(None, description="Departure date in YYYY-MM-DD format"),
+    lead_time_days: Optional[int] = Query(None, description="Lead time in days from today"),
+    cabin_class: str = Query("Economy", description="Cabin class: Economy or Business")
+) -> Dict[str, Any]:
+    """
+    On-Demand Live Google Flights Scraper Endpoint (GET).
+    Accepts query parameters and returns fresh live scraped flight data with zero caching.
+    """
+    d = destination or dest or "BOM"
+    return _execute_live_google_flights(origin, d, departure_date, lead_time_days, cabin_class)
+
+class BookingOptionsRequest(BaseModel):
+    origin: str = "DEL"
+    dest: str = "BOM"
+    departure_date: Optional[str] = None
+    airline: Optional[str] = None
+    flight_number: Optional[str] = None
+    departure_time: Optional[str] = None
+    cabin_class: str = "Economy"
+
+@router.post("/scraper/booking-options")
+@router.post("/scrape/booking-options")
+def get_flight_booking_options_post(req: BookingOptionsRequest) -> Dict[str, Any]:
+    """
+    On-Demand Third-Party Vendor Booking Options Endpoint (POST).
+    Retrieves real live prices across MakeMyTrip, EaseMyTrip, Cleartrip, Yatra, and Airline Direct.
+    """
+    dep_date = req.departure_date or (datetime.now().date() + timedelta(days=7)).strftime("%Y-%m-%d")
+    scraper = GoogleFlightsScraper(headless=True)
+    options = scraper.get_flight_booking_options(
+        origin_iata=req.origin,
+        dest_iata=req.dest,
+        travel_date_str=dep_date,
+        airline=req.airline,
+        departure_time=req.departure_time,
+        flight_number=req.flight_number,
+        cabin_class=req.cabin_class
+    )
+    return {
+        "status": "success",
+        "route": f"{req.origin.upper()}-{req.dest.upper()}",
+        "departure_date": dep_date,
+        "flight_number": req.flight_number,
+        "airline": req.airline,
+        "total_vendors_found": len(options),
+        "booking_options": options
+    }
+
+@router.get("/scraper/booking-options")
+@router.get("/scrape/booking-options")
+def get_flight_booking_options_get(
+    origin: str = Query("DEL"),
+    dest: str = Query("BOM"),
+    departure_date: Optional[str] = Query(None),
+    airline: Optional[str] = Query(None),
+    flight_number: Optional[str] = Query(None),
+    departure_time: Optional[str] = Query(None),
+    cabin_class: str = Query("Economy")
+) -> Dict[str, Any]:
+    """
+    On-Demand Third-Party Vendor Booking Options Endpoint (GET).
+    """
+    req = BookingOptionsRequest(
+        origin=origin,
+        dest=dest,
+        departure_date=departure_date,
+        airline=airline,
+        flight_number=flight_number,
+        departure_time=departure_time,
+        cabin_class=cabin_class
+    )
+    return get_flight_booking_options_post(req)
+
 @router.post("/scrape/search")
 def live_search_and_scrape(req: LiveSearchRequest) -> Dict[str, Any]:
     """
@@ -136,7 +411,7 @@ def live_search_and_scrape(req: LiveSearchRequest) -> Dict[str, Any]:
     live_2026 = df_valid[df_valid['source_file'].str.contains('live_scraper|2026', na=False)].copy()
     pool_df = live_2026 if len(live_2026) >= 15 else df_valid.copy()
 
-    if len(pool_df) >= 4:
+    if not pool_df.empty:
         # Balanced multi-carrier sampling across major Indian airlines
         if not req.airline or req.airline == 'ALL':
             sample_frames = []
@@ -185,7 +460,7 @@ def live_search_and_scrape(req: LiveSearchRequest) -> Dict[str, Any]:
             
             # Flight number
             raw_fn = str(row['flight_number']) if 'flight_number' in row and pd.notna(row['flight_number']) else ''
-            fn = raw_fn if raw_fn.strip() not in ['', 'nan', 'None', '0'] else f"{prefix} {100 + ((idx * 37) % 890)}"
+            fn = raw_fn if raw_fn.strip() not in ['', 'nan', 'None', '0'] else None
             
             def _parse_hhmm(t_str: str) -> tuple[int, int]:
                 if not t_str:
@@ -206,16 +481,20 @@ def live_search_and_scrape(req: LiveSearchRequest) -> Dict[str, Any]:
 
             # Dep time
             raw_dep = str(row['departure_time']).strip() if 'departure_time' in row and pd.notna(row['departure_time']) else ''
+            # NO SYNTHETIC DEPARTURE TIMES
             if not raw_dep or raw_dep in ['00:00', 'nan', 'None']:
-                dep = std_slots[idx % len(std_slots)]
+                dep = None
             else:
                 dh, dm = _parse_hhmm(raw_dep)
                 dep = f"{dh:02d}:{dm:02d}"
 
             # Arr time
-            dep_h, dep_m = _parse_hhmm(dep)
-            arr_total_m = dep_h * 60 + dep_m + h * 60 + m
-            arr = f"{(arr_total_m // 60) % 24:02d}:{arr_total_m % 60:02d}"
+            if dep:
+                dep_h, dep_m = _parse_hhmm(dep)
+                arr_total_m = dep_h * 60 + dep_m + h * 60 + m
+                arr = f"{(arr_total_m // 60) % 24:02d}:{arr_total_m % 60:02d}"
+            else:
+                arr = None
 
             dur = str(row['duration_raw']) if 'duration_raw' in row and pd.notna(row['duration_raw']) and str(row['duration_raw']) != 'nan' else default_dur
             
@@ -242,64 +521,6 @@ def live_search_and_scrape(req: LiveSearchRequest) -> Dict[str, Any]:
                 "source_platform": src,
                 "is_nonstop": True,
                 "travel_date": chosen_travel_date
-            })
-    else:
-        # Calibrated multi-portal flight synthesis matching actual DGCA schedules & real live airfare curves
-        bench = ROUTE_BENCHMARKS.get((origin, dest)) or ROUTE_BENCHMARKS.get((dest, origin)) or {"dur": "2h 10m", "base": 5500.0}
-        base_route_price = bench["base"]
-        dur_str = bench["dur"]
-
-        today = datetime.now()
-        lt = int(req.lead_time) if req.lead_time != 'ALL' and req.lead_time.isdigit() else 1
-        t_date = (today + timedelta(days=lt)).strftime("%Y-%m-%d")
-
-        # Statistically validated Lead-Time Multipliers (T+1 urgency spike to T+45 early bird)
-        lt_mult = 1.48 if lt == 1 else (1.18 if lt <= 7 else (1.00 if lt <= 15 else (0.86 if lt <= 30 else 0.79)))
-
-        for idx, sched in enumerate(AIRLINE_SCHEDULES):
-            c_name = sched["airline"]
-            if req.airline != 'ALL' and req.airline.lower() not in c_name.lower():
-                continue
-
-            # Determine platform
-            chosen_portal = req.platform.upper() if req.platform != 'ALL' else sched["portals"][idx % len(sched["portals"])]
-            
-            # Flight number & times
-            fn = f"{sched['prefix']} {sched['fn'] + idx * 7}"
-            dep_time = sched["dep"]
-            
-            # Compute arrival time from duration
-            h, m = 2, 15
-            if 'h' in dur_str:
-                parts = dur_str.split('h')
-                h = int(parts[0].strip())
-                m = int(parts[1].replace('m', '').strip()) if len(parts) > 1 and parts[1].strip() else 0
-            
-            dep_h, dep_m = map(int, dep_time.split(':'))
-            arr_total_m = dep_h * 60 + dep_m + h * 60 + m
-            arr_time = f"{(arr_total_m // 60) % 24:02d}:{arr_total_m % 60:02d}"
-
-            tot = round(base_route_price * sched["mult"] * lt_mult + (idx * 45), 2)
-            base = round(tot * 0.78, 2)
-            tax = round(tot - base, 2)
-
-            flights.append({
-                "record_id": f"LIVE_{chosen_portal[:3]}_{int(time.time())}_{idx+1:03d}",
-                "airline": c_name,
-                "flight_number": fn,
-                "origin": origin,
-                "dest": dest,
-                "route": route_key,
-                "departure_time": dep_time,
-                "arrival_time": arr_time,
-                "duration": dur_str,
-                "cabin_class": req.cabin_class,
-                "base_fare_inr": base,
-                "taxes_fees_inr": tax,
-                "total_fare_inr": tot,
-                "source_platform": chosen_portal,
-                "is_nonstop": True,
-                "travel_date": t_date
             })
 
     def _parse_dur_mins(d_str: str) -> int:

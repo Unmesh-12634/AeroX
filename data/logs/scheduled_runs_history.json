@@ -244,5 +244,15 @@
     "latest_apix_index": 150.19,
     "status": "SUCCESS",
     "error": null
+  },
+  {
+    "iteration": 1,
+    "start_timestamp": "2026-09-10 21:26:17",
+    "end_timestamp": "2026-09-10 21:27:31",
+    "duration_seconds": 73.74,
+    "scraped_observations": 1132,
+    "latest_apix_index": null,
+    "status": "SUCCESS",
+    "error": null
   }
 ]
