@@ -35,9 +35,12 @@ class FlightObservation(BaseModel):
     is_ambiguous_carrier: Optional[bool] = False
     is_fare_mild_outlier: Optional[bool] = False
     is_fare_extreme_outlier: Optional[bool] = False
+    is_nonstop: Optional[bool] = True
+    stops_count: Optional[int] = 0
+    stop_info: Optional[str] = "Non-Stop"
 
 class ScrapeRequest(BaseModel):
-    platforms: List[str] = ["google_flights", "makemytrip", "easemytrip"]
+    platforms: List[str] = ["google_flights"]
     routes: List[str] = ["DEL-BOM"]
     lead_times: List[int] = [1, 7, 15, 30]
     cabin_class: str = "Economy"
@@ -48,9 +51,10 @@ class LiveSearchRequest(BaseModel):
     lead_time: str = "ALL"
     airline: str = "ALL"
     platform: str = "ALL"
+    stops_filter: Optional[str] = "ALL"  # "ALL", "NONSTOP", "1_STOP", "2_PLUS_STOPS"
     cabin_class: str = "Economy"
-    departure_date: Optional[str] = None
     travel_date: Optional[str] = None
+    force_scrape: Optional[bool] = False
 
 class PolicySimRequest(BaseModel):
     fuel_surcharge_delta_pct: float = 0.0     # e.g., +15.0%

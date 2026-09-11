@@ -11,6 +11,15 @@ updated: 2026-09-08
 - **Core Mission**: Transform volatile, multi-dimensional domestic airfare observations into a representative, statistically rigorous, and auditable Airfare Price Index (APIx) and market intelligence platform for MoSPI / NSO / RBI.
 - **Identity**: A national airfare data, statistical analysis, and intelligence platform (NOT a consumer flight booking/search engine).
 
+## 1.1 Core PS Mandates (Handwritten Notes Specification)
+1. **Data Scraping**: Automatically web-scrape real airfare data directly from Google Flights and OTA portals.
+2. **Cleaning & Normalization**: Standardize airlines, airports, clean invalid fares, and de-duplicate records.
+3. **Fare Component Separation**: Separate Base Fare from Taxes, User Development Fees (UDF/PSF), and Convenience Charges.
+4. **Route Basket & Weights**: Select and weight routes on the basis of official DGCA passenger traffic volume.
+5. **Multiple Advance Windows**: Collect prices across booking lead times (T+1, T+7, T+15, T+30, T+45).
+6. **Multi-Frequency APIx**: Calculate Airfare Price Index on Daily, Weekly, and Monthly frequencies.
+7. **NSO / RBI API**: Provide structured API feeds for National Statistical Office (NSO/MoSPI) and Reserve Bank of India (RBI).
+
 ## 2. Key Stakeholders
 - **Primary**: MoSPI / NSO (Consumer Price Index augmentation, transportation inflation analytics).
 - **Secondary**: RBI & Economic Policymakers (macroeconomic inflation tracking).
@@ -38,7 +47,8 @@ updated: 2026-09-08
   1. *What* is happening? (Airfare Index & Market Pulse)
   2. *Where* is it happening? (Route Intelligence & Regional Pressure)
   3. *How much* is it happening? (Magnitude & Volatility Index)
-  4. *Why* might it be happening? (Evidence-based factor attribution: lead time, seasonal, capacity, demand)
+  4. *Why* might it be happening? (Evidence-ba
+  sed factor attribution: lead time, seasonal, capacity, demand)
   5. *What* could happen next? (Early surge warnings & What-If policy simulations)
 
 ## 5. Innovation & SIH WOW Features

@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     AIRLINE_INDEX_PATH: Path = INDEX_RESULTS_DIR / "airline_airfare_indices.csv"
     CPI_BENCHMARK_PATH: Path = CLEANED_DIR / "cleaned_cpi_mospi_2024.csv"
     SCHEDULER_HISTORY_PATH: Path = LOGS_DIR / "scheduled_runs_history.json"
+    LIVE_SCRAPED_DIR: Path = LIVE_SCRAPED_DIR
     
     # Scraping
     DEFAULT_LEAD_TIMES: list[int] = [1, 3, 7, 14, 30, 45]

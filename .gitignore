@@ -1,45 +1,61 @@
-﻿# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# Environments & Virtual Envs
-.env
-.venv
+.Python
 env/
 venv/
+.venv/
 ENV/
-env.bak/
-venv.bak/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Testing & Coverage
+# Testing & Caches
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
 .nox/
-
-# Playwright & Browsers
-.playwright/
-test-results/
-playwright-report/
-
-# OS & Editor generated files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-.idea/
-.vscode/
-*.sublime-workspace
-*.sublime-project
-
-# Logs
-data/logs/*.log
 *.log
 
-# Antigravity / Agent runtime artifacts
-.system_generated/
-scratch/
+# Frontend / Node
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+dist-ssr/
+*.local
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Archives
+*.zip
+*.tar.gz

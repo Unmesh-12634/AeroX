@@ -165,6 +165,7 @@ class TestAPIEndpoints:
             "lead_time": "1",
             "airline": "ALL",
             "platform": "ALL",
+            "stops_filter": "ALL",
             "cabin_class": "Economy"
         })
         assert response.status_code == 200
@@ -179,6 +180,33 @@ class TestAPIEndpoints:
         assert "airline" in first_flight
         assert "total_fare_inr" in first_flight
         assert "source_platform" in first_flight
+        assert "is_nonstop" in first_flight
+        assert "stops_count" in first_flight
+        assert "stop_info" in first_flight
+
+    def test_live_search_stoppage_filtering(self):
+        """Test POST /api/v1/scrape/search with NONSTOP and 1_STOP filters."""
+        # Nonstop filter
+        res_ns = client.post("/api/v1/scrape/search", json={
+            "origin": "DEL",
+            "dest": "BOM",
+            "stops_filter": "NONSTOP"
+        })
+        assert res_ns.status_code == 200
+        data_ns = res_ns.json()
+        assert data_ns["stops_filter"] == "NONSTOP"
+        assert all(f["is_nonstop"] is True or f["stops_count"] == 0 for f in data_ns["flights"])
+
+        # 1-Stop filter
+        res_1s = client.post("/api/v1/scrape/search", json={
+            "origin": "DEL",
+            "dest": "BOM",
+            "stops_filter": "1_STOP"
+        })
+        assert res_1s.status_code == 200
+        data_1s = res_1s.json()
+        assert data_1s["stops_filter"] == "1_STOP"
+        assert all(f["stops_count"] == 1 for f in data_1s["flights"])
 
     def test_scraper_status_endpoint(self):
         """Test GET /api/v1/scrape/status returns scraper engine health."""

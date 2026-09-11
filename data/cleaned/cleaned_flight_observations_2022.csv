@@ -2541,7 +2541,6 @@ data.csv,2022_real_observations,MAA,MAA,BOM,BOM,MAA-BOM,IndiGo,IndiGo,,2022-02-1
 data.csv,2022_real_observations,MAA,MAA,BOM,BOM,MAA-BOM,Air India,Air India,,2022-02-16,14:55,17:05,2h 10m,130,Economy,5883.0,,,,,False
 data.csv,2022_real_observations,MAA,MAA,BOM,BOM,MAA-BOM,IndiGo,IndiGo,,2022-02-16,09:40,11:35,1h 55m,115,Economy,7142.0,,,,,False
 data.csv,2022_real_observations,MAA,MAA,BOM,BOM,MAA-BOM,IndiGo,IndiGo,,2022-02-16,13:10,15:05,1h 55m,115,Economy,10292.0,,,,,False
-data.csv,2022_real_observations,BOM,BOM,HYD,HYD,BOM-HYD,IndiGo,IndiGo,,2022-02-16,16:20,17:40,1h 20m,80,Economy,,,,,,False
 data.csv,2022_real_observations,BOM,BOM,MAA,MAA,BOM-MAA,Go First,Go First,,2022-02-17,05:50,07:40,1h 50m,110,Economy,5779.0,,,,,True
 data.csv,2022_real_observations,BOM,BOM,MAA,MAA,BOM-MAA,Air India,Air India,,2022-02-17,05:20,07:20,2h,120,Economy,5943.0,,,,,False
 data.csv,2022_real_observations,BOM,BOM,MAA,MAA,BOM-MAA,SpiceJet,SpiceJet,,2022-02-17,06:00,08:00,2h,120,Economy,5942.0,,,,,False

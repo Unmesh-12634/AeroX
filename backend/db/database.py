@@ -30,7 +30,7 @@ class DataRepository:
     def _load_master_data(self):
         if settings.MASTER_CSV_PATH.exists():
             try:
-                df = pd.read_csv(settings.MASTER_CSV_PATH)
+                df = pd.read_csv(settings.MASTER_CSV_PATH, low_memory=False)
                 df['total_fare_inr'] = pd.to_numeric(df['total_fare_inr'], errors='coerce')
                 df = df.dropna(subset=['total_fare_inr'])
                 self.master_df = df

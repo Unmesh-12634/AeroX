@@ -50,7 +50,7 @@ try:
         CleartripScraper, IxigoScraper, GoibiboScraper
     )
     from scripts.scrapers.airline_scrapers import (
-        IndiGoDirectScraper, AirIndiaDirectScraper,
+        IndiGoDirectScraper, AirIndiaDirectScraper, AirIndiaExpressDirectScraper,
         AkasaDirectScraper, SpiceJetDirectScraper
     )
 except ImportError:
@@ -61,7 +61,7 @@ except ImportError:
         CleartripScraper, IxigoScraper, GoibiboScraper
     )
     from airline_scrapers import (
-        IndiGoDirectScraper, AirIndiaDirectScraper,
+        IndiGoDirectScraper, AirIndiaDirectScraper, AirIndiaExpressDirectScraper,
         AkasaDirectScraper, SpiceJetDirectScraper
     )
 
@@ -86,8 +86,8 @@ DEFAULT_LEAD_TIMES = [1, 7, 15, 30, 45] # T+1, T+7, T+15, T+30, T+45 days
 
 PLATFORM_GROUPS = {
     "ota": ["makemytrip", "yatra", "easemytrip", "cleartrip", "ixigo", "goibibo"],
-    "airlines": ["indigo", "airindia", "akasa", "spicejet"],
-    "all": ["google_flights", "makemytrip", "yatra", "easemytrip", "cleartrip", "ixigo", "goibibo", "indigo", "airindia", "akasa", "spicejet"]
+    "airlines": ["indigo", "airindia", "airindiaexpress", "akasa", "spicejet"],
+    "all": ["google_flights", "makemytrip", "yatra", "easemytrip", "cleartrip", "ixigo", "goibibo", "indigo", "airindia", "airindiaexpress", "akasa", "spicejet"]
 }
 
 class ScraperOrchestrator:
@@ -103,6 +103,7 @@ class ScraperOrchestrator:
             "goibibo": GoibiboScraper(headless=headless),
             "indigo": IndiGoDirectScraper(headless=headless),
             "airindia": AirIndiaDirectScraper(headless=headless),
+            "airindiaexpress": AirIndiaExpressDirectScraper(headless=headless),
             "akasa": AkasaDirectScraper(headless=headless),
             "spicejet": SpiceJetDirectScraper(headless=headless)
         }
@@ -146,7 +147,6 @@ class ScraperOrchestrator:
                 for lt in lead_times:
                     travel_date = (today + timedelta(days=lt)).strftime("%Y-%m-%d")
                     print(f"    --> Querying {origin}-{dest} on {travel_date} (Lead: T+{lt} days)...", end="", flush=True)
-                    log_file = os.path.join(DATA_DIR, 'logs', 'scraper_daemon.log')
                     try:
                         obs_list = scraper.search_route(
                             origin_iata=origin,
@@ -154,16 +154,10 @@ class ScraperOrchestrator:
                             travel_date_str=travel_date,
                             cabin_class=cabin_class
                         )
-                        msg = f" Found {len(obs_list)} real flights."
-                        print(msg)
+                        print(f" Found {len(obs_list)} real flights.")
                         all_observations.extend(obs_list)
-                        with open(log_file, "a", encoding="utf-8") as lf:
-                            lf.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] SUCCESS: {origin}-{dest} T+{lt} (Found {len(obs_list)} flights)\n")
                     except Exception as e:
-                        msg = f" Error: {e}"
-                        print(msg)
-                        with open(log_file, "a", encoding="utf-8") as lf:
-                            lf.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] FAILURE: {origin}-{dest} T+{lt} failed with error: {e}\n")
+                        print(f" Error: {e}")
 
         # Persist and update master dataset
         if all_observations:
@@ -235,17 +229,6 @@ class ScraperOrchestrator:
             df_master_combined = pd.concat([df_master, df_append], ignore_index=True)
             df_master_combined.to_csv(master_v2_path, index=False)
             print(f"[✓] Main Project Master v2 updated: {master_v2_path} (Total Records: {len(df_master_combined):,})")
-
-            # 4. Append to real_only_observations.csv
-            real_only_path = os.path.join(CLEANED_DIR, "real_only_observations.csv")
-            if os.path.exists(real_only_path):
-                df_real = pd.read_csv(real_only_path)
-                df_real_combined = pd.concat([df_real, df_append], ignore_index=True)
-                df_real_combined.to_csv(real_only_path, index=False)
-                print(f"[✓] Real Only Observations updated: {real_only_path} (Total Records: {len(df_real_combined):,})")
-            else:
-                df_append.to_csv(real_only_path, index=False)
-                print(f"[✓] Created Real Only Observations: {real_only_path}")
 
 def main():
     parser = argparse.ArgumentParser(description="SIH26056 Real-Time Airfare Multi-Platform Scraper Engine")

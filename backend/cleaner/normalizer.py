@@ -21,24 +21,40 @@ CITY_SYNONYMS = {
     'goa': 'GOI', 'dabolim': 'GOI', 'goa dabolim': 'GOI', 'goa (dabolim)': 'GOI', 'mopa': 'GOX', 'goa mopa': 'GOX', 'goa (mopa)': 'GOX', 'panaji': 'GOI',
     'pune': 'PNQ', 'lohegaon': 'PNQ',
     'jaipur': 'JAI', 'sanganer': 'JAI', 'rajasthan': 'JAI',
+    'jodhpur': 'JDH',
+    'udaipur': 'UDR', 'dabok': 'UDR',
     'lucknow': 'LKO', 'amausi': 'LKO', 'chaudhary charan singh': 'LKO',
+    'varanasi': 'VNS', 'babatpur': 'VNS', 'kashi': 'VNS',
     'guwahati': 'GAU', 'borjhar': 'GAU', 'assam': 'GAU',
     'patna': 'PAT', 'bihar': 'PAT',
     'bhubaneswar': 'BBI', 'odisha': 'BBI',
     'srinagar': 'SXR', 'kashmir': 'SXR',
+    'jammu': 'IXJ',
+    'leh': 'IXL', 'ladakh': 'IXL',
     'chandigarh': 'IXC', 'punjab': 'IXC',
     'amritsar': 'ATQ', 'rajasansi': 'ATQ',
     'indore': 'IDR', 'madhya pradesh': 'IDR',
     'visakhapatnam': 'VTZ', 'vizag': 'VTZ',
+    'vijayawada': 'VGA',
+    'tirupati': 'TIR',
     'ranchi': 'IXR', 'jharkhand': 'IXR',
     'raipur': 'RPR', 'chhattisgarh': 'RPR',
     'dehradun': 'DED', 'jolly grant': 'DED',
-    'varanasi': 'VNS', 'babatpur': 'VNS', 'kashi': 'VNS',
     'thiruvananthapuram': 'TRV', 'trivandrum': 'TRV',
+    'kozhikode': 'CCJ', 'calicut': 'CCJ',
+    'coimbatore': 'CJB',
+    'madurai': 'IXM',
+    'mangaluru': 'IXE', 'mangalore': 'IXE',
     'bagdogra': 'IXB', 'siliguri': 'IXB',
     'port blair': 'IXZ', 'andaman': 'IXZ',
-    'udaipur': 'UDR', 'dabok': 'UDR',
-    'nagpur': 'NAG', 'sonegaon': 'NAG'
+    'nagpur': 'NAG', 'sonegaon': 'NAG',
+    'vadodara': 'BDQ',
+    'aurangabad': 'IXU', 'chhatrapati sambhajinagar': 'IXU',
+    'agartala': 'IXA', 'tripura': 'IXA',
+    'imphal': 'IMF', 'manipur': 'IMF',
+    'dibrugarh': 'DIB',
+    'silchar': 'IXS',
+    'dimapur': 'DMU', 'nagaland': 'DMU'
 }
 
 AIRLINE_STANDARDIZATION_MAP = {
@@ -79,7 +95,9 @@ def resolve_iata(city_or_code: str) -> Optional[str]:
     if len(cleaned) == 3 and cleaned.upper() in [
         'DEL', 'BOM', 'BLR', 'HYD', 'CCU', 'MAA', 'AMD', 'COK', 'GOI', 'GOX',
         'PNQ', 'JAI', 'LKO', 'GAU', 'PAT', 'BBI', 'SXR', 'IXC', 'ATQ', 'IDR',
-        'VTZ', 'IXR', 'RPR', 'DED', 'VNS', 'TRV', 'IXB', 'IXZ', 'UDR', 'NAG'
+        'VTZ', 'IXR', 'RPR', 'DED', 'VNS', 'TRV', 'IXB', 'IXZ', 'UDR', 'NAG',
+        'IXJ', 'IXL', 'JDH', 'BDQ', 'IXU', 'CCJ', 'CJB', 'IXM', 'TIR', 'VGA',
+        'IXE', 'IXA', 'IMF', 'DIB', 'IXS', 'DMU'
     ]:
         return cleaned.upper()
     return CITY_SYNONYMS.get(cleaned, None)

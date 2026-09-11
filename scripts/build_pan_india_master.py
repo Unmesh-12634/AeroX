@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 from scripts.index_engine.calculator import AirfareIndexEngine, AIRPORT_COORDINATES
+from scripts.scrapers.models import decompose_fare_components
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
@@ -180,12 +181,17 @@ def generate_pan_india_dataset():
                 if total_fare < 2400:
                     total_fare = 2400.0
                     
-                base_fare = float(np.round(total_fare * 0.82, -1))
-                taxes_fees = float(np.round(total_fare - base_fare, -1))
-                
                 platform = np.random.choice(PLATFORMS)
                 record_idx += 1
                 rec_id = f"OBS_PAN_{record_idx}"
+
+                # Decompose real fare components
+                decomp = decompose_fare_components(total_fare, origin_iata=o_iata, cabin_class="Economy", platform=platform)
+                
+                # Stoppage metadata
+                is_nonstop = (dur_minutes <= 200)
+                stops_count = 0 if is_nonstop else 1
+                stop_info = "Non-Stop" if is_nonstop else "1 Stop (via Hub)"
                 
                 new_observations.append({
                     'record_id': rec_id,
@@ -207,9 +213,16 @@ def generate_pan_india_dataset():
                     'duration_raw': dur_str,
                     'cabin_class': 'Economy',
                     'total_fare_inr': total_fare,
-                    'base_fare_inr': base_fare,
-                    'taxes_fees_inr': taxes_fees,
-                    'search_timestamp': '2026-09-09 11:30:00',
+                    'base_fare_inr': decomp['base_fare_inr'],
+                    'fuel_surcharge_inr': decomp['fuel_surcharge_inr'],
+                    'udf_psf_inr': decomp['udf_psf_inr'],
+                    'gst_inr': decomp['gst_inr'],
+                    'convenience_fee_inr': decomp['convenience_fee_inr'],
+                    'taxes_fees_inr': decomp['taxes_fees_inr'],
+                    'is_nonstop': is_nonstop,
+                    'stops_count': stops_count,
+                    'stop_info': stop_info,
+                    'search_timestamp': '2026-09-10 11:30:00',
                     'lead_time_days': lead_days,
                     'is_defunct_carrier': False,
                     'is_ambiguous_carrier': False,

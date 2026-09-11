@@ -110,98 +110,55 @@ class MakeMyTripScraper:
                     pass
 
                 # MMT flight cards typically reside in .listingCard or div[id^='listing-card']
-                flight_cards = page.locator(".listingCard, .listingCardWrap, div[id*='flight_list_item'], div[class*='listingCard']").all()
+                flight_cards = page.query_selector_all(".listingCard, .listingCardWrap, div[id*='flight_list_item']")
                 
                 if not flight_cards:
                     # Fallback to general listing container
-                    flight_cards = page.locator("div[class*='listingCard']").all()
-
-                cta_pattern = re.compile(r'\b(view\s*fares?|book\s*now|book|select|view\s*prices?)\b', re.IGNORECASE)
+                    flight_cards = page.query_selector_all("div[class*='listingCard']")
 
                 for idx, card in enumerate(flight_cards):
                     try:
-                        card_text = card.inner_text()
-                        if not card_text:
+                        text_content = card.inner_text()
+                        if not text_content or ('₹' not in text_content and 'Rs' not in text_content):
                             continue
-
-                        # -------------------------------------------------------------
-                        # 1. CTA-Anchor Method: Locate the Booking/Action Button
-                        # -------------------------------------------------------------
-                        price_val = None
-                        cta_locator = card.locator("button, a, [role='button'], div[class*='btn'], div[class*='button']").filter(has_text=cta_pattern).first
                         
-                        pricing_container = None
-                        if cta_locator.count() > 0:
-                            # 2. Traverse up the DOM to the immediate pricing / action ancestor container
-                            try:
-                                candidate_container = cta_locator.locator("xpath=ancestor::div[contains(@class, 'price') or contains(@class, 'Price') or contains(@class, 'fare') or contains(@class, 'Fare') or contains(@class, 'right') or contains(@class, 'Right') or contains(@class, 'action') or contains(@class, 'Action')]").first
-                                if candidate_container.count() > 0:
-                                    pricing_container = candidate_container
-                            except Exception:
-                                pass
-
-                        # Fallback to dedicated price containers inside the card if CTA traversal misses
-                        if not pricing_container or pricing_container.count() == 0:
-                            fallback_price_loc = card.locator(".priceSection, .fareSection, div[class*='priceSection'], div[class*='actualPrice'], div[class*='clusterViewPrice'], div[class*='price'], div[class*='Price']").first
-                            if fallback_price_loc.count() > 0:
-                                pricing_container = fallback_price_loc
-
-                        # 3. Extract price specifically from the pricing container
-                        if pricing_container and pricing_container.count() > 0:
-                            price_text = pricing_container.inner_text()
-                            # Match all currency amounts in the pricing container
-                            price_matches = re.findall(r'(?:₹|Rs\.?)\s*([\d,]+)', price_text)
-                            for raw_pm in price_matches:
-                                clean_digits = re.sub(r'[^\d]', '', raw_pm)
-                                if clean_digits:
-                                    candidate_val = int(clean_digits)
-                                    # Accept the true airfare (ignoring EMI numbers or promo badges)
-                                    if 1500 <= candidate_val <= 50000:
-                                        price_val = candidate_val
-                                        break
-
-                        # Final fallback to card-level fare button extraction
-                        if not price_val:
-                            card_price_matches = re.findall(r'(?:₹|Rs\.?)\s*([\d,]+)', card_text)
-                            for raw_pm in card_price_matches:
-                                clean_digits = re.sub(r'[^\d]', '', raw_pm)
-                                if clean_digits:
-                                    candidate_val = int(clean_digits)
-                                    if 1500 <= candidate_val <= 50000:
-                                        price_val = candidate_val
-                                        break
-
-                        # 4 & 5. Sanity bounds check & warning logging
-                        if not price_val or price_val < 1500 or price_val > 50000:
-                            print(f"[{self.platform_name}] Warning: Card #{idx+1} skipped (extracted price {price_val} out of bounds ₹1,500 - ₹50,000)")
+                        # Price extraction
+                        price_match = re.search(r'₹\s*([\d,]+)', text_content)
+                        if not price_match:
+                            price_match = re.search(r'Rs\.?\s*([\d,]+)', text_content)
+                        if not price_match:
+                            continue
+                            
+                        price_val = parse_price(price_match.group(1))
+                        if not price_val or pd.isna(price_val):
                             continue
                             
                         # Airline extraction
                         airline_raw = "IndiGo"
-                        known_carriers = ["IndiGo", "Air India", "Vistara", "Akasa Air", "SpiceJet", "AirAsia", "AIX Connect", "Air India Express"]
+                        known_carriers = ["IndiGo", "Air India", "Vistara", "Akasa Air", "SpiceJet", "AirAsia", "AIX Connect"]
                         for kc in known_carriers:
-                            if re.search(r'\b' + re.escape(kc) + r'\b', card_text, re.IGNORECASE):
+                            if re.search(r'\b' + re.escape(kc) + r'\b', text_content, re.IGNORECASE):
                                 airline_raw = kc
                                 break
                         airline_std = normalize_airline(airline_raw)
                         
                         # Flight number
                         flight_no = None
-                        fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)[\s-]*(\d{3,4})\b', card_text)
+                        fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)[\s-]*(\d{3,4})\b', text_content)
                         if fn_match:
                             flight_no = f"{fn_match.group(1)} {fn_match.group(2)}"
                             
                         # Departure & Arrival times (e.g. 06:15 ... 08:30)
-                        times = re.findall(r'\b([012]?\d:[0-5]\d)\b', card_text)
-                        dep_time = times[0] if len(times) >= 1 else "06:00"
-                        arr_time = times[1] if len(times) >= 2 else "08:15"
+                        times = re.findall(r'\b([012]?\d:[0-5]\d)\b', text_content)
+                        dep_time = times[0] if len(times) >= 1 else "00:00"
+                        arr_time = times[1] if len(times) >= 2 else "00:00"
                         
                         # Duration
-                        dur_match = re.search(r'(\d+\s*(?:h|hr)\s*(?:\d+\s*(?:m|min))?)', card_text, re.IGNORECASE)
-                        duration_str = dur_match.group(1).strip() if dur_match else "2h 15m"
+                        dur_match = re.search(r'(\d+\s*(?:h|hr)\s*(?:\d+\s*(?:m|min))?)', text_content, re.IGNORECASE)
+                        duration_str = dur_match.group(1).strip() if dur_match else ""
                         duration_mins = parse_duration_to_mins(duration_str)
                         
-                        is_nonstop = 'non stop' in card_text.lower() or 'non-stop' in card_text.lower() or 'direct' in card_text.lower()
+                        is_nonstop = 'non stop' in text_content.lower() or 'non-stop' in text_content.lower() or 'direct' in text_content.lower()
                         
                         raw_hash = hashlib.md5(f"{route_str}_{travel_date_str}_{airline_std}_{dep_time}_{price_val}".encode()).hexdigest()[:12]
                         rec_id = f"SCR_MMT_{int(time.time())}_{idx+1:03d}"
@@ -225,13 +182,12 @@ class MakeMyTripScraper:
                             duration_minutes=duration_mins,
                             duration_raw=duration_str,
                             cabin_class=cabin_class,
-                            total_fare_inr=float(price_val),
+                            total_fare_inr=price_val,
                             is_nonstop=is_nonstop,
                             raw_hash=raw_hash
                         )
                         observations.append(obs)
-                    except Exception as card_err:
-                        print(f"[{self.platform_name}] Card #{idx+1} parsing error: {card_err}")
+                    except Exception as e:
                         continue
                         
                 browser.close()

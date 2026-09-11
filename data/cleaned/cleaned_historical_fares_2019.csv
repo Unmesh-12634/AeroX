@@ -4065,7 +4065,6 @@ Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Multiple ca
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-06-09,19:15,,,,Economy,10577.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Kolkata,CCU,Banglore,BLR,CCU-BLR,Air Asia,AirAsia India,,2019-05-12,07:35,,,,Economy,5320.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,New Delhi,DEL,BLR-DEL,IndiGo,IndiGo,,2019-03-21,07:10,,,,Economy,6860.0,,,,,False
-Data_Train.csv,2019_historical_precovid,Mumbai,BOM,Hyderabad,HYD,BOM-HYD,SpiceJet,SpiceJet,,2019-03-21,22:45,,,,Economy,1759.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-03-27,11:30,,,,Economy,12242.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Kolkata,CCU,Banglore,BLR,CCU-BLR,SpiceJet,SpiceJet,,2019-06-03,22:20,,,,Economy,3841.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Jet Airways,Jet Airways,,2019-05-27,15:15,,,,Economy,3502.0,,,,,True
@@ -4273,7 +4272,6 @@ Data_Train.csv,2019_historical_precovid,Kolkata,CCU,Banglore,BLR,CCU-BLR,Air Ind
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-06-12,08:10,,,,Economy,14300.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Air India,Air India,,2019-05-03,10:00,,,,Economy,6121.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-03-09,08:00,,,,Economy,17549.0,,,,,True
-Data_Train.csv,2019_historical_precovid,Mumbai,BOM,Hyderabad,HYD,BOM-HYD,SpiceJet,SpiceJet,,2019-03-27,22:45,,,,Economy,1759.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,IndiGo,IndiGo,,2019-05-12,06:05,,,,Economy,4423.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Jet Airways,Jet Airways,,2019-04-09,07:10,,,,Economy,4544.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Multiple carriers,Multiple Carriers,,2019-06-03,08:00,,,,Economy,12402.0,,,,,False
@@ -4838,7 +4836,6 @@ Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways
 Data_Train.csv,2019_historical_precovid,Kolkata,CCU,Banglore,BLR,CCU-BLR,Jet Airways,Jet Airways,,2019-05-15,17:00,,,,Economy,9314.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-06-24,21:50,,,,Economy,14714.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Multiple carriers,Multiple Carriers,,2019-06-06,08:00,,,,Economy,12192.0,,,,,False
-Data_Train.csv,2019_historical_precovid,Mumbai,BOM,Hyderabad,HYD,BOM-HYD,SpiceJet,SpiceJet,,2019-04-03,22:45,,,,Economy,1759.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,IndiGo,IndiGo,,2019-03-27,02:05,,,,Economy,4744.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Jet Airways,Jet Airways,,2019-05-21,19:50,,,,Economy,7229.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways,Jet Airways,,2019-03-09,00:20,,,,Economy,15029.0,,,,,True
@@ -10512,7 +10509,6 @@ Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,Jet Airways
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,New Delhi,DEL,BLR-DEL,GoAir,GoAir,,2019-03-15,11:40,,,,Economy,6113.0,,,,,True
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,New Delhi,DEL,BLR-DEL,Air India,Air India,,2019-03-01,06:45,,,,Economy,26480.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Jet Airways,Jet Airways,,2019-06-12,07:10,,,,Economy,5769.0,,,,,True
-Data_Train.csv,2019_historical_precovid,Mumbai,BOM,Hyderabad,HYD,BOM-HYD,SpiceJet,SpiceJet,,2019-03-27,05:45,,,,Economy,1759.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Delhi,DEL,Cochin,COK,DEL-COK,IndiGo,IndiGo,,2019-06-12,17:10,,,,Economy,5883.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Banglore,BLR,Delhi,DEL,BLR-DEL,Air India,Air India,,2019-04-03,10:00,,,,Economy,5176.0,,,,,False
 Data_Train.csv,2019_historical_precovid,Kolkata,CCU,Banglore,BLR,CCU-BLR,IndiGo,IndiGo,,2019-06-27,20:25,,,,Economy,4804.0,,,,,False

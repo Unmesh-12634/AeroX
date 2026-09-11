@@ -118,7 +118,7 @@ class AirfareIndexEngine:
         if not os.path.exists(master_path):
             raise FileNotFoundError(f"Master dataset not found at {master_path}")
         
-        self.master_df = pd.read_csv(master_path)
+        self.master_df = pd.read_csv(master_path, low_memory=False)
         
         if os.path.exists(cpi_path):
             self.cpi_df = pd.read_csv(cpi_path)
