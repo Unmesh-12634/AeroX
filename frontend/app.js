@@ -914,6 +914,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (p.includes('makemytrip') || p.includes('mmt')) return '/logos/makemytrip.webp';
     if (p.includes('easemytrip') || p.includes('emt')) return '/logos/easemytrip.png';
     if (p.includes('ixigo') || p.includes('ixi')) return '/logos/ixogo.png';
+    if (p.includes('yatra')) return '/logos/yatra.png';
     if (p.includes('google') || p.includes('gf')) return '/logos/googleairline.png';
     return '/logos/googleairline.png';
   };
@@ -1261,6 +1262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         : `<span class="deal-quality-pill benchmark"><span class="pill-dot">●</span> Scraped Benchmark</span>`;
 
       const airlineLogoUrl = window.getAirlineLogoUrl(f.airline);
+      const platformLogoUrl = window.getPlatformLogoUrl(f.source_platform);
 
       return `
         <div class="live-flight-card" onclick="window.bookFlightTicket(JSON.parse(decodeURIComponent('${fEncoded}')))">
@@ -1303,9 +1305,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <!-- Divider -->
           <div class="flight-card-divider"></div>
 
-          <!-- Right: Price & Benchmark Breakdown -->
+          <!-- Right: Price & Scraped Source Platform Breakdown -->
           <div class="flight-fare-col">
             <div class="fare-badge-row">
+              <span class="source-platform-pill" title="Fare scraped from ${portalLabel}">
+                <img src="${platformLogoUrl}" alt="${portalLabel}" class="source-platform-icon" onerror="this.style.display='none';" />
+                <span>${portalLabel}</span>
+              </span>
               ${qualityBadgeHtml}
             </div>
             <div class="fare-price-val">₹${Math.round(f.total_fare_inr).toLocaleString()}</div>

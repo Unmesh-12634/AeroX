@@ -3330,7 +3330,38 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 3px;
-  width: 175px;
+  min-width: 190px;
+  flex-shrink: 0;
+}
+
+.fare-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.source-platform-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1E293B;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  letter-spacing: 0.01em;
+}
+
+.source-platform-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  border-radius: 3px;
+  display: inline-block;
   flex-shrink: 0;
 }
 
@@ -3338,7 +3369,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 8px;
+  padding: 2.5px 8px;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 600;
