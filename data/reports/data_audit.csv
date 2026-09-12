@@ -1,0 +1,11 @@
+file_name,category,num_rows,num_cols,exact_duplicates,date_range,airlines_count,origins_count,destinations_count,routes_count,min_price,max_price,mean_price,median_price,has_travel_date,has_collection_timestamp,has_cabin_class,has_taxes_fees,has_availability
+cpi_2018.xlsx,A. Official CPI/reference data,19,15,0,January 2025 to July 2026,0,0,0,0,102.05,131.66,117.66,121.45,True,False,False,False,False
+flight_data_BOM_BLR.csv,B. Real flight/fare observation data,90,8,20,NOT_AVAILABLE,5,2,2,2,2307.0,20581.0,6186.19,4621.0,False,False,False,False,False
+flight_data_DEL_BLR.csv,B. Real flight/fare observation data,95,8,20,NOT_AVAILABLE,6,2,2,2,5230.0,13399.0,6509.29,5717.0,False,False,False,False,False
+flight_data_DEL_BOM.csv,B. Real flight/fare observation data,100,8,20,NOT_AVAILABLE,5,2,2,2,4745.0,10539.0,5450.81,4780.0,False,False,False,False,False
+flight_data_DEL_CCU.csv,B. Real flight/fare observation data,60,8,14,NOT_AVAILABLE,4,2,2,2,5408.0,15298.0,6269.1,6020.0,False,False,False,False,False
+flight_data_DEL_HYD.csv,B. Real flight/fare observation data,59,8,14,NOT_AVAILABLE,5,2,2,2,4548.0,7606.0,5129.95,4986.0,False,False,False,False,False
+data.csv,B. Real flight/fare observation data,2907,9,29,14-02-2022 to 28-02-2022,6,6,6,10,1828.0,14282.0,4101.22,3199.5,True,False,True,False,False
+Data_Train.csv,C. Historical flight-price data,10683,7,2001,01/03/2019 to 9/06/2019,12,5,6,6,1759.0,79512.0,9087.06,8372.0,True,False,True,False,False
+processed_data.csv,D. Processed/derived data,10683,12,2001,March 2019 to June 2019,12,5,5,5,1759.0,79512.0,9087.06,8372.0,True,False,False,False,False
+DomPaxTraffic.csv,A. Official CPI/reference data,7,8,0,2005-06 to 2011-12,0,0,0,0,,,,,True,False,False,False,False

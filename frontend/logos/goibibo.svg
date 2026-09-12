@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#EC2726"/>
+  <text x="60" y="74" font-family="'Inter', 'Arial Black', sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">go</text>
+  <circle cx="94" cy="46" r="6" fill="#FBBF24"/>
+</svg>

@@ -1,0 +1,405 @@
+source_file,dataset_tier,origin_raw,origin_iata,dest_raw,dest_iata,route,airline_raw,airline_standardized,flight_number,travel_date,departure_time,arrival_time,duration_raw,duration_minutes,cabin_class,total_fare_inr,base_fare_inr,taxes_fees_inr,search_timestamp,lead_time_days,is_defunct_carrier
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Air India,Air India,AI 621,,03:55,05:50,01 h 55 m,115,Economy,2307.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,AirAsia,AirAsia India,I5 670,,19:55,21:45,01 h 50 m,110,Economy,2773.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,AirAsia,AirAsia India,I5 2992,,23:55,"01:45 + 1 DAY",01 h 50 m,110,Economy,2773.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5388,,21:30,23:15,01 h 45 m,105,Economy,2839.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1103,,00:45,02:20,01 h 35 m,95,Economy,3005.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1103,,00:45,02:20,01 h 35 m,95,Economy,3005.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1103,,00:45,02:20,01 h 35 m,95,Economy,3005.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1341,,20:00,21:35,01 h 35 m,95,Economy,3005.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1341,,20:00,21:35,01 h 35 m,95,Economy,3005.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1139,,18:05,19:40,01 h 35 m,95,Economy,3053.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 6953,,00:50,02:40,01 h 50 m,110,Economy,3219.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1306,,19:00,20:35,01 h 35 m,95,Economy,3283.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5352,,06:10,07:50,01 h 40 m,100,Economy,3420.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5382,,12:30,14:15,01 h 45 m,105,Economy,3420.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5382,,12:30,14:15,01 h 45 m,105,Economy,3420.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Air India,Air India,AI 607,,16:40,18:25,01 h 45 m,105,Economy,3578.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5069,,11:15,13:00,01 h 45 m,105,Economy,3650.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5069,,11:15,13:00,01 h 45 m,105,Economy,3650.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 849,,17:30,19:15,01 h 45 m,105,Economy,4075.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5125,,23:15,"00:50 + 1 DAY",01 h 35 m,95,Economy,4100.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5125,,23:15,"00:50 + 1 DAY",01 h 35 m,95,Economy,4100.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1110,,09:25,11:05,01 h 40 m,100,Economy,4300.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 845,,05:55,07:45,01 h 50 m,110,Economy,4436.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 6293,,07:45,09:30,01 h 45 m,105,Economy,4600.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 853,,16:00,17:45,01 h 45 m,105,Economy,4600.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1625,,13:35,15:10,01 h 35 m,95,Economy,5039.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Akasa Air,Akasa Air,QP 1625,,13:35,15:10,01 h 35 m,95,Economy,5039.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5294,,14:45,16:40,01 h 55 m,115,Economy,5540.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Air India,Air India,AI 641,,18:55,20:25,01 h 30 m,90,Economy,5783.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 865,,18:55,20:55,02 h,120,Economy,5966.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5221,,16:45,18:35,01 h 50 m,110,Economy,6450.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5067,,18:05,19:55,01 h 50 m,110,Economy,6450.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5067,,18:05,19:55,01 h 50 m,110,Economy,6450.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5256,,20:35,22:05,01 h 30 m,90,Economy,6450.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 857,,21:30,23:15,01 h 45 m,105,Economy,6911.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 2244,,19:30,21:15,01 h 45 m,105,Economy,7701.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Air India,Air India,AI 603,,06:45,08:40,01 h 55 m,115,Economy,9458.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 863,,09:05,10:50,01 h 45 m,105,Economy,11521.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 863,,09:05,10:50,01 h 45 m,105,Economy,11521.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5296,,07:00,08:40,01 h 40 m,100,Economy,13801.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5211,,08:30,10:25,01 h 55 m,115,Economy,13801.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,IndiGo,IndiGo,6E 5212,,09:50,11:35,01 h 45 m,105,Economy,13801.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Vistara,Vistara,UK 851,,07:00,08:50,01 h 50 m,110,Economy,14183.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Mumbai,BOM,Bengaluru,BENGALURU,BOM-BENGALURU,Air India,Air India,AI 639,,09:20,11:10,01 h 50 m,110,Economy,17018.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1340,,05:30,07:20,01 h 50 m,110,Economy,3345.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5295,,04:25,06:20,01 h 55 m,115,Economy,3520.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5295,,04:25,06:20,01 h 55 m,115,Economy,3520.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1624,,04:50,06:55,02 h 05 m,125,Economy,3525.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5124,,05:00,06:50,01 h 50 m,110,Economy,3900.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5124,,05:00,06:50,01 h 50 m,110,Economy,3900.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5124,,05:00,06:50,01 h 50 m,110,Economy,3900.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1138,,15:45,17:20,01 h 35 m,95,Economy,3939.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1138,,15:45,17:20,01 h 35 m,95,Economy,3939.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5351,,15:00,16:40,01 h 40 m,100,Economy,4090.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5251,,16:30,18:15,01 h 45 m,105,Economy,4090.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 939,,22:45,"00:35 + 1 DAY",01 h 50 m,110,Economy,4090.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5209,,06:00,07:35,01 h 35 m,95,Economy,4140.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5293,,12:15,14:05,01 h 50 m,110,Economy,4140.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5293,,12:15,14:05,01 h 50 m,110,Economy,4140.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1104,,11:45,13:30,01 h 45 m,105,Economy,4249.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 6347,,21:45,23:40,01 h 55 m,115,Economy,4400.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 6347,,21:45,23:40,01 h 55 m,115,Economy,4400.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,AirAsia,AirAsia India,I5 472,,02:00,04:00,02 h,120,Economy,4401.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 604,,09:20,11:35,02 h 15 m,135,Economy,4621.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 604,,09:20,11:35,02 h 15 m,135,Economy,4621.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1109,,06:55,08:35,01 h 40 m,100,Economy,4629.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,AirAsia,AirAsia India,I5 2991,,21:25,23:10,01 h 45 m,105,Economy,4899.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 488,,10:15,11:55,01 h 40 m,100,Economy,4900.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5134,,13:45,15:20,01 h 35 m,95,Economy,4900.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1136,,06:25,07:55,01 h 30 m,90,Economy,5149.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Akasa Air,Akasa Air,QP 1136,,06:25,07:55,01 h 30 m,90,Economy,5149.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5207,,07:05,08:55,01 h 50 m,110,Economy,5240.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5255,,18:00,19:50,01 h 50 m,110,Economy,5595.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5376,,19:30,21:10,01 h 40 m,100,Economy,6190.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 640,,06:45,08:35,01 h 50 m,110,Economy,6721.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 622,,12:05,14:00,01 h 55 m,115,Economy,6721.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 622,,12:05,14:00,01 h 55 m,115,Economy,6721.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 610,,19:20,21:20,02 h,120,Economy,6721.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 5083,,20:40,22:20,01 h 40 m,100,Economy,8191.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 866,,06:40,08:20,01 h 40 m,100,Economy,9346.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 852,,09:30,11:25,01 h 55 m,115,Economy,9346.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 854,,18:25,20:15,01 h 50 m,110,Economy,9346.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 854,,18:25,20:15,01 h 50 m,110,Economy,9346.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,IndiGo,IndiGo,6E 259,,08:30,10:10,01 h 40 m,100,Economy,9490.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 846,,08:30,10:10,01 h 40 m,100,Economy,11038.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 840,,21:35,23:20,01 h 45 m,105,Economy,11038.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 850,,19:55,21:35,01 h 40 m,100,Economy,11934.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 864,,19:00,20:35,01 h 35 m,95,Economy,14596.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Vistara,Vistara,UK 864,,19:00,20:35,01 h 35 m,95,Economy,14596.0,,,,,False
+flight_data_BOM_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,Mumbai,BOM,BENGALURU-BOM,Air India,Air India,AI 642,,21:25,23:20,01 h 55 m,115,Economy,20581.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Akasa Air,Akasa Air,QP 1409,,23:00,01:45 + 1 DAY,02 h 45 m,165,Economy,5230.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,AirAsia,AirAsia India,I5 740,,07:50,10:40,02 h 50 m,170,Economy,5235.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,AirAsia,AirAsia India,I5 1534,,22:55,01:35 + 1 DAY,02 h 40 m,160,Economy,5235.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2067,,03:55,06:45,02 h 50 m,170,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6612,,05:50,08:35,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6612,,05:50,08:35,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6612,,05:50,08:35,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2403,,07:05,09:50,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2403,,07:05,09:50,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 308,,08:00,11:00,03 h,180,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2131,,21:45,00:35 + 1 DAY,02 h 50 m,170,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6565,,22:55,01:40 + 1 DAY,02 h 45 m,165,Economy,5236.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 514,,03:30,06:25,02 h 55 m,175,Economy,5240.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 803,,06:10,09:00,02 h 50 m,170,Economy,5240.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 803,,06:10,09:00,02 h 50 m,170,Economy,5240.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 504,,21:10,00:05 + 1 DAY,02 h 55 m,175,Economy,5240.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,SpiceJet,SpiceJet,SG 534,,21:35,00:10 + 1 DAY,02 h 35 m,155,Economy,5297.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,SpiceJet,SpiceJet,SG 534,,21:35,00:10 + 1 DAY,02 h 35 m,155,Economy,5297.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,SpiceJet,SpiceJet,SG 8143,,23:55,02:40 + 1 DAY,02 h 45 m,165,Economy,5297.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Akasa Air,Akasa Air,QP 1350,,21:00,23:35,02 h 35 m,155,Economy,5400.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Akasa Air,Akasa Air,QP 1350,,21:00,23:35,02 h 35 m,155,Economy,5400.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 813,,08:00,10:55,02 h 55 m,175,Economy,5503.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2338,,20:55,23:40,02 h 45 m,165,Economy,5599.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 813,,17:40,20:30,02 h 50 m,170,Economy,6028.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 781,,15:30,18:20,02 h 50 m,170,Economy,6216.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2302,,20:20,23:05,02 h 45 m,165,Economy,6216.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2302,,20:20,23:05,02 h 45 m,165,Economy,6216.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 502,,13:40,16:20,02 h 40 m,160,Economy,6343.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 815,,15:35,18:35,03 h,180,Economy,6343.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 807,,17:00,20:15,03 h 15 m,195,Economy,6343.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 811,,06:15,09:05,02 h 50 m,170,Economy,6448.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 817,,16:05,18:45,02 h 40 m,160,Economy,6448.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 817,,16:05,18:45,02 h 40 m,160,Economy,6448.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6383,,11:45,14:40,02 h 55 m,175,Economy,7020.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2514,,13:15,16:10,02 h 55 m,175,Economy,7020.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 2487,,17:15,20:00,02 h 45 m,165,Economy,7020.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6622,,18:55,21:50,02 h 55 m,175,Economy,7020.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 512,,19:15,22:35,03 h 20 m,200,Economy,7183.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 512,,19:15,22:35,03 h 20 m,200,Economy,7183.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 5608,,09:20,12:05,02 h 45 m,165,Economy,7450.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,IndiGo,IndiGo,6E 6797,,10:40,13:35,02 h 55 m,175,Economy,7450.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 819,,14:10,16:45,02 h 35 m,155,Economy,7498.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Air India,Air India,AI 506,,09:40,12:30,02 h 50 m,170,Economy,8233.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 809,,19:50,22:40,02 h 50 m,170,Economy,8495.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 809,,19:50,22:40,02 h 50 m,170,Economy,8495.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 815,,08:00,10:50,02 h 50 m,170,Economy,13021.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 801,,09:10,11:50,02 h 40 m,160,Economy,13021.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,New Delhi,DEL,Bengaluru,BENGALURU,DEL-BENGALURU,Vistara,Vistara,UK 807,,20:40,23:20,02 h 40 m,160,Economy,13021.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 6247,,04:25,07:15,02 h 50 m,170,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 5021,,05:35,08:25,02 h 50 m,170,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 6621,,15:20,18:15,02 h 55 m,175,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 5039,,16:45,19:35,02 h 50 m,170,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2174,,18:00,20:45,02 h 45 m,165,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2174,,18:00,20:45,02 h 45 m,165,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2174,,18:00,20:45,02 h 45 m,165,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,AirAsia,AirAsia India,I5 1532,,19:10,22:05,02 h 55 m,175,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,AirAsia,AirAsia India,I5 1532,,19:10,22:05,02 h 55 m,175,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 735,,19:20,22:05,02 h 45 m,165,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2406,,20:35,23:20,02 h 45 m,165,Economy,5354.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 511,,14:55,18:20,03 h 25 m,205,Economy,5368.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 509,,19:35,22:35,03 h,180,Economy,5368.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 820,,17:50,20:35,02 h 45 m,165,Economy,5513.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 820,,17:50,20:35,02 h 45 m,165,Economy,5513.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 818,,19:40,22:20,02 h 40 m,160,Economy,5513.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 814,,21:10,23:45,02 h 35 m,155,Economy,5513.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 814,,21:10,23:45,02 h 35 m,155,Economy,5513.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Akasa Air,Akasa Air,QP 1359,,04:30,07:10,02 h 40 m,160,Economy,5552.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,SpiceJet,SpiceJet,SG 8136,,02:00,04:55,02 h 55 m,175,Economy,5596.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,SpiceJet,SpiceJet,SG 8136,,02:00,04:55,02 h 55 m,175,Economy,5596.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,SpiceJet,SpiceJet,SG 8198,,20:10,23:20,03 h 10 m,190,Economy,5596.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 804,,05:45,08:40,02 h 55 m,175,Economy,5618.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 503,,17:15,20:05,02 h 50 m,170,Economy,5618.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 122,,07:00,09:45,02 h 45 m,165,Economy,5717.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,AirAsia,AirAsia India,I5 741,,11:15,14:05,02 h 50 m,170,Economy,5717.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,AirAsia,AirAsia India,I5 741,,11:15,14:05,02 h 50 m,170,Economy,5717.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2401,,13:50,16:35,02 h 45 m,165,Economy,5717.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2053,,23:15,02:10 + 1 DAY,02 h 55 m,175,Economy,5717.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Akasa Air,Akasa Air,QP 1405,,09:15,12:05,02 h 50 m,170,Economy,5772.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 802,,18:45,21:25,02 h 40 m,160,Economy,5776.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 501,,13:15,15:55,02 h 40 m,160,Economy,5881.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 501,,13:15,15:55,02 h 40 m,160,Economy,5881.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 871,,10:30,13:20,02 h 50 m,170,Economy,5992.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 868,,09:45,12:40,02 h 55 m,175,Economy,6196.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 513,,07:05,10:00,02 h 55 m,175,Economy,6721.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 505,,09:50,12:35,02 h 45 m,165,Economy,6721.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 861,,08:00,10:45,02 h 45 m,165,Economy,7142.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 861,,08:00,10:45,02 h 45 m,165,Economy,7142.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 869,,12:00,14:45,02 h 45 m,165,Economy,7457.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 507,,11:45,14:35,02 h 50 m,170,Economy,7561.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 810,,07:00,09:40,02 h 40 m,160,Economy,8926.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Air India,Air India,AI 808,,21:00,23:55,02 h 55 m,175,Economy,10711.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 816,,11:30,14:10,02 h 40 m,160,Economy,10774.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 816,,11:30,14:10,02 h 40 m,160,Economy,10774.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,IndiGo,IndiGo,6E 2339,,00:30,03:20,02 h 50 m,170,Economy,12445.0,,,,,False
+flight_data_DEL_BLR.csv,route_snapshot_modern,Bengaluru,BENGALURU,New Delhi,DEL,BENGALURU-DEL,Vistara,Vistara,UK 808,,08:00,10:35,02 h 35 m,155,Economy,13399.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Akasa Air,Akasa Air,QP 1719,,09:00,10:55,01 h 55 m,115,Economy,4758.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Akasa Air,Akasa Air,QP 1411,,10:55,13:05,02 h 10 m,130,Economy,4758.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Akasa Air,Akasa Air,QP 1128,,16:00,18:10,02 h 10 m,130,Economy,4758.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2009,,01:00,03:00,02 h,120,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2112,,05:30,07:35,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2112,,05:30,07:35,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2112,,05:30,07:35,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 5218,,06:30,08:50,02 h 20 m,140,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 5218,,06:30,08:50,02 h 20 m,140,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 6814,,07:15,09:20,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2075,,08:00,10:15,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 665,,08:00,10:20,02 h 20 m,140,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 5112,,09:00,10:55,01 h 55 m,115,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2328,,10:00,12:15,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2328,,10:00,12:15,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 865,,10:00,12:30,02 h 30 m,150,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 824,,11:00,13:00,02 h,120,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 824,,11:00,13:00,02 h,120,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,SpiceJet,SpiceJet,SG 157,,12:10,14:35,02 h 25 m,145,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 6092,,12:55,15:05,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 6092,,12:55,15:05,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 620,,13:30,15:40,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 863,,14:00,16:20,02 h 20 m,140,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2176,,14:20,16:30,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2016,,15:45,18:00,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 5197,,16:30,18:40,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 5197,,16:30,18:40,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 441,,17:15,19:30,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 864,,17:30,19:40,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2017,,18:30,20:35,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,SpiceJet,SpiceJet,SG 8709,,18:55,21:25,02 h 30 m,150,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2084,,19:45,22:00,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2084,,19:45,22:00,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 805,,20:00,22:10,02 h 10 m,130,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 6424,,20:15,22:45,02 h 30 m,150,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 6083,,21:00,23:05,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2114,,22:00,00:05 + 1 DAY,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 814,,22:30,00:45 + 1 DAY,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 814,,22:30,00:45 + 1 DAY,02 h 15 m,135,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,IndiGo,IndiGo,6E 2519,,23:15,01:20 + 1 DAY,02 h 05 m,125,Economy,4780.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 951,,14:20,16:25,02 h 05 m,125,Economy,4880.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 995,,10:20,12:35,02 h 15 m,135,Economy,4933.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 963,,09:00,11:15,02 h 15 m,135,Economy,5038.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 993,,12:50,15:00,02 h 10 m,130,Economy,5038.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 993,,12:50,15:00,02 h 10 m,130,Economy,5038.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,SpiceJet,SpiceJet,SG 8192,,18:20,20:45,02 h 25 m,145,Economy,5042.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 945,,11:40,13:50,02 h 10 m,130,Economy,5316.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Air India,Air India,AI 605,,21:15,23:35,02 h 20 m,140,Economy,5316.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 941,,16:55,19:05,02 h 10 m,130,Economy,5744.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,New Delhi,DEL,Mumbai,BOM,DEL-BOM,Vistara,Vistara,UK 999,,21:55,00:10 + 1 DAY,02 h 15 m,135,Economy,5744.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2111,,02:30,04:40,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2056,,05:00,07:15,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 5187,,06:05,08:10,02 h 05 m,125,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2398,,07:00,09:10,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 864,,07:00,09:15,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 864,,07:00,09:15,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 864,,07:00,09:15,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 825,,07:45,09:55,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 825,,07:45,09:55,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Akasa Air,Akasa Air,QP 1410,,07:55,10:10,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2139,,08:30,10:40,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 866,,09:00,11:20,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,SpiceJet,SpiceJet,SG 158,,09:05,11:20,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 5008,,09:30,11:40,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 5008,,09:30,11:40,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 809,,10:00,12:20,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 623,,10:25,12:40,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 623,,10:25,12:40,02 h 15 m,135,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 6821,,10:30,12:50,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 5113,,11:45,14:05,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 5113,,11:45,14:05,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2015,,12:45,14:55,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Akasa Air,Akasa Air,QP 1127,,13:05,15:10,02 h 05 m,125,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 993,,14:30,16:35,02 h 05 m,125,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 442,,15:35,18:10,02 h 35 m,155,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2326,,15:45,17:55,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2326,,15:45,17:55,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 687,,16:00,18:20,02 h 20 m,140,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2103,,17:15,19:25,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,SpiceJet,SpiceJet,SG 710,,22:30,01:00 + 1 DAY,02 h 30 m,150,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2083,,22:50,01:00 + 1 DAY,02 h 10 m,130,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2126,,23:55,02:00 + 1 DAY,02 h 05 m,125,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2126,,23:55,02:00 + 1 DAY,02 h 05 m,125,Economy,4745.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 6082,,18:00,20:00,02 h,120,Economy,5184.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 660,,18:15,20:15,02 h,120,Economy,5281.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Air India,Air India,AI 806,,08:00,10:15,02 h 15 m,135,Economy,5919.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2113,,19:00,21:10,02 h 10 m,130,Economy,6654.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2518,,20:10,22:25,02 h 15 m,135,Economy,6654.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2518,,20:10,22:25,02 h 15 m,135,Economy,6654.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,IndiGo,IndiGo,6E 2051,,21:35,23:30,01 h 55 m,115,Economy,6654.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,SpiceJet,SpiceJet,SG 8191,,21:20,23:45,02 h 25 m,145,Economy,7422.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 928,,06:30,08:35,02 h 05 m,125,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 952,,12:50,14:45,01 h 55 m,115,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 944,,14:40,16:55,02 h 15 m,135,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 944,,14:40,16:55,02 h 15 m,135,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 902,,15:45,18:10,02 h 25 m,145,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 910,,17:25,19:35,02 h 10 m,130,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 996,,18:30,20:40,02 h 10 m,130,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 950,,21:55,00:10 + 1 DAY,02 h 15 m,135,Economy,10539.0,,,,,False
+flight_data_DEL_BOM.csv,route_snapshot_modern,Mumbai,BOM,New Delhi,DEL,BOM-DEL,Vistara,Vistara,UK 986,,22:50,01:00 + 1 DAY,02 h 10 m,130,Economy,10539.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2284,,05:25,07:55,02 h 30 m,150,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 747,,06:15,08:25,02 h 10 m,130,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 5219,,06:25,08:35,02 h 10 m,130,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 6182,,15:55,18:10,02 h 15 m,135,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2415,,17:45,20:00,02 h 15 m,135,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2415,,17:45,20:00,02 h 15 m,135,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2415,,17:45,20:00,02 h 15 m,135,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2057,,19:00,21:05,02 h 05 m,125,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2057,,19:00,21:05,02 h 05 m,125,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,SpiceJet,SpiceJet,SG 8251,,19:30,21:40,02 h 10 m,130,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2517,,20:30,22:40,02 h 10 m,130,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 6005,,22:50,01:00 + 1 DAY,02 h 10 m,130,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2603,,23:50,02:05 + 1 DAY,02 h 15 m,135,Economy,5408.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 737,,15:45,18:05,02 h 20 m,140,Economy,5440.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 737,,15:45,18:05,02 h 20 m,140,Economy,5440.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 767,,12:20,14:30,02 h 10 m,130,Economy,5492.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 764,,17:05,19:15,02 h 10 m,130,Economy,5492.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 764,,17:05,19:15,02 h 10 m,130,Economy,5492.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 762,,21:00,23:30,02 h 30 m,150,Economy,5492.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2788,,02:55,05:10,02 h 15 m,135,Economy,5849.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 2788,,02:55,05:10,02 h 15 m,135,Economy,5849.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 282,,10:10,12:10,02 h,120,Economy,5849.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 6557,,13:00,15:00,02 h,120,Economy,5849.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 707,,17:35,19:35,02 h,120,Economy,5881.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,SpiceJet,SpiceJet,SG 8263,,07:10,09:30,02 h 20 m,140,Economy,5986.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 401,,06:55,09:00,02 h 05 m,125,Economy,6374.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Air India,Air India,AI 401,,06:55,09:00,02 h 05 m,125,Economy,6374.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 705,,07:40,09:45,02 h 05 m,125,Economy,8474.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,Vistara,Vistara,UK 727,,20:30,22:20,01 h 50 m,110,Economy,10469.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,New Delhi,DEL,Kolkata,CCU,DEL-CCU,IndiGo,IndiGo,6E 5213,,09:00,11:05,02 h 05 m,125,Economy,15298.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 5214,,05:25,07:50,02 h 25 m,145,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 375,,07:00,09:15,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 6183,,18:55,21:10,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 898,,19:35,21:55,02 h 20 m,140,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2224,,20:55,23:10,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2224,,20:55,23:10,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2224,,20:55,23:10,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2716,,21:45,00:05 + 1 DAY,02 h 20 m,140,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2716,,21:45,00:05 + 1 DAY,02 h 20 m,140,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,SpiceJet,SpiceJet,SG 8265,,22:20,00:30 + 1 DAY,02 h 10 m,130,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2746,,23:45,02:00 + 1 DAY,02 h 15 m,135,Economy,6020.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Air India,Air India,AI 763,,06:55,09:15,02 h 20 m,140,Economy,6063.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 778,,15:15,17:50,02 h 35 m,155,Economy,6063.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Air India,Air India,AI 768,,15:25,18:10,02 h 45 m,165,Economy,6063.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Air India,Air India,AI 768,,15:25,18:10,02 h 45 m,165,Economy,6063.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Air India,Air India,AI 770,,20:00,22:35,02 h 35 m,155,Economy,6063.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,SpiceJet,SpiceJet,SG 8373,,10:50,13:10,02 h 20 m,140,Economy,6064.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,SpiceJet,SpiceJet,SG 8373,,10:50,13:10,02 h 20 m,140,Economy,6064.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 720,,07:10,09:35,02 h 25 m,145,Economy,6095.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 706,,10:25,12:40,02 h 15 m,135,Economy,6095.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 706,,10:25,12:40,02 h 15 m,135,Economy,6095.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 738,,18:45,21:20,02 h 35 m,155,Economy,6095.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Vistara,Vistara,UK 708,,20:30,23:00,02 h 30 m,150,Economy,6095.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2513,,08:30,10:55,02 h 25 m,145,Economy,6212.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2759,,15:40,18:00,02 h 20 m,140,Economy,6212.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2345,,10:10,12:30,02 h 20 m,140,Economy,6420.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2345,,10:10,12:30,02 h 20 m,140,Economy,6420.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2358,,11:40,14:00,02 h 20 m,140,Economy,6420.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,Air India,Air India,AI 769,,10:00,12:20,02 h 20 m,140,Economy,8100.0,,,,,False
+flight_data_DEL_CCU.csv,route_snapshot_modern,Kolkata,CCU,New Delhi,DEL,CCU-DEL,IndiGo,IndiGo,6E 2516,,16:45,19:05,02 h 20 m,140,Economy,11820.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Akasa Air,Akasa Air,QP 1406,,12:45,15:05,02 h 20 m,140,Economy,4548.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2461,,01:55,04:10,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2337,,05:40,07:55,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 6203,,06:30,08:40,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 560,,07:10,09:20,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 560,,07:10,09:20,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 560,,07:10,09:20,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 774,,08:10,10:20,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 774,,08:10,10:20,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 542,,09:30,12:00,02 h 30 m,150,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2005,,10:10,12:15,02 h 05 m,125,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 522,,11:05,13:25,02 h 20 m,140,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 837,,13:30,15:45,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2187,,15:05,17:20,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2187,,15:05,17:20,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 544,,17:00,19:10,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 5312,,17:15,19:25,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 5312,,17:15,19:25,02 h 10 m,130,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2341,,18:45,21:00,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 605,,19:45,22:00,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 605,,19:45,22:00,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,IndiGo,IndiGo,6E 2371,,21:25,23:40,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Air India,Air India,AI 839,,21:30,23:45,02 h 15 m,135,Economy,4750.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 879,,17:35,19:50,02 h 15 m,135,Economy,4873.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 859,,10:25,12:35,02 h 10 m,130,Economy,4904.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 899,,14:45,17:00,02 h 15 m,135,Economy,4925.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 899,,14:45,17:00,02 h 15 m,135,Economy,4925.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,SpiceJet,SpiceJet,SG 8164,,23:00,01:00 + 1 DAY,02 h,120,Economy,4981.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 829,,07:20,09:30,02 h 10 m,130,Economy,5692.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,New Delhi,DEL,Hyderabad,HYD,DEL-HYD,Vistara,Vistara,UK 871,,20:35,22:55,02 h 20 m,140,Economy,6343.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Akasa Air,Akasa Air,QP 1407,,19:25,21:45,02 h 20 m,140,Economy,4979.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 379,,05:05,07:25,02 h 20 m,140,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 491,,09:30,11:50,02 h 20 m,140,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2171,,11:55,14:05,02 h 10 m,130,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2063,,14:25,16:45,02 h 20 m,140,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2063,,14:25,16:45,02 h 20 m,140,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2063,,14:25,16:45,02 h 20 m,140,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2003,,18:15,20:30,02 h 15 m,135,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2003,,18:15,20:30,02 h 15 m,135,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 5605,,21:55,00:05 + 1 DAY,02 h 10 m,130,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 6146,,22:45,01:00 + 1 DAY,02 h 15 m,135,Economy,4986.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 543,,10:05,12:30,02 h 25 m,145,Economy,5052.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2011,,06:45,09:00,02 h 15 m,135,Economy,5210.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2342,,08:40,10:45,02 h 05 m,125,Economy,5210.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 2342,,08:40,10:45,02 h 05 m,125,Economy,5210.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,IndiGo,IndiGo,6E 6606,,16:30,18:50,02 h 20 m,140,Economy,5210.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 880,,13:15,15:35,02 h 20 m,140,Economy,5401.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 880,,13:15,15:35,02 h 20 m,140,Economy,5401.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 890,,17:40,19:55,02 h 15 m,135,Economy,5453.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 559,,06:15,08:45,02 h 30 m,150,Economy,5472.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 559,,06:15,08:45,02 h 30 m,150,Economy,5472.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 523,,14:10,16:35,02 h 25 m,145,Economy,5472.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 541,,16:25,18:50,02 h 25 m,145,Economy,5472.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Air India,Air India,AI 840,,20:50,23:20,02 h 30 m,150,Economy,5472.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,SpiceJet,SpiceJet,SG 160,,06:10,08:25,02 h 15 m,135,Economy,5629.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 830,,10:10,12:30,02 h 20 m,140,Economy,5905.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 830,,10:10,12:30,02 h 20 m,140,Economy,5905.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 860,,07:00,08:55,01 h 55 m,115,Economy,7585.0,,,,,False
+flight_data_DEL_HYD.csv,route_snapshot_modern,Hyderabad,HYD,New Delhi,DEL,HYD-DEL,Vistara,Vistara,UK 870,,20:35,22:45,02 h 10 m,130,Economy,7606.0,,,,,False
