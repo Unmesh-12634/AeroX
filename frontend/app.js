@@ -5045,9 +5045,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.exportCpiTableCSV = function() {
     if (!state.cpiDataCache || !state.cpiDataCache.series) return;
     const rows = state.cpiDataCache.series;
-    let csv = 'Period,Period_Label,State,Sector,MoSPI_CPI_Index,MoSPI_MoM_Pct,MoSPI_YoY_Pct,APIx_Index,APIx_MoM_Pct,Lead_Status,Source\n';
+    let csv = 'Period,Period_Label,State,Sector,MoSPI_CPI_Index,MoSPI_MoM_Pct,MoSPI_YoY_Pct,APIx_Index,APIx_MoM_Pct,Spread_Pts,Spread_Pct,Lead_Status,Source\n';
     rows.forEach(r => {
-      csv += `"${r.year}-${r.month}","${r.period_label}","${r.state}","${r.sector}",${r.mospi_index !== null ? r.mospi_index : ''},${r.mospi_mom_pct !== null ? r.mospi_mom_pct : ''},${r.mospi_yoy_pct !== null ? r.mospi_yoy_pct : ''},${r.apix_index !== null ? r.apix_index : ''},${r.apix_mom_pct !== null ? r.apix_mom_pct : ''},"${r.lead_status}","${r.source}"\n`;
+      csv += `"${r.year}-${r.month}","${r.period_label}","${r.state}","${r.sector}",${r.mospi_index !== null ? r.mospi_index : ''},${r.mospi_mom_pct !== null ? r.mospi_mom_pct : ''},${r.mospi_yoy_pct !== null ? r.mospi_yoy_pct : ''},${r.apix_index !== null ? r.apix_index : ''},${r.apix_mom_pct !== null ? r.apix_mom_pct : ''},${r.spread_pts !== null ? r.spread_pts : ''},${r.spread_pct !== null ? r.spread_pct : ''},"${r.lead_status}","${r.source}"\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -5064,7 +5064,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       if (forceReload || !state.cpiDataCache) {
-        const url = `/api/v1/analytics/mospi-cpi?state=${encodeURIComponent(state.cpiSelectedState || 'All India')}&sector=${encodeURIComponent(state.cpiSelectedSector || 'Combined')}`;
+        const url = `/api/v1/mospi-cpi?state=${encodeURIComponent(state.cpiSelectedState || 'All India')}&sector=${encodeURIComponent(state.cpiSelectedSector || 'Combined')}`;
         const res = await fetch(url);
         if (res.ok) {
           state.cpiDataCache = await res.json();
@@ -5152,6 +5152,13 @@ document.addEventListener('DOMContentLoaded', () => {
           apixMomText = `<span style="font-weight:600; color:#0284C7;">${s}${Number(item.apix_mom_pct).toFixed(2)}%</span>`;
         }
 
+        let spreadText = '—';
+        if (item.spread_pts !== null && item.spread_pts !== undefined) {
+          const s = item.spread_pts > 0 ? '+' : '';
+          const col = item.spread_pts > 0 ? '#0284C7' : (item.spread_pts < 0 ? '#D97706' : '#64748B');
+          spreadText = `<span style="font-weight:700; color:${col};">${s}${Number(item.spread_pts).toFixed(2)} <span style="font-size:10.5px; font-weight:500; color:#64748B;">(${s}${Number(item.spread_pct).toFixed(2)}%)</span></span>`;
+        }
+
         const statusBadge = item.is_nowcast
           ? `<span class="badge" style="background:#E0F2FE; color:#0284C7; font-weight:700;">${item.lead_status}</span>`
           : `<span class="badge" style="background:#F1F5F9; color:#475569;">${item.lead_status}</span>`;
@@ -5166,6 +5173,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${yoyText}</td>
           <td>${apixText}</td>
           <td>${apixMomText}</td>
+          <td>${spreadText}</td>
           <td>${statusBadge}</td>
           <td>${srcBadge}</td>
         `;
@@ -5265,6 +5273,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sign = (isMom && val > 0) ? '+' : '';
                 const unit = isMom ? '%' : ' pts';
                 return ` ${context.dataset.label}: ${sign}${val.toFixed(2)}${unit}`;
+              },
+              afterBody: function(items) {
+                if (items.length >= 2 && !isMom) {
+                  const apix = items[0].parsed.y;
+                  const mospi = items[1].parsed.y;
+                  if (apix !== null && mospi !== null && apix !== undefined && mospi !== undefined) {
+                    const diff = apix - mospi;
+                    const diffPct = (diff / mospi) * 100;
+                    const sign = diff > 0 ? '+' : '';
+                    return `--------------------\nTracking Spread (APIx - MoSPI):\n${sign}${diff.toFixed(2)} pts (${sign}${diffPct.toFixed(2)}%)`;
+                  }
+                }
+                return '';
               }
             }
           }
