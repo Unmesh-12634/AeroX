@@ -1414,8 +1414,8 @@ body {
   margin-bottom: 24px;
 }
 
-@media (max-width: 1380px) {
-  .kpi-grid {
+@media (max-width: 1100px) {
+  .kpi-grid:not(.apix-kpi-grid) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -5422,13 +5422,27 @@ body {
   transform: none;
 }
 
-.apix-kpi-grid {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+.kpi-grid.apix-kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 14px !important;
   margin-bottom: 24px;
 }
 
+@media (max-width: 1200px) {
+  .kpi-grid.apix-kpi-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid.apix-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .apix-telemetry-card {
+  overflow: visible !important;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 14px;
@@ -5634,14 +5648,17 @@ body {
 .formula-math {
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  padding: 12px;
-  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
-  font-size: 13px;
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-size: 15px;
   color: #0F172A;
   overflow-x: auto;
-  margin-bottom: 10px;
-  line-height: 1.5;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .formula-notes {
@@ -5651,8 +5668,13 @@ body {
 }
 
 .compact-table td, .compact-table th {
-  padding: 10px 14px;
-  font-size: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.compact-table td:nth-child(2) {
+  font-family: 'KaTeX_Math', 'Times New Roman', serif;
+  font-size: 14px;
 }
 
 .apix-sim-card {
@@ -5759,5 +5781,281 @@ body {
 
 .sim-metric-title {
   color: #64748B;
+}
+
+/* =========================================================================
+   Interactive Eye Button & Math Calculation Tooltip
+   ========================================================================= */
+.apix-telemetry-card .kpi-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.card-title-wrap span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted, #64748B);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.4;
+}
+
+.apix-telemetry-card .badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  align-self: flex-start;
+}
+
+.eye-info-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: #94A3B8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.eye-info-btn:hover {
+  color: #0284C7;
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.eye-info-btn .eye-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  width: 290px;
+  background: #0B132B;
+  color: #F1F5F9;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 13px 15px;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  font-weight: 400;
+  text-align: left;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.kpi-card:nth-child(4) .eye-tooltip,
+.kpi-card:nth-child(5) .eye-tooltip {
+  left: auto;
+  right: -10px;
+  transform: translateY(-4px);
+}
+
+.kpi-card:first-child .eye-tooltip {
+  left: -10px;
+  transform: translateY(-4px);
+}
+
+.eye-info-btn:hover .eye-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.kpi-card:nth-child(4) .eye-info-btn:hover .eye-tooltip,
+.kpi-card:nth-child(5) .eye-info-btn:hover .eye-tooltip,
+.kpi-card:first-child .eye-info-btn:hover .eye-tooltip {
+  transform: translateY(0);
+}
+
+.eye-tooltip-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #38BDF8;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eye-tooltip-formula {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #7DD3FC;
+  margin: 8px 0;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-left: 3px solid #0284C7;
+  word-break: break-word;
+}
+
+.eye-tooltip-source {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 8px;
+  display: block;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 7px;
+}
+
+/* =========================================================================
+   Interactive Eye Button & Math Calculation Tooltip
+   ========================================================================= */
+.apix-telemetry-card .kpi-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.card-title-wrap span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted, #64748B);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.4;
+}
+
+.apix-telemetry-card .badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  align-self: flex-start;
+}
+
+.eye-info-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: #94A3B8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+.eye-info-btn:hover {
+  color: #0284C7;
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.eye-info-btn .eye-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  width: 290px;
+  background: #0B132B;
+  color: #F1F5F9;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 13px 15px;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.3);
+  z-index: 99999;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  font-weight: 400;
+  text-align: left;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.kpi-card:nth-child(4) .eye-tooltip,
+.kpi-card:nth-child(5) .eye-tooltip {
+  left: auto;
+  right: -10px;
+  transform: translateY(-4px);
+}
+
+.kpi-card:first-child .eye-tooltip {
+  left: -10px;
+  transform: translateY(-4px);
+}
+
+.eye-info-btn:hover .eye-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.kpi-card:nth-child(4) .eye-info-btn:hover .eye-tooltip,
+.kpi-card:nth-child(5) .eye-info-btn:hover .eye-tooltip,
+.kpi-card:first-child .eye-info-btn:hover .eye-tooltip {
+  transform: translateY(0);
+}
+
+.eye-tooltip-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #38BDF8;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.eye-tooltip-formula {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #7DD3FC;
+  margin: 8px 0;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-left: 3px solid #0284C7;
+  word-break: break-word;
+}
+
+.eye-tooltip-source {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 8px;
+  display: block;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 7px;
 }
 

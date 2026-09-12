@@ -17,6 +17,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
+  <!-- KaTeX for beautiful math equation rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
   <link rel="stylesheet" href="/static/style.css?v=5.5">
 </head>
 <body>
@@ -633,7 +638,7 @@
             <div class="corridor-pills-wrap u-s9" >
               <button type="button" class="route-pill-btn active" onclick="window.selectRoutePill('ALL', 'All Monitored Corridors', this)">
                 <span>All India (National)</span>
-                <span class="pill-badge">APIx 150.19</span>
+                <span class="pill-badge" id="pillBadgeNationalApix">APIx --</span>
               </button>
               <button type="button" class="route-pill-btn" onclick="window.selectRoutePill('DEL-BOM', 'DEL ⇄ BOM (Delhi - Mumbai)', this)">
                 <span>DEL ⇄ BOM</span>
@@ -1091,11 +1096,22 @@
           </div>
 
           <!-- Top 5-Card Institutional Telemetry Grid -->
-          <div class="kpi-grid apix-kpi-grid">
+          <div class="kpi-grid apix-kpi-grid" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px;">
             <!-- 1. Headline APIx -->
             <div class="kpi-card apix-telemetry-card">
               <div class="kpi-label">
-                <span id="apixHeadlineLabel">Headline National APIx</span>
+                <div class="card-title-wrap">
+                  <span id="apixHeadlineLabel">Headline National APIx</span>
+                  <button type="button" class="eye-info-btn" aria-label="Calculation formula">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="eye-tooltip">
+                      <div class="eye-tooltip-title">Mathematical Formula</div>
+                      <div>Elementary Jevons geometric price ratios aggregated by DGCA Laspeyres volume weights:</div>
+                      <div class="eye-tooltip-formula">APIx = &sum; w_r &times; exp(&Sigma; ln(p_k / p_0) / n)</div>
+                      <span class="eye-tooltip-source">Standard: MoSPI &amp; IMF Axiomatic Index Manual</span>
+                    </div>
+                  </button>
+                </div>
                 <span class="badge info">Base 2024=100</span>
               </div>
               <div class="kpi-val-row">
@@ -1108,7 +1124,18 @@
             <!-- 2. Substitution Bias Mitigation -->
             <div class="kpi-card apix-telemetry-card">
               <div class="kpi-label">
-                <span>Substitution Bias Mitigation</span>
+                <div class="card-title-wrap">
+                  <span>Substitution Bias Mitigation</span>
+                  <button type="button" class="eye-info-btn" aria-label="Calculation formula">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="eye-tooltip">
+                      <div class="eye-tooltip-title">Bias Calculation</div>
+                      <div>Difference between upward-biased arithmetic mean (Laspeyres) and geometric mean (Jevons):</div>
+                      <div class="eye-tooltip-formula">&Delta; Bias = APIx_Jevons - APIx_Laspeyres</div>
+                      <span class="eye-tooltip-source">Eliminates artificial +2.14 pts upward drift</span>
+                    </div>
+                  </button>
+                </div>
                 <span class="badge normal">Jevons vs Laspeyres</span>
               </div>
               <div class="kpi-val-row">
@@ -1121,7 +1148,18 @@
             <!-- 3. Rolling Moving Average -->
             <div class="kpi-card apix-telemetry-card">
               <div class="kpi-label">
-                <span id="apix7dMaLabel">7-Day Rolling Index (MA)</span>
+                <div class="card-title-wrap">
+                  <span id="apix7dMaLabel">7-Day Rolling Index (MA)</span>
+                  <button type="button" class="eye-info-btn" aria-label="Calculation formula">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="eye-tooltip">
+                      <div class="eye-tooltip-title">Moving Average Formula</div>
+                      <div>7-day backward rolling window over daily national headline indices to smooth noise:</div>
+                      <div class="eye-tooltip-formula">MA_t = (1/7) &times; &sum;_{i=0}^6 APIx_{t-i}</div>
+                      <span class="eye-tooltip-source">Signal: Filters weekend surges &amp; flash sales</span>
+                    </div>
+                  </button>
+                </div>
                 <span class="badge elevated">Trend Signal</span>
               </div>
               <div class="kpi-val-row">
@@ -1134,7 +1172,18 @@
             <!-- 4. Volatility Index -->
             <div class="kpi-card apix-telemetry-card">
               <div class="kpi-label">
-                <span>Price Volatility Index (CV%)</span>
+                <div class="card-title-wrap">
+                  <span>Price Volatility Index (CV%)</span>
+                  <button type="button" class="eye-info-btn" aria-label="Calculation formula">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="eye-tooltip">
+                      <div class="eye-tooltip-title">Coefficient of Variation</div>
+                      <div>Relative dispersion of ticket fares normalized against the sample mean:</div>
+                      <div class="eye-tooltip-formula">CV = (&sigma; / &mu;) &times; 100%</div>
+                      <span class="eye-tooltip-source">&lt;18%: Stable pricing | &gt;25%: High volatility</span>
+                    </div>
+                  </button>
+                </div>
                 <span class="badge normal">Stable Band</span>
               </div>
               <div class="kpi-val-row">
@@ -1147,7 +1196,18 @@
             <!-- 5. National Basket Mean Fare -->
             <div class="kpi-card apix-telemetry-card">
               <div class="kpi-label">
-                <span>National Basket Mean Fare</span>
+                <div class="card-title-wrap">
+                  <span>National Basket Mean Fare</span>
+                  <button type="button" class="eye-info-btn" aria-label="Calculation formula">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <div class="eye-tooltip">
+                      <div class="eye-tooltip-title">Weighted Basket Mean</div>
+                      <div>Sample-wide average fare of all audited flights across monitored DGCA trunk routes:</div>
+                      <div class="eye-tooltip-formula">Mean = (1/N) &times; &sum; Fare_i</div>
+                      <span class="eye-tooltip-source">Computed from real-time scraped observations</span>
+                    </div>
+                  </button>
+                </div>
                 <span class="badge info">All Classes</span>
               </div>
               <div class="kpi-val-row">
@@ -1225,11 +1285,11 @@
               </div>
 
               <!-- Lead-Time Horizon Breakdown Badges -->
-              <div class="apix-lead-badges-footer">
-                <div class="lead-badge-chip immediate"><strong>T+1 Urgent</strong>: Multiplier 1.55&times;</div>
-                <div class="lead-badge-chip short"><strong>T+7 Moderate</strong>: Multiplier 1.16&times;</div>
-                <div class="lead-badge-chip baseline"><strong>T+15 Benchmark</strong>: Multiplier 1.00&times;</div>
-                <div class="lead-badge-chip advance"><strong>T+30 Discount</strong>: Multiplier 0.86&times;</div>
+              <div class="apix-lead-badges-footer" id="apixLeadBadgesFooter">
+                <div class="lead-badge-chip immediate" id="chipLeadT1"><strong>T+1 Urgent</strong>: Multiplier 2.65&times;</div>
+                <div class="lead-badge-chip short" id="chipLeadT7"><strong>T+7 Moderate</strong>: Multiplier 2.05&times;</div>
+                <div class="lead-badge-chip baseline" id="chipLeadT15"><strong>T+15 Benchmark</strong>: Multiplier 2.11&times;</div>
+                <div class="lead-badge-chip advance" id="chipLeadT30"><strong>T+30 Advance</strong>: Multiplier 2.11&times;</div>
               </div>
             </div>
           </div>
@@ -1371,54 +1431,9 @@
                   $$APIx_t = \sum_{r=1}^{M} w_r \cdot I_{J, r, t} \quad \text{where} \quad \sum_{r=1}^M w_r = 1.000$$
                 </div>
                 <div class="formula-notes">
-                  <strong>Weight Source:</strong> Official DGCA Passenger Seat Demand (PSD) traffic distribution across 462 domestic corridors, updated triennially.
+                  <strong>Weight Source:</strong> DGCA City-Pair Passenger Traffic distribution basket across key domestic trunk corridors.
                 </div>
               </div>
-            </div>
-
-            <!-- Axiomatic Properties Matrix -->
-            <div class="table-wrapper" style="margin-top: 16px;">
-              <table class="apple-table compact-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Axiomatic Property</th>
-                    <th scope="col">Mathematical Criterion</th>
-                    <th scope="col">Jevons (Our Engine)</th>
-                    <th scope="col">Carli (Arithmetic)</th>
-                    <th scope="col">Dutot (Mean Ratio)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Time Reversal Test</strong></td>
-                    <td>$I(p_0, p_t) \times I(p_t, p_0) = 1$</td>
-                    <td><span class="badge normal">&#10003; PASS (Exact)</span></td>
-                    <td><span class="badge critical">&#10007; FAIL (+2.14% Bias)</span></td>
-                    <td><span class="badge normal">&#10003; PASS</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Circular Test (Transitivity)</strong></td>
-                    <td>$I(p_0, p_1) \times I(p_1, p_2) = I(p_0, p_2)$</td>
-                    <td><span class="badge normal">&#10003; PASS (Chainable)</span></td>
-                    <td><span class="badge critical">&#10007; FAIL (Drift)</span></td>
-                    <td><span class="badge normal">&#10003; PASS</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Commensurability</strong></td>
-                    <td>Scale / currency unit invariance</td>
-                    <td><span class="badge normal">&#10003; PASS</span></td>
-                    <td><span class="badge normal">&#10003; PASS</span></td>
-                    <td><span class="badge critical">&#10007; FAIL (Unit Dependent)</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Substitution Bias</strong></td>
-                    <td>Consumer switching mitigation</td>
-                    <td><span class="badge normal">&#10003; Zero Bias</span></td>
-                    <td><span class="badge critical">&#10007; Upward Bias (+3.65 pts)</span></td>
-                    <td><span class="badge elevated">! High Outlier Bias</span></td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
 
             <!-- MoSPI 5-Step Pipeline Steps -->
@@ -1515,14 +1530,14 @@
               <div class="apix-sim-output-box">
                 <div class="sim-out-label">Simulated National APIx</div>
                 <div class="sim-out-headline">
-                  <span class="sim-out-number" id="simApixResult">150.19</span>
+                  <span class="sim-out-number" id="simApixResult">100.00</span>
                   <span class="badge info" id="simApixDeltaTag">Baseline (100%)</span>
                 </div>
 
                 <div class="sim-out-metrics-list">
                   <div class="sim-metric-item">
                     <span class="sim-metric-title">Simulated Basket Mean Airfare:</span>
-                    <strong id="simAvgFareResult">&#8377;7,485</strong>
+                    <strong id="simAvgFareResult">&#8377;6,250</strong>
                   </div>
                   <div class="sim-metric-item">
                     <span class="sim-metric-title">Transport Sub-Index Impact:</span>
