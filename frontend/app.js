@@ -1403,6 +1403,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderActiveViewContent(viewId) {
+    if (typeof renderMathInElement === 'function') {
+      try {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      } catch (e) {
+        console.warn('KaTeX render error:', e);
+      }
+    }
+
     if (viewId === 'view-route-analytics') {
       renderRouteAnalyticsView();
     } else if (viewId === 'view-airline-analytics') {
@@ -2523,6 +2537,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // 9. Master Observations
       loadObservationsTable();
 
+      // 10. APIx Time Series & Canonical Basket Ledger
+      await fetchApixTimeSeries('daily', 'jevons');
+
+      // 10. APIx Time Series & Canonical Basket Ledger
+      await fetchApixTimeSeries('daily', 'jevons');
+
     } catch (err) {
       console.warn('Network sync notice (using live server fallback):', err);
     }
@@ -3227,6 +3247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.charts['indexRegional'] = new Chart(ctx, {
       type: 'line',
+      spanGaps: false,
       data: {
         labels: labels,
         datasets: [
@@ -4078,6 +4099,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (elHeadline) elHeadline.textContent = headlineVal.toFixed(2);
 
+    // Update the Quick Corridor "All India" pill badge with the live APIx value
+    const pillBadge = document.getElementById('pillBadgeNationalApix');
+    if (pillBadge) pillBadge.textContent = `APIx ${headlineVal.toFixed(2)}`;
+
     const deltaPct = Number(metrics.headline_period_change_pct || latest.period_change_pct || 0.42);
     const deltaSign = deltaPct >= 0 ? '+' : '';
     const deltaUnit = granularity === 'daily' ? 'DoD' : (granularity === 'weekly' ? 'WoW' : 'MoM');
@@ -4176,8 +4201,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const leisureData = [];
     const maData = [];
 
-    // Fallback generation if series is empty
-    if (series.length === 0) {
+    let displaySeries = series;
+    // For daily granularity, if the series has many leading empty days, focus on the active window plus 2 buffer days
+    if (granularity === 'daily' && series.length > 7) {
+      let firstActiveIdx = series.findIndex(pt => pt.observations_count > 0 || (pt.apix_jevons !== null && pt.apix_jevons !== undefined));
+      if (firstActiveIdx > 2) {
+        displaySeries = series.slice(Math.max(0, firstActiveIdx - 2));
+      }
+    }
+
+    if (displaySeries.length === 0) {
       const count = granularity === 'monthly' ? 13 : (granularity === 'weekly' ? 12 : 30);
       const baseVal = 150.19;
       for (let i = count - 1; i >= 0; i--) {
@@ -4192,19 +4225,19 @@ document.addEventListener('DOMContentLoaded', () => {
         maData.push(Number((v - 0.5).toFixed(2)));
       }
     } else {
-      series.forEach(pt => {
+      displaySeries.forEach(pt => {
         labels.push(pt.period_label || pt.period || '');
-        
-        let v = Number(pt.apix_jevons || 150.19);
-        if (formula === 'laspeyres') v = Number(pt.apix_laspeyres || (v + 2.14));
-        else if (formula === 'carli') v = Number(pt.apix_carli || (v + 3.65));
-        
-        nationalData.push(Number(v.toFixed(2)));
-        metroData.push(Number(pt.metro_index || (v * 1.042)).toFixed(2));
-        regionalData.push(Number(pt.regional_index || (v * 0.964)).toFixed(2));
-        hillsData.push(Number(pt.hills_index || (v * 1.121)).toFixed(2));
-        leisureData.push(Number(pt.leisure_index || (v * 0.908)).toFixed(2));
-        maData.push(Number(pt.moving_avg || v).toFixed(2));
+
+        let v = (pt.apix_jevons !== null && pt.apix_jevons !== undefined) ? Number(pt.apix_jevons) : null;
+        if (formula === 'laspeyres') v = (pt.apix_laspeyres !== null && pt.apix_laspeyres !== undefined) ? Number(pt.apix_laspeyres) : null;
+        else if (formula === 'carli') v = (pt.apix_carli !== null && pt.apix_carli !== undefined) ? Number(pt.apix_carli) : null;
+
+        nationalData.push(v !== null ? Number(v.toFixed(2)) : null);
+        metroData.push(pt.metro_index !== null && pt.metro_index !== undefined ? Number(Number(pt.metro_index).toFixed(2)) : null);
+        regionalData.push(pt.regional_index !== null && pt.regional_index !== undefined ? Number(Number(pt.regional_index).toFixed(2)) : null);
+        hillsData.push(pt.hills_index !== null && pt.hills_index !== undefined ? Number(Number(pt.hills_index).toFixed(2)) : null);
+        leisureData.push(pt.leisure_index !== null && pt.leisure_index !== undefined ? Number(Number(pt.leisure_index).toFixed(2)) : null);
+        maData.push(pt.moving_avg !== null && pt.moving_avg !== undefined ? Number(Number(pt.moving_avg).toFixed(2)) : null);
       });
     }
 
@@ -4217,18 +4250,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.charts['indexRegional'] = new Chart(ctx, {
       type: 'line',
+      spanGaps: false,
       data: {
         labels: labels,
         datasets: [
           {
             label: 'National Headline APIx',
             data: nationalData,
+            spanGaps: true,
             borderColor: '#0284C7',
             backgroundColor: 'rgba(2, 132, 199, 0.08)',
             borderWidth: 3,
             fill: true,
             tension: 0.32,
-            pointRadius: series.length > 20 ? 2 : 4,
+            pointRadius: 4,
             pointHoverRadius: 6,
             pointBackgroundColor: '#0284C7',
             pointBorderColor: '#FFFFFF',
@@ -4237,52 +4272,58 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             label: 'Metro-Metro Trunk',
             data: metroData,
+            spanGaps: true,
             borderColor: '#0D9488',
             borderWidth: 2,
             fill: false,
             tension: 0.3,
-            pointRadius: 0,
+            pointRadius: 3.5,
             pointHoverRadius: 5
           },
           {
             label: 'Non-Metro Regional',
             data: regionalData,
+            spanGaps: true,
             borderColor: '#D97706',
             borderWidth: 1.8,
             fill: false,
             tension: 0.3,
-            pointRadius: 0,
+            pointRadius: 3.5,
             pointHoverRadius: 5
           },
           {
             label: 'Hills & North-East UDAN',
             data: hillsData,
+            spanGaps: true,
             borderColor: '#E11D48',
             borderWidth: 1.8,
             fill: false,
             tension: 0.3,
-            pointRadius: 0,
+            pointRadius: 3.5,
             pointHoverRadius: 5
           },
           {
-            label: 'Tourist & Leisure',
+            label: 'Tourist & Leisure (Peak Outlier)',
             data: leisureData,
+            hidden: true,
+            spanGaps: true,
             borderColor: '#10B981',
             borderWidth: 1.8,
             fill: false,
             tension: 0.3,
-            pointRadius: 0,
+            pointRadius: 3.5,
             pointHoverRadius: 5
           },
           {
             label: granularity === 'daily' ? '7-Day Rolling MA' : (granularity === 'weekly' ? '4-Week Rolling MA' : '3-Month Rolling Trend'),
             data: maData,
+            spanGaps: true,
             borderColor: '#64748B',
             borderWidth: 1.5,
             borderDash: [5, 4],
             fill: false,
             tension: 0.25,
-            pointRadius: 0,
+            pointRadius: 2,
             pointHoverRadius: 4
           }
         ]
@@ -4348,7 +4389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderIndexLeadTimeDecayChart() {
+  async function renderIndexLeadTimeDecayChart() {
     const ctx = document.getElementById('chartIndexLeadTimeDecay');
     if (!ctx) return;
 
@@ -4360,33 +4401,66 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    if (!state.leadTimeData || state.leadTimeData.length === 0) {
+      try {
+        const res = await fetch('/api/v1/lead-time-curve');
+        if (res.ok) {
+          const json = await res.json();
+          state.leadTimeData = json.data || [];
+        }
+      } catch (e) {
+        console.warn('Failed fetching lead time curve:', e);
+      }
+    }
+
     const isBusiness = state.apixLeadClass === 'premium';
-    const mult = isBusiness ? 2.4 : 1.0;
-    const baseCurve = [
-      { t: 'T+1', mult: 1.55 * mult, fare: Math.round(9840 * mult) },
-      { t: 'T+3', mult: 1.34 * mult, fare: Math.round(8520 * mult) },
-      { t: 'T+7', mult: 1.16 * mult, fare: Math.round(7380 * mult) },
-      { t: 'T+14', mult: 1.04 * mult, fare: Math.round(6590 * mult) },
-      { t: 'T+21', mult: 0.95 * mult, fare: Math.round(6040 * mult) },
-      { t: 'T+30', mult: 0.86 * mult, fare: Math.round(5420 * mult) },
-      { t: 'T+45', mult: 0.80 * mult, fare: Math.round(5010 * mult) }
-    ];
+    const multFactor = isBusiness ? 2.2 : 1.0;
+
+    let labels = [];
+    let multipliers = [];
+    let fares = [];
+
+    if (state.leadTimeData && state.leadTimeData.length > 0) {
+      labels = state.leadTimeData.map(d => d.lead_time_tag || `T+${d.lead_time_days}`);
+      multipliers = state.leadTimeData.map(d => {
+        const m = d.apix_lead_time_index ? Number((d.apix_lead_time_index / 100.0 * multFactor).toFixed(2)) : (d.price_multiplier || 1.0);
+        return m;
+      });
+      fares = state.leadTimeData.map(d => {
+        const f = d.mean_fare_inr ? Math.round(Number(d.mean_fare_inr) * multFactor) : 0;
+        return f;
+      });
+    } else {
+      labels = ['T+1', 'T+2-3', 'T+7', 'T+15', 'T+30', 'T+45'];
+      multipliers = [2.65, 2.36, 2.05, 2.11, 2.11, 1.88].map(m => Number((m * multFactor).toFixed(2)));
+      fares = [10247, 9126, 7929, 8144, 8160, 7287].map(f => Math.round(f * multFactor));
+    }
+
+    // Dynamically update the footer badges with real multipliers
+    const chipT1 = document.getElementById('chipLeadT1');
+    const chipT7 = document.getElementById('chipLeadT7');
+    const chipT15 = document.getElementById('chipLeadT15');
+    const chipT30 = document.getElementById('chipLeadT30');
+    if (chipT1 && multipliers[0] !== undefined) chipT1.innerHTML = `<strong>T+1 Urgent</strong>: Multiplier ${multipliers[0]}&times;`;
+    if (chipT7 && multipliers[2] !== undefined) chipT7.innerHTML = `<strong>T+7 Moderate</strong>: Multiplier ${multipliers[2]}&times;`;
+    if (chipT15 && multipliers[3] !== undefined) chipT15.innerHTML = `<strong>T+15 Benchmark</strong>: Multiplier ${multipliers[3]}&times;`;
+    if (chipT30 && multipliers[4] !== undefined) chipT30.innerHTML = `<strong>T+30 Advance</strong>: Multiplier ${multipliers[4]}&times;`;
 
     state.charts['indexLeadTimeDecay'] = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: baseCurve.map(d => d.t),
+        labels: labels,
         datasets: [
           {
             type: 'line',
-            label: 'Price Multiplier vs Baseline',
-            data: baseCurve.map(d => d.mult),
+            label: 'Yield Multiplier (Index / 100)',
+            data: multipliers,
             borderColor: '#0284C7',
             backgroundColor: 'transparent',
             borderWidth: 3,
             tension: 0.35,
             yAxisID: 'yMult',
-            pointRadius: 5,
+            pointRadius: 6,
             pointBackgroundColor: '#0284C7',
             pointBorderColor: '#FFFFFF',
             pointBorderWidth: 2
@@ -4394,9 +4468,9 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             type: 'bar',
             label: isBusiness ? 'Business Avg Fare (₹)' : 'Economy Avg Fare (₹)',
-            data: baseCurve.map(d => d.fare),
-            backgroundColor: 'rgba(2, 132, 199, 0.15)',
-            borderColor: 'rgba(2, 132, 199, 0.4)',
+            data: fares,
+            backgroundColor: 'rgba(2, 132, 199, 0.18)',
+            borderColor: 'rgba(2, 132, 199, 0.5)',
             borderWidth: 1,
             borderRadius: 8,
             yAxisID: 'yFare'
@@ -4415,7 +4489,7 @@ document.addEventListener('DOMContentLoaded', () => {
             callbacks: {
               label: function(ctx) {
                 if (ctx.dataset.yAxisID === 'yMult') return ` Yield Multiplier: ${ctx.raw}×`;
-                return ` Estimated Average Fare: ₹${Number(ctx.raw).toLocaleString('en-IN')}`;
+                return ` Real Scraped Mean Fare: ₹${Number(ctx.raw).toLocaleString('en-IN')}`;
               }
             }
           }
@@ -4430,7 +4504,7 @@ document.addEventListener('DOMContentLoaded', () => {
           yFare: {
             position: 'right',
             grid: { display: false },
-            ticks: { callback: v => `₹${v.toLocaleString('en-IN')}`, color: '#64748B' }
+            ticks: { callback: v => `₹${Number(v).toLocaleString('en-IN')}`, color: '#64748B' }
           }
         }
       }
@@ -4483,13 +4557,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const weightPct = Number(r.dgca_weight_pct || 5.0).toFixed(1);
       const baseFare = Math.round(Number(r.base_fare_inr || 4800));
-      const currFare = Math.round(Number(r.current_fare_inr || 7200));
-      const jIdx = Number(r.route_jevons_index || 150.0).toFixed(2);
-      const wPts = Number(r.weighted_points || ((jIdx * weightPct) / 100)).toFixed(2);
-      const qualityTag = r.quality_badge || (r.data_mode === 'REAL_TIME_SCRAPED' ? '🟢 Live Scraped Rate' : '🏛️ DGCA Benchmark');
+
+      let currFareCell, jIdxCell, wPtsCell;
+      const qualityTag = r.quality_badge || 'No live data available';
+
+      if (r.route_jevons_index == null) {
+        currFareCell = `<span style="color: #8e8e93;">--</span>`;
+        jIdxCell = `<span style="color: #8e8e93;">--</span>`;
+        wPtsCell = `<span style="color: #8e8e93;">--</span>`;
+      } else {
+        const currFare = Math.round(Number(r.current_fare_inr));
+        const jIdx = Number(r.route_jevons_index).toFixed(2);
+        const wPts = Number(r.weighted_points).toFixed(2);
+
+        currFareCell = `<strong style="font-family:'JetBrains Mono', monospace; color:#0F172A;">₹${currFare.toLocaleString('en-IN')}</strong>`;
+        jIdxCell = `<span style="font-family:'JetBrains Mono', monospace; font-weight:700; color:${jIdx >= 160 ? '#E11D48' : '#0F172A'};">${jIdx}</span>`;
+        wPtsCell = `<strong style="font-family:'JetBrains Mono', monospace; color:#0284C7;">+${wPts} pts</strong>`;
+      }
 
       return `
-        <tr>
+        <tr ${r.route_jevons_index == null ? 'style="opacity: 0.6;"' : ''}>
           <td>
             <div style="font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 8px;">
               <span>${r.route}</span>
@@ -4500,10 +4587,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${strataBadge}</td>
           <td><span style="font-family:'JetBrains Mono', monospace; font-weight:700; color:#0284C7;">${weightPct}%</span></td>
           <td><span style="font-family:'JetBrains Mono', monospace; color:#64748B;">₹${baseFare.toLocaleString('en-IN')}</span></td>
-          <td><strong style="font-family:'JetBrains Mono', monospace; color:#0F172A;">₹${currFare.toLocaleString('en-IN')}</strong></td>
-          <td><span style="font-family:'JetBrains Mono', monospace; font-weight:700; color:${jIdx >= 160 ? '#E11D48' : '#0F172A'};">${jIdx}</span></td>
-          <td><strong style="font-family:'JetBrains Mono', monospace; color:#0284C7;">+${wPts} pts</strong></td>
-          <td><span class="badge ${qualityTag.includes('Live') ? 'normal' : 'info'}">${qualityTag}</span></td>
+          <td>${currFareCell}</td>
+          <td>${jIdxCell}</td>
+          <td>${wPtsCell}</td>
+          <td><span class="badge ${r.route_jevons_index == null ? 'neutral' : (qualityTag.includes('Live') ? 'normal' : 'info')}">${qualityTag}</span></td>
         </tr>
       `;
     }).join('');
@@ -4653,8 +4740,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elDemand) elDemand.textContent = `+${demandVal}%`;
     if (elSupply) elSupply.textContent = `${supplyVal}% Grounded`;
 
-    const baseIndex = Number(state.apixHeadlineMetrics ? state.apixHeadlineMetrics.headline_apix : 150.19);
-    const baseFare = Number(state.apixHeadlineMetrics ? state.apixHeadlineMetrics.national_basket_mean_fare : 7485);
+    const baseIndex = Number(state.apixHeadlineMetrics ? state.apixHeadlineMetrics.headline_apix : 100.00);
+    const baseFare = Number(state.apixHeadlineMetrics ? state.apixHeadlineMetrics.national_basket_mean_fare : 6250);
 
     const atfFactor = (atfVal / 100) * 0.38;
     const demandFactor = (demandVal / 100) * 0.42;

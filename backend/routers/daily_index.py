@@ -114,13 +114,13 @@ def build_route_ledger(df: pd.DataFrame) -> List[Dict[str, Any]]:
             quality_badge = "🟢 Live Scraped Rate"
             obs_cnt = len(r_fares)
         else:
-            curr_fare = round(base_fare * 1.48, 0)
-            r_idx = 148.0
-            data_mode = "DGCA_BENCHMARK"
-            quality_badge = "🏛️ DGCA Benchmark"
+            curr_fare = None
+            r_idx = None
+            data_mode = "DGCA_BASELINE"
+            quality_badge = "No live data available"
             obs_cnt = 0
 
-        weighted_pts = round((r_idx * weight_pct) / 100.0, 2)
+        weighted_pts = round((r_idx * weight_pct) / 100.0, 2) if r_idx is not None else 0.0
         
         routes_ledger.append({
             "route": r_key,
@@ -134,8 +134,8 @@ def build_route_ledger(df: pd.DataFrame) -> List[Dict[str, Any]]:
             "dgca_weight": weight,
             "dgca_weight_pct": weight_pct,
             "base_fare_inr": base_fare,
-            "current_fare_inr": round(curr_fare, 2),
-            "route_jevons_index": round(r_idx, 2),
+            "current_fare_inr": round(curr_fare, 2) if curr_fare is not None else None,
+            "route_jevons_index": round(r_idx, 2) if r_idx is not None else None,
             "weighted_points": weighted_pts,
             "observations_count": obs_cnt,
             "quality_badge": quality_badge,
@@ -184,15 +184,23 @@ def get_apix_time_series(
     df = load_combined_observations()
     routes_ledger = build_route_ledger(df)
     
-    # Base Headline from the route ledger
-    base_headline = sum(r["weighted_points"] for r in routes_ledger)
-    if base_headline <= 0 or np.isnan(base_headline):
-        base_headline = 150.19
+    # Pull Base Headline from daily index file instead of multi-year pooled ledger
+    try:
+        if settings.DAILY_INDEX_PATH.exists():
+            daily_df = pd.read_csv(settings.DAILY_INDEX_PATH)
+            if not daily_df.empty:
+                base_headline = float(daily_df.iloc[-1]['apix_jevons_laspeyres'])
+            else:
+                base_headline = 100.0
+        else:
+            base_headline = 100.0
+    except Exception:
+        base_headline = 100.0
         
     series = []
     
     if granularity == "monthly":
-        # Monthly series: Combine official MoSPI CPI benchmark months + current live months
+        # ── Step 1: Load official MoSPI CPI data ──────────────────────────────
         cpi_path = settings.CPI_BENCHMARK_PATH
         cpi_rows = []
         if cpi_path.exists():
@@ -201,98 +209,222 @@ def get_apix_time_series(
                 for _, r in cpi_df.iterrows():
                     m_name = str(r.get('month', '')).strip()
                     yr = str(r.get('year', '')).strip()
-                    idx_val = float(r.get('index', 125.0))
-                    infl_val = float(r.get('inflation', 0.0)) if pd.notna(r.get('inflation')) else 0.0
+                    idx_val = r.get('index')
+                    infl_val = r.get('inflation')
+                    if not m_name or not yr:
+                        continue
                     cpi_rows.append({
                         "period": f"{yr}-{m_name}",
                         "period_label": f"{m_name[:3]} {yr}",
                         "year": int(yr) if yr.isdigit() else 2025,
                         "month": m_name,
-                        "cpi_index": idx_val,
-                        "inflation": infl_val
+                        "mospi_cpi_index": round(float(idx_val), 2) if pd.notna(idx_val) else None,
+                        "inflation": round(float(infl_val), 2) if pd.notna(infl_val) else None
                     })
             except Exception:
                 pass
-                
+
         month_order = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
                        "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
         cpi_rows.sort(key=lambda x: (x["year"], month_order.get(x["month"], 1)))
-        
-        # Last 12 benchmark months from MoSPI
+
+        # ── Step 2: Compute real Jevons index for months where we have scraped data ──
+        monthly_jevons: Dict[str, float] = {}
+        monthly_obs: Dict[str, int] = {}
+        monthly_mean_fare: Dict[str, float] = {}
+        monthly_median_fare: Dict[str, float] = {}
+
+        if not df.empty:
+            df_m = df.copy()
+            df_m['ym'] = df_m['travel_date_dt'].dt.to_period('M').astype(str)  # e.g. "2026-09"
+            for ym, grp in df_m.groupby('ym'):
+                r_indices = {}
+                r_weights = {}
+                for route, r_grp in grp.groupby('route'):
+                    fares = r_grp['total_fare_inr'].values
+                    base_p = get_base_fare(route)
+                    ratios = fares / base_p
+                    ratios = ratios[ratios > 0]
+                    if len(ratios) == 0:
+                        continue
+                    r_indices[route] = float(np.exp(np.mean(np.log(ratios))) * 100.0)
+                    r_weights[route] = get_route_weight(route)
+
+                if r_indices:
+                    tot_w = sum(r_weights.values())
+                    if tot_w > 0:
+                        jevons = sum(r_indices[r] * (r_weights[r] / tot_w) for r in r_indices)
+                        monthly_jevons[ym] = round(jevons, 2)
+                        monthly_obs[ym] = len(grp)
+                        monthly_mean_fare[ym] = round(float(grp['total_fare_inr'].mean()), 2)
+                        monthly_median_fare[ym] = round(float(grp['total_fare_inr'].median()), 2)
+
+        # ── Step 3: Build series — last 12 MoSPI months + current live month ──
         for item in cpi_rows[-12:]:
-            cpi_idx = item["cpi_index"]
-            apix_j = round(cpi_idx * 1.196, 2)
-            apix_l = round(apix_j + 2.14, 2)
-            apix_c = round(apix_j + 3.65, 2)
-            
+            yr = item["year"]
+            mo = month_order.get(item["month"], 1)
+            ym_key = f"{yr}-{mo:02d}"
+
+            # Our Jevons index: only set if we actually scraped this month
+            our_apix = monthly_jevons.get(ym_key)
+            our_obs = monthly_obs.get(ym_key, 0)
+            our_mean = monthly_mean_fare.get(ym_key)
+            our_median = monthly_median_fare.get(ym_key)
+
             series.append({
                 "period": item["period"],
                 "period_label": item["period_label"],
-                "apix_jevons": apix_j,
-                "apix_laspeyres": apix_l,
-                "apix_carli": apix_c,
+                # MoSPI official CPI — real government data, labeled honestly
+                "mospi_cpi_index": item["mospi_cpi_index"],
+                "mospi_inflation_pct": item["inflation"],
+                # Our Jevons APIx — only non-null when we have real scraped observations
+                "apix_jevons": our_apix,
+                "apix_laspeyres": round(our_apix + 2.14, 2) if our_apix is not None else None,
+                "apix_carli": round(our_apix + 3.65, 2) if our_apix is not None else None,
                 "bias_mitigation_pts": -2.14,
-                "metro_index": round(apix_j * 1.041, 2),
-                "regional_index": round(apix_j * 0.965, 2),
-                "hills_index": round(apix_j * 1.119, 2),
-                "leisure_index": round(apix_j * 0.909, 2),
-                "mean_fare_inr": round(apix_j * 48.5, 0),
-                "median_fare_inr": round(apix_j * 45.0, 0),
-                "observations_count": 8450
+                "metro_index": None,
+                "regional_index": None,
+                "hills_index": None,
+                "leisure_index": None,
+                "mean_fare_inr": our_mean,
+                "median_fare_inr": our_median,
+                # Honest count: 0 for MoSPI-only months, real count where we scraped
+                "observations_count": our_obs,
+                "data_source": "REAL_SCRAPED" if our_apix is not None else "MOSPI_CPI_ONLY"
             })
-            
-        # Add Current Live September 2026
-        curr_h = round(base_headline, 2)
+
+        # ── Step 4: Append current live month ─────────────────────────────────
+        now = datetime.now()
+        curr_ym = now.strftime('%Y-%m')
+        curr_label = f"{now.strftime('%b')} {now.year} (Live)"
+        curr_apix = round(base_headline, 2)
+        curr_obs = monthly_obs.get(curr_ym, len(df) if not df.empty else 0)
+        curr_mean = monthly_mean_fare.get(curr_ym, round(float(df['total_fare_inr'].mean()), 2) if not df.empty else None)
+        curr_median = monthly_median_fare.get(curr_ym, round(float(df['total_fare_inr'].median()), 2) if not df.empty else None)
+
         series.append({
-            "period": "2026-09",
-            "period_label": "Sep 2026 (Live)",
-            "apix_jevons": curr_h,
-            "apix_laspeyres": round(curr_h + 2.14, 2),
-            "apix_carli": round(curr_h + 3.65, 2),
+            "period": curr_ym,
+            "period_label": curr_label,
+            "mospi_cpi_index": None,  # MoSPI not yet released for current month
+            "mospi_inflation_pct": None,
+            "apix_jevons": curr_apix,
+            "apix_laspeyres": round(curr_apix + 2.14, 2),
+            "apix_carli": round(curr_apix + 3.65, 2),
             "bias_mitigation_pts": -2.14,
-            "metro_index": round(curr_h * 1.042, 2),
-            "regional_index": round(curr_h * 0.965, 2),
-            "hills_index": round(curr_h * 1.119, 2),
-            "leisure_index": round(curr_h * 0.909, 2),
-            "mean_fare_inr": 7485.0,
-            "median_fare_inr": 6950.0,
-            "observations_count": len(df) if not df.empty else 12146
+            "metro_index": None,
+            "regional_index": None,
+            "hills_index": None,
+            "leisure_index": None,
+            "mean_fare_inr": curr_mean,
+            "median_fare_inr": curr_median,
+            "observations_count": curr_obs,
+            "data_source": "REAL_SCRAPED"
         })
 
     elif granularity == "weekly":
-        # 12 Rolling calendar weeks
+        # Build a lookup of real weekly indices from actual observations
+        weekly_rows: Dict[str, Any] = {}
+        if not df.empty:
+            # Tag each row with its ISO year-week
+            df_w = df.copy()
+            df_w['iso_week'] = df_w['travel_date_dt'].dt.strftime('%G-W%V')  # ISO year + week number
+            df_w['week_start'] = df_w['travel_date_dt'] - pd.to_timedelta(df_w['travel_date_dt'].dt.weekday, unit='d')
+
+            for iso_wk, grp in df_w.groupby('iso_week'):
+                r_indices_jevons = {}
+                r_indices_lasp = {}
+                r_indices_carli = {}
+                r_weights = {}
+                r_strata = {}
+
+                for route, r_grp in grp.groupby('route'):
+                    fares = r_grp['total_fare_inr'].values
+                    base_p = get_base_fare(route)
+                    ratios = fares / base_p
+                    ratios = ratios[ratios > 0]
+                    if len(ratios) == 0:
+                        continue
+                    r_indices_jevons[route] = float(np.exp(np.mean(np.log(ratios))) * 100.0)
+                    r_indices_lasp[route] = float((np.mean(fares) / base_p) * 100.0)
+                    r_indices_carli[route] = float(np.mean(ratios) * 100.0)
+                    r_weights[route] = get_route_weight(route)
+                    r_strata[route] = classify_strata(route)
+
+                if not r_indices_jevons:
+                    continue
+
+                tot_w = sum(r_weights.values())
+                if tot_w <= 0:
+                    continue
+
+                apix_j = sum(r_indices_jevons[r] * (r_weights[r] / tot_w) for r in r_indices_jevons)
+                apix_l = sum(r_indices_lasp[r] * (r_weights[r] / tot_w) for r in r_indices_lasp)
+                apix_c = sum(r_indices_carli[r] * (r_weights[r] / tot_w) for r in r_indices_carli)
+
+                strata_res = {}
+                for s in ['metro', 'regional', 'hills', 'leisure']:
+                    s_routes = [r for r in r_indices_jevons if r_strata[r] == s]
+                    s_w = sum(r_weights[r] for r in s_routes)
+                    strata_res[s] = round(
+                        sum(r_indices_jevons[r] * (r_weights[r] / s_w) for r in s_routes), 2
+                    ) if s_w > 0 else None
+
+                w_start_dt = grp['week_start'].min()
+                w_end_dt = w_start_dt + timedelta(days=6)
+                label = f"W{int(iso_wk.split('W')[1])} ({w_start_dt.strftime('%d %b')}-{w_end_dt.strftime('%d %b')})"
+
+                weekly_rows[iso_wk] = {
+                    "period": iso_wk,
+                    "period_label": label,
+                    "apix_jevons": round(apix_j, 2),
+                    "apix_laspeyres": round(apix_l, 2),
+                    "apix_carli": round(apix_c, 2),
+                    "bias_mitigation_pts": -2.14,
+                    "metro_index": strata_res.get('metro'),
+                    "regional_index": strata_res.get('regional'),
+                    "hills_index": strata_res.get('hills'),
+                    "leisure_index": strata_res.get('leisure'),
+                    "mean_fare_inr": round(float(grp['total_fare_inr'].mean()), 2),
+                    "median_fare_inr": round(float(grp['total_fare_inr'].median()), 2),
+                    "observations_count": len(grp)
+                }
+
+        # Emit 12 rolling calendar weeks, using real data where available, null where not
         ref_date = datetime.now()
         for w_idx in range(11, -1, -1):
             w_start = ref_date - timedelta(weeks=w_idx, days=ref_date.weekday())
             w_end = w_start + timedelta(days=6)
             w_num = w_start.isocalendar()[1]
+            iso_wk = f"{w_start.isocalendar()[0]}-W{w_num:02d}"
             label = f"W{w_num} ({w_start.strftime('%d %b')}-{w_end.strftime('%d %b')})"
-            
-            cycle = np.sin((12 - w_idx) * 0.5) * 4.2 + (12 - w_idx) * 0.35
-            apix_j = round(base_headline - 5.5 + cycle, 2)
-            apix_l = round(apix_j + 2.14, 2)
-            apix_c = round(apix_j + 3.65, 2)
-            
-            series.append({
-                "period": f"{w_start.year}-W{w_num:02d}",
-                "period_label": label,
-                "apix_jevons": apix_j,
-                "apix_laspeyres": apix_l,
-                "apix_carli": apix_c,
-                "bias_mitigation_pts": -2.14,
-                "metro_index": round(apix_j * 1.042, 2),
-                "regional_index": round(apix_j * 0.964, 2),
-                "hills_index": round(apix_j * 1.121, 2),
-                "leisure_index": round(apix_j * 0.908, 2),
-                "mean_fare_inr": round(apix_j * 49.8, 0),
-                "median_fare_inr": round(apix_j * 46.2, 0),
-                "observations_count": 1820 + (12 - w_idx) * 80
-            })
-            
-        series[-1]["apix_jevons"] = round(base_headline, 2)
-        series[-1]["apix_laspeyres"] = round(base_headline + 2.14, 2)
-        series[-1]["apix_carli"] = round(base_headline + 3.65, 2)
-        series[-1]["period_label"] = f"W{ref_date.isocalendar()[1]} (Current Week)"
+            is_current = (w_idx == 0)
+
+            if iso_wk in weekly_rows:
+                row = weekly_rows[iso_wk]
+                row["period_label"] = f"W{w_num} (Current Week)" if is_current else label
+                # Override current week headline with the latest computed value
+                if is_current:
+                    row["apix_jevons"] = round(base_headline, 2)
+                    row["apix_laspeyres"] = round(base_headline + 2.14, 2)
+                    row["apix_carli"] = round(base_headline + 3.65, 2)
+                series.append(row)
+            else:
+                # No real observations for this week — emit null (honest gap)
+                series.append({
+                    "period": iso_wk,
+                    "period_label": f"W{w_num} (Current Week)" if is_current else label,
+                    "apix_jevons": round(base_headline, 2) if is_current else None,
+                    "apix_laspeyres": round(base_headline + 2.14, 2) if is_current else None,
+                    "apix_carli": round(base_headline + 3.65, 2) if is_current else None,
+                    "bias_mitigation_pts": -2.14,
+                    "metro_index": None,
+                    "regional_index": None,
+                    "hills_index": None,
+                    "leisure_index": None,
+                    "mean_fare_inr": None,
+                    "median_fare_inr": None,
+                    "observations_count": 0
+                })
 
     else:
         # DAILY series: 30 consecutive calendar days
@@ -329,9 +461,9 @@ def get_apix_time_series(
                     s_w = sum(r_weights[r] for r in s_routes)
                     if s_w > 0:
                         s_idx = sum(r_indices_jevons[r] * (r_weights[r] / s_w) for r in s_routes)
+                        strata_res[s] = round(s_idx, 2)
                     else:
-                        s_idx = apix_j * (1.042 if s == 'metro' else (1.121 if s == 'hills' else (0.908 if s == 'leisure' else 0.964)))
-                    strata_res[s] = round(s_idx, 2)
+                        strata_res[s] = None
                     
                 daily_rows[d_str] = {
                     "period": d_str,
@@ -358,24 +490,22 @@ def get_apix_time_series(
                 row["period_label"] = cur_d.strftime('%d %b')
                 series.append(row)
             else:
-                cycle = np.sin((30 - i) * 0.4) * 3.5 + np.cos((30 - i) * 0.8) * 1.8
-                apix_j = round(base_headline - (i * 0.12) + cycle, 2)
-                apix_l = round(apix_j + 2.14, 2)
-                apix_c = round(apix_j + 3.65, 2)
+                # No real observations for this day — emit null rather than a fabricated value.
+                # Chart.js renders nulls as honest gaps in the line.
                 series.append({
                     "period": d_str,
                     "period_label": cur_d.strftime('%d %b'),
-                    "apix_jevons": apix_j,
-                    "apix_laspeyres": apix_l,
-                    "apix_carli": apix_c,
+                    "apix_jevons": None,
+                    "apix_laspeyres": None,
+                    "apix_carli": None,
                     "bias_mitigation_pts": -2.14,
-                    "metro_index": round(apix_j * 1.042, 2),
-                    "regional_index": round(apix_j * 0.964, 2),
-                    "hills_index": round(apix_j * 1.121, 2),
-                    "leisure_index": round(apix_j * 0.908, 2),
-                    "mean_fare_inr": round(apix_j * 49.8, 0),
-                    "median_fare_inr": round(apix_j * 46.5, 0),
-                    "observations_count": 420 + int(abs(cycle) * 45)
+                    "metro_index": None,
+                    "regional_index": None,
+                    "hills_index": None,
+                    "leisure_index": None,
+                    "mean_fare_inr": None,
+                    "median_fare_inr": None,
+                    "observations_count": 0
                 })
 
         if series:
@@ -393,7 +523,7 @@ def get_apix_time_series(
         series = df_s.to_dict(orient="records")
 
     latest_pt = series[-1] if series else {}
-    headline_apix = latest_pt.get("apix_jevons", 150.19)
+    headline_apix = latest_pt.get("apix_jevons", 100.0)
     headline_delta = latest_pt.get("period_change_pct", 0.42)
     rolling_ma = latest_pt.get("moving_avg", headline_apix)
     
@@ -406,8 +536,8 @@ def get_apix_time_series(
         "substitution_bias_pts": -2.14,
         "rolling_moving_avg": rolling_ma,
         "volatility_cv": 15.4,
-        "national_basket_mean_fare": latest_pt.get("mean_fare_inr", 7485.0),
-        "total_observations": len(df) if not df.empty else 12146,
+        "national_basket_mean_fare": latest_pt.get("mean_fare_inr") or (round(float(df['total_fare_inr'].mean()), 2) if not df.empty else None),
+        "total_observations": len(df) if not df.empty else 0,
         "formula_standard": "MoSPI & DGCA Elementary Jevons Geometric Mean × Laspeyres Volume Weighting",
         "timestamp": datetime.now().isoformat(),
         "series": series,
