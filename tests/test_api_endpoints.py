@@ -4,6 +4,7 @@ API Integration Tests: FastAPI Endpoints Verification
 """
 
 import pytest
+from urllib.parse import urlparse
 from starlette.testclient import TestClient
 from backend.app import app
 
@@ -227,7 +228,8 @@ class TestAPIEndpoints:
         assert res_booking.status_code == 307
         loc = res_booking.headers.get("location")
         assert loc is not None
-        assert "makemytrip.com" in loc
+        booking_host = (urlparse(loc).hostname or "").lower()
+        assert booking_host == "www.makemytrip.com" or booking_host.endswith(".makemytrip.com")
         assert "DEL-BOM" in loc
 
         res_airline = client.get(
@@ -237,7 +239,8 @@ class TestAPIEndpoints:
         assert res_airline.status_code == 307
         loc_al = res_airline.headers.get("location")
         assert loc_al is not None
-        assert "airindia.com" in loc_al
+        airline_host = (urlparse(loc_al).hostname or "").lower()
+        assert airline_host == "www.airindia.com" or airline_host.endswith(".airindia.com")
 
     def test_scrape_search_data_cleaning_and_unbundling(self):
         """Test that all scraped flight records are properly cleaned and unbundled without unicode noise."""
@@ -276,4 +279,3 @@ class TestAPIEndpoints:
             assert f["booking_url"].startswith("http")
             assert f["airline_url"].startswith("http")
             assert f["redirect_url"].startswith("/api/v1/scrape/redirect")
-

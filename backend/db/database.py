@@ -34,6 +34,8 @@ class DataRepository:
                 df = pd.read_csv(settings.MASTER_CSV_PATH, low_memory=False)
                 df['total_fare_inr'] = pd.to_numeric(df['total_fare_inr'], errors='coerce')
                 df = df.dropna(subset=['total_fare_inr'])
+                # Enforce valid commercial domestic airfare floor (>= 1500 INR)
+                df = df[df['total_fare_inr'] >= 1500.0]
                 dfs.append(df)
             except Exception as e:
                 print(f"[-] Error loading master CSV: {e}")

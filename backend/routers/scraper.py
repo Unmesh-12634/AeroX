@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeou
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from typing import Dict, Any, List, Optional
 from backend.config import settings
@@ -39,6 +39,38 @@ from scripts.scrapers.models import decompose_fare_components, ScrapedFlightObse
 from scripts.scrapers.dgca_basket_live_service import get_realtime_dgca_basket
 
 router = APIRouter(tags=["Scraper Execution & Scheduler"])
+
+_ALLOWED_REDIRECT_HOSTS = (
+    "google.com",
+    "google.co.in",
+    "makemytrip.com",
+    "easemytrip.com",
+    "ixigo.com",
+    "yatra.com",
+    "cleartrip.com",
+    "goibibo.com",
+    "goindigo.in",
+    "airindia.com",
+    "airindiaexpress.com",
+    "akasaair.com",
+    "spicejet.com",
+)
+
+def _sanitize_redirect_url(url: str) -> Optional[str]:
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except Exception:
+        return None
+    if parsed.scheme not in {"http", "https"}:
+        return None
+    host = (parsed.hostname or "").lower()
+    if not host:
+        return None
+    if not any(host == allowed or host.endswith(f".{allowed}") for allowed in _ALLOWED_REDIRECT_HOSTS):
+        return None
+    query_pairs = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    safe_query = urllib.parse.urlencode(query_pairs, doseq=True)
+    return urllib.parse.urlunparse((parsed.scheme, host, parsed.path or "/", "", safe_query, ""))
 
 # Accurate Flight Durations & Base Distances between Indian Hubs
 ROUTE_BENCHMARKS = {
@@ -777,9 +809,6 @@ def redirect_to_booking(
     High-reliability redirect gateway ensuring working flight search & airline booking URLs.
     Issues an HTTP 307 Temporary Redirect directly to the live provider portal.
     """
-    if target_url and (target_url.startswith("http://") or target_url.startswith("https://")):
-        return RedirectResponse(url=target_url, status_code=307)
-
     links = build_flight_deep_links(
         origin=origin.upper().strip(),
         dest=dest.upper().strip(),
@@ -790,7 +819,10 @@ def redirect_to_booking(
         cabin_class=cabin_class
     )
     target = links["airline_url"] if target_type == "airline" else links["booking_url"]
-    return RedirectResponse(url=target, status_code=307)
+    safe_target = _sanitize_redirect_url(target)
+    if safe_target is None:
+        raise HTTPException(status_code=400, detail="Invalid redirect target")
+    return RedirectResponse(url=safe_target, status_code=307)
 
 @router.get("/scrape/search")
 def live_search_and_scrape_get(
@@ -1027,4 +1059,3 @@ def get_route_basket(
         },
         "routes": routes_out
     }
-

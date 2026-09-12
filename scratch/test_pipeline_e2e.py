@@ -1,5 +1,6 @@
 import sys
 import os
+from urllib.parse import urlparse
 
 sys.path.insert(0, os.path.abspath("."))
 
@@ -47,14 +48,16 @@ def run_tests():
     assert red_res.status_code == 307
     loc = red_res.headers.get("location")
     print(f"\n[OK] MakeMyTrip 307 Redirect Location: {loc}")
-    assert "makemytrip.com" in loc
+    booking_host = (urlparse(loc).hostname or "").lower()
+    assert booking_host == "www.makemytrip.com" or booking_host.endswith(".makemytrip.com")
 
     # 4. Test Redirect Endpoint for Air India Official
     red_ai = client.get("/api/v1/scrape/redirect?platform=google_flights&origin=DEL&dest=BOM&date=2026-09-18&airline=Air%20India&flight=AI%20804&target_type=airline", follow_redirects=False)
     assert red_ai.status_code == 307
     loc_ai = red_ai.headers.get("location")
     print(f"[OK] Air India Official 307 Redirect Location: {loc_ai}")
-    assert "airindia.com" in loc_ai
+    airline_host = (urlparse(loc_ai).hostname or "").lower()
+    assert airline_host == "www.airindia.com" or airline_host.endswith(".airindia.com")
 
     # 5. Search DEL-BLR
     res_blr = client.post("/api/v1/scrape/search", json={
