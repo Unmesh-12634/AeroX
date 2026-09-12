@@ -124,8 +124,8 @@ def get_mospi_cpi(
         else:
             raw_df = pd.read_csv(cpi_path)
         raw_df.columns = [c.strip().lower() for c in raw_df.columns]
-    except Exception as e:
-        return {"error": str(e), "data": [], "series": [], "kpis": {}}
+    except Exception:
+        return {"error": "Failed to load CPI benchmark data.", "data": [], "series": [], "kpis": {}}
 
     # Extract unique states and sectors
     all_states = sorted(raw_df['state'].dropna().unique().tolist())
