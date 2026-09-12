@@ -206,6 +206,9 @@ def get_apix_time_series(
         if cpi_path.exists():
             try:
                 cpi_df = pd.read_csv(cpi_path)
+                cpi_df.columns = [c.strip().lower() for c in cpi_df.columns]
+                if 'state' in cpi_df.columns and 'sector' in cpi_df.columns:
+                    cpi_df = cpi_df[(cpi_df['state'] == 'All India') & (cpi_df['sector'] == 'Combined')]
                 for _, r in cpi_df.iterrows():
                     m_name = str(r.get('month', '')).strip()
                     yr = str(r.get('year', '')).strip()

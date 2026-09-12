@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     airline: 'ALL',
     source: 'ALL',
     stopsFilter: 'ALL',
+    visibleFlightCount: 20,
+    currentSort: 'LOW_TO_HIGH',
+    randomSeed: 42,
     currentLiveFlights: [],
     airportsList: [],
     overviewData: null,
@@ -324,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSearchScrape) {
       btnSearchScrape.addEventListener('click', async (e) => {
         e.preventDefault();
+        state.visibleFlightCount = 20;
         btnSearchScrape.disabled = true;
         const originalText = btnSearchScrape.innerHTML;
         btnSearchScrape.innerHTML = `
@@ -893,6 +897,39 @@ document.addEventListener('DOMContentLoaded', () => {
     'DED': 'Dehradun', 'CJB': 'Coimbatore'
   };
 
+  // =========================================================================
+  // Official Airline & OTA Platform Logo Resolvers
+  // =========================================================================
+  window.getAirlineLogoUrl = function(carrierName) {
+    if (!carrierName) return '/logos/indigo.png';
+    const c = String(carrierName).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (c.includes('airindiaexpress') || c.includes('aix') || c === 'ix') return '/logos/airindiaexpress.jpeg';
+    if (c.includes('airindia') || c === 'ai') return '/logos/airindia.jpg';
+    if (c.includes('akasa') || c === 'qp') return '/logos/Akasaair.png';
+    if (c.includes('spicejet') || c.includes('spice') || c === 'sg') return '/logos/spicejet.png';
+    if (c.includes('vistara') || c === 'uk') return '/logos/vistara.webp';
+    if (c.includes('indigo') || c === '6e') return '/logos/indigo.png';
+    return '/logos/indigo.png';
+  };
+
+  window.getPlatformLogoUrl = function(plat) {
+    if (!plat) return '/logos/googleairline.png';
+    const p = String(plat).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (p.includes('makemytrip') || p.includes('mmt')) return '/logos/makemytrip.webp';
+    if (p.includes('easemytrip') || p.includes('emt')) return '/logos/easemytrip.png';
+    if (p.includes('ixigo') || p.includes('ixi')) return '/logos/ixogo.png';
+    if (p.includes('yatra')) return '/logos/yatra.png';
+    if (p.includes('cleartrip') || p.includes('ct')) return '/logos/cleartrip.svg';
+    if (p.includes('goibibo') || p.includes('gib')) return '/logos/goibibo.svg';
+    if (p.includes('indigo')) return '/logos/indigo.png';
+    if (p.includes('airindiaexpress') || p.includes('aix')) return '/logos/airindiaexpress.jpeg';
+    if (p.includes('airindia')) return '/logos/airindia.jpg';
+    if (p.includes('akasa')) return '/logos/Akasaair.png';
+    if (p.includes('spicejet')) return '/logos/spicejet.png';
+    if (p.includes('google') || p.includes('gf')) return '/logos/googleairline.png';
+    return '/logos/googleairline.png';
+  };
+
   window.generateFlightBookingUrl = function(f) {
     if (f.booking_url) return f.booking_url;
 
@@ -923,13 +960,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const platform = (f.source_platform || '').toLowerCase();
     const airline  = (f.airline || '').toLowerCase();
+    const flightNum = (f.flight_number || '').trim();
+    const flightNumClean = flightNum.replace(/\s+/g, '');
 
-    // ── 1. OTA Platform-Specific Deep-Links ──────────────────────────────────
+    // ── 1. OTA Platform-Specific Flight-Level Deep-Links ──────────────────────
     if (platform.includes('makemytrip') || platform.includes('mmt')) {
       return `https://www.makemytrip.com/flight/search?itinerary=${origin}-${dest}-${dd_mm_yyyy}&tripType=O&paxType=A-1_C-0_I-0&intl=false&cabinClass=E`;
     }
     if (platform.includes('easemytrip') || platform.includes('emt')) {
-      return `https://flight.easemytrip.com/FlightList/Index?org=${origin}&dest=${dest}&adt=1&chd=0&inf=0&cls=0&dref=${yyyy_mm_dd}`;
+      return `https://flight.easemytrip.com/FlightList/Index?org=${origin}&dest=${dest}&adt=1&chd=0&inf=0&cls=0&dref=${dd_mm_yyyy}`;
     }
     if (platform.includes('ixigo')) {
       return `https://www.ixigo.com/search/result/flight/${origin}/${dest}/${ddmmyyyy}//1/0/0/e/0`;
@@ -938,7 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://flight.yatra.com/air-search/dom2/trigger?type=O&viewName=normal&flexi=0&noOfSegments=1&origin=${origin}&originCode=${origin}&destination=${dest}&destinationCode=${dest}&flight_depart_date=${dd_mm_yyyy}&ADT=1&CHD=0&INF=0&class=Economy`;
     }
     if (platform.includes('cleartrip')) {
-      return `https://www.cleartrip.com/flights/results?adults=1&childs=0&infants=0&class=Economy&depart_date=${mmddyyyy_slash}&from=${origin}&to=${dest}&intl=n`;
+      return `https://www.cleartrip.com/flights/results?adults=1&childs=0&infants=0&class=Economy&depart_date=${dd_mm_yyyy}&from=${origin}&to=${dest}&intl=n`;
     }
     if (platform.includes('goibibo')) {
       return `https://www.goibibo.com/flights/air-${origin}-${dest}-${yyyymmdd}--1-0-0-E-D/`;
@@ -946,7 +985,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (platform.includes('google')) {
       const originCity = IATA_TO_CITY_MAP[origin] || origin;
       const destCity   = IATA_TO_CITY_MAP[dest] || dest;
-      const gfQuery = `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
+      const gfQuery = f.airline && f.airline.toLowerCase() !== 'all'
+        ? `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway ${f.airline}`
+        : `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
       return `https://www.google.com/travel/flights?q=${encodeURIComponent(gfQuery)}&curr=INR&hl=en`;
     }
 
@@ -955,7 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://www.goindigo.in/flight-booking.html?origin=${origin}&destination=${dest}&travelDate=${yyyy_mm_dd}&isOneWay=true`;
     }
     if (airline.includes('air india express')) {
-      return `https://www.airindiaexpress.com/flight-search?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
+      return `https://www.airindiaexpress.com/`;
     }
     if (airline.includes('air india')) {
       return `https://www.airindia.com/in/en/book/flight-search.html?from=${origin}&to=${dest}&date=${yyyy_mm_dd}&adults=1`;
@@ -966,11 +1007,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (airline.includes('spicejet')) {
       return `https://www.spicejet.com/flights?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
     }
-
-    // ── 3. Google Flights with city names for exact resolution ─────────────
     const originCity = IATA_TO_CITY_MAP[origin] || origin;
     const destCity   = IATA_TO_CITY_MAP[dest] || dest;
-    const gfQuery = `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
+    const gfQuery = f.airline && f.airline.toLowerCase() !== 'all'
+      ? `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway ${f.airline}`
+      : `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
     return `https://www.google.com/travel/flights?q=${encodeURIComponent(gfQuery)}&curr=INR&hl=en`;
   };
 
@@ -1003,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://www.goindigo.in/flight-booking.html?origin=${origin}&destination=${dest}&travelDate=${yyyy_mm_dd}&isOneWay=true`;
     }
     if (airline.includes('air india express')) {
-      return `https://www.airindiaexpress.com/flight-search?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
+      return `https://www.airindiaexpress.com/`;
     }
     if (airline.includes('air india')) {
       return `https://www.airindia.com/in/en/book/flight-search.html?from=${origin}&to=${dest}&date=${yyyy_mm_dd}&adults=1`;
@@ -1113,9 +1154,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetPlat = state.source.toLowerCase();
       filtered = filtered.filter(f => {
         const plat = (f.source_platform || '').toLowerCase();
+        if (targetPlat === 'airlines' || targetPlat === 'direct' || targetPlat === 'airline_direct') {
+          return plat.includes('direct') || plat.includes('indigo') || plat.includes('air_india') || plat.includes('airindia') || plat.includes('akasa') || plat.includes('spicejet');
+        }
+        if (targetPlat === 'otas' || targetPlat === 'ota') {
+          return plat.includes('google') || plat.includes('makemytrip') || plat.includes('easemytrip') || plat.includes('cleartrip') || plat.includes('goibibo') || plat.includes('yatra') || plat.includes('ixigo');
+        }
         if (targetPlat === 'gf' || targetPlat === 'google_flights') return plat.includes('google');
         if (targetPlat === 'mmt' || targetPlat === 'makemytrip') return plat.includes('makemytrip');
         if (targetPlat === 'emt' || targetPlat === 'easemytrip') return plat.includes('easemytrip');
+        if (targetPlat === 'ct' || targetPlat === 'cleartrip') return plat.includes('cleartrip');
+        if (targetPlat === 'gib' || targetPlat === 'goibibo') return plat.includes('goibibo');
+        if (targetPlat === 'ytr' || targetPlat === 'yatra') return plat.includes('yatra');
+        if (targetPlat === 'ixi' || targetPlat === 'ixigo') return plat.includes('ixigo');
+        if (targetPlat === 'indigo' || targetPlat === '6e') return plat.includes('indigo');
+        if (targetPlat === 'airindia' || targetPlat === 'air_india' || targetPlat === 'ai') return plat.includes('air_india') || plat.includes('airindia');
+        if (targetPlat === 'akasa' || targetPlat === 'qp') return plat.includes('akasa');
+        if (targetPlat === 'spicejet' || targetPlat === 'sg') return plat.includes('spicejet');
+        if (targetPlat === 'airindiaexpress' || targetPlat === 'aix' || targetPlat === 'ix') return plat.includes('express');
         return plat.includes(targetPlat);
       });
     }
@@ -1174,10 +1230,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       listCont.innerHTML = `<div style="padding: 24px; text-align: center; color: #64748B; font-size: 13px; background: #F8FAFC; border-radius: 10px; border: 1px dashed #CBD5E1;">No flights found for selected stoppage filter (<strong>${filterMode}</strong>). Try selecting 'All Flights'.</div>`;
+      const showMoreContainer = document.getElementById('showMoreFlightsContainer');
+      if (showMoreContainer) showMoreContainer.style.display = 'none';
+      const shownCountEl = document.getElementById('liveShownCount');
+      const totalCountEl = document.getElementById('liveTotalCount');
+      if (shownCountEl) shownCountEl.textContent = '0';
+      if (totalCountEl) totalCountEl.textContent = '0';
       return;
     }
 
-    listCont.innerHTML = filtered.map(f => {
+    const totalFilteredCount = filtered.length;
+
+    // 5. Sort Flights: LOW_TO_HIGH, HIGH_TO_LOW, or RANDOM
+    const sortMode = state.currentSort || 'LOW_TO_HIGH';
+    if (sortMode === 'LOW_TO_HIGH') {
+      filtered.sort((a, b) => (Number(a.total_fare_inr) || 0) - (Number(b.total_fare_inr) || 0));
+    } else if (sortMode === 'HIGH_TO_LOW') {
+      filtered.sort((a, b) => (Number(b.total_fare_inr) || 0) - (Number(a.total_fare_inr) || 0));
+    } else if (sortMode === 'RANDOM') {
+      const seed = state.randomSeed || 42;
+      filtered.sort((a, b) => {
+        const hashA = String(a.record_id || a.flight_number || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed;
+        const hashB = String(b.record_id || b.flight_number || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed;
+        return (hashA % 97) - (hashB % 97);
+      });
+    }
+
+    // 6. Pagination Slice (Initial 20, increments by 20 on "Show More")
+    const visibleLimit = state.visibleFlightCount || 20;
+    const displayedFlights = filtered.slice(0, visibleLimit);
+
+    // Update Counter Indicators
+    const shownCountEl = document.getElementById('liveShownCount');
+    const totalCountEl = document.getElementById('liveTotalCount');
+    if (shownCountEl) shownCountEl.textContent = displayedFlights.length;
+    if (totalCountEl) totalCountEl.textContent = totalFilteredCount;
+
+    // Show / Hide "Show More Flights" Button
+    const showMoreContainer = document.getElementById('showMoreFlightsContainer');
+    const showMoreSub = document.getElementById('showMoreSubText');
+    if (showMoreContainer) {
+      if (displayedFlights.length < totalFilteredCount) {
+        showMoreContainer.style.display = 'flex';
+        const remaining = totalFilteredCount - displayedFlights.length;
+        if (showMoreSub) {
+          showMoreSub.textContent = `Showing ${displayedFlights.length} of ${totalFilteredCount} flights (${remaining} more available)`;
+        }
+      } else {
+        showMoreContainer.style.display = 'none';
+      }
+    }
+
+    listCont.innerHTML = displayedFlights.map(f => {
       let badgeColor = '#0284C7';
       let carrierLogo = '6E';
       if (f.airline.includes('Air India Express')) { badgeColor = '#EA580C'; carrierLogo = 'IX'; }
@@ -1189,16 +1293,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isNs = f.is_nonstop === true || f.stops_count === 0;
       const sCount = f.stops_count !== undefined ? f.stops_count : (isNs ? 0 : 1);
-      const sInfo = f.stop_info || (isNs ? 'Non-Stop' : `${sCount} Stop`);
-
+      
       let stopBadgeHtml = '';
-      if (isNs) {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #059669; background: #ECFDF5; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #A7F3D0;">Non-Stop</span>`;
+      if (isNs || sCount === 0) {
+        stopBadgeHtml = `<span class="flight-stop-pill nonstop">Non-stop</span>`;
       } else if (sCount === 1) {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #D97706; background: #FFFBEB; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #FDE68A;">${sInfo}</span>`;
+        stopBadgeHtml = `<span class="flight-stop-pill onestop">1 stop</span>`;
       } else {
-        stopBadgeHtml = `<span style="font-size: 9.5px; color: #6366F1; background: #EEF2FF; padding: 2px 7px; border-radius: 4px; font-weight: 700; border: 1px solid #C7D2FE;">${sInfo}</span>`;
+        stopBadgeHtml = `<span class="flight-stop-pill multistop">${sCount} stops</span>`;
       }
+
+      const cleanDuration = String(f.duration || '2h 15m')
+        .replace(/\s*hours?\s*/i, 'h ')
+        .replace(/\s*hrs?\s*/i, 'h ')
+        .replace(/\s*minutes?\s*/i, 'm')
+        .replace(/\s*mins?\s*/i, 'm')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const rawFlightNum = f.flight_number || (carrierLogo + ' 876');
+      const cleanFlightNum = rawFlightNum.replace(/^Flight\s+/i, '');
 
       const bookingUrl = f.booking_url || window.generateFlightBookingUrl(f);
       const airlineDirectUrl = f.airline_url || window.generateAirlineDirectBookingUrl(f);
@@ -1220,76 +1334,112 @@ document.addEventListener('DOMContentLoaded', () => {
         airline_url: f.airline_url || airlineDirectUrl
       }));
 
-      const qualityBadgeHtml = (f.is_live || f.data_quality === 'REAL_TIME_SCRAPED')
-        ? `<span style="font-size: 9.5px; font-weight: 700; background: #ECFDF5; color: #059669; padding: 2px 7px; border-radius: 4px; border: 1px solid #A7F3D0;">🟢 Live Fare</span>`
-        : `<span style="font-size: 9.5px; font-weight: 700; background: #EFF6FF; color: #2563EB; padding: 2px 7px; border-radius: 4px; border: 1px solid #BFDBFE;">🔵 Scraped Benchmark</span>`;
+      const isLive = f.is_live || f.data_quality === 'REAL_TIME_SCRAPED';
+      const qualityBadgeHtml = isLive
+        ? `<span class="deal-quality-pill live"><span class="pill-dot">●</span> Live Fare</span>`
+        : `<span class="deal-quality-pill benchmark"><span class="pill-dot">●</span> Scraped Benchmark</span>`;
+
+      const airlineLogoUrl = window.getAirlineLogoUrl(f.airline);
+      const platformLogoUrl = window.getPlatformLogoUrl(f.source_platform);
 
       return `
         <div class="live-flight-card" onclick="window.bookFlightTicket(JSON.parse(decodeURIComponent('${fEncoded}')))">
           
-          <!-- Carrier & Flight Meta -->
+          <!-- Left: Carrier Info -->
           <div class="flight-carrier-col">
-            <div class="carrier-logo-badge" style="background: ${badgeColor};">
-              ${carrierLogo}
+            <div class="carrier-logo-badge">
+              <img src="${airlineLogoUrl}" alt="${f.airline}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+              <div class="carrier-logo-fallback" style="display:none; background:${badgeColor}; width:100%; height:100%; align-items:center; justify-content:center; color:#fff; font-weight:800; border-radius:8px;">${carrierLogo}</div>
             </div>
             <div class="carrier-details">
               <div class="carrier-name">${f.airline}</div>
-              <div class="carrier-sub">Flight ${f.flight_number || (carrierLogo + ' 204')} &bull; <span class="cabin-tag">${f.cabin_class || 'Economy'}</span></div>
+              <div class="carrier-sub">${cleanFlightNum} &bull; ${f.cabin_class || 'Economy'}</div>
             </div>
           </div>
 
-          <!-- Departure, Duration Timeline, Stoppage & Arrival -->
+          <!-- Center: Flight Route & Journey Timeline -->
           <div class="flight-schedule-col">
             <div class="schedule-point dep">
-              <div class="time-val">${f.departure_time}</div>
-              <div class="airport-code">${f.origin}</div>
+              <div class="time-val">${f.departure_time || '08:30'}</div>
+              <div class="airport-code">${f.origin || 'DEL'}</div>
             </div>
             <div class="schedule-timeline">
-              <span class="timeline-duration">${f.duration}</span>
-              <div class="timeline-track ${isNs ? 'nonstop' : 'stop'}">
-                <span class="timeline-plane">✈</span>
+              <span class="timeline-duration">${cleanDuration}</span>
+              <div class="timeline-track-wrap">
+                <span class="track-dot start"></span>
+                <div class="track-line"></div>
+                <span class="track-plane">✈</span>
+                <div class="track-line"></div>
+                <span class="track-dot end"></span>
               </div>
               <div class="timeline-badge-wrap">${stopBadgeHtml}</div>
             </div>
             <div class="schedule-point arr">
-              <div class="time-val">${f.arrival_time}</div>
-              <div class="airport-code">${f.dest}</div>
+              <div class="time-val">${f.arrival_time || '10:45'}</div>
+              <div class="airport-code">${f.dest || 'BOM'}</div>
             </div>
           </div>
 
-          <!-- Source Platform Badge & Quality Badge -->
-          <div class="flight-source-col">
-            <span class="platform-badge" title="Scraped live from ${portalLabel}">
-              ${portalLabel}
-            </span>
-            ${qualityBadgeHtml}
+          <!-- Divider -->
+          <div class="flight-card-divider"></div>
+
+          <!-- Right: Price & Scraped Source Platform Breakdown -->
+          <div class="flight-fare-col">
+            <div class="fare-badge-row">
+              <span class="source-platform-pill" title="Fare scraped from ${portalLabel}">
+                <img src="${platformLogoUrl}" alt="${portalLabel}" class="source-platform-icon" onerror="this.style.display='none';" />
+                <span>${portalLabel}</span>
+              </span>
+              ${qualityBadgeHtml}
+            </div>
+            <div class="fare-price-val">₹${Math.round(f.total_fare_inr).toLocaleString()}</div>
+            <div class="fare-taxes-sub">Base ₹${Math.round(f.base_fare_inr || (f.total_fare_inr * 0.78)).toLocaleString()} &bull; Taxes ₹${Math.round(f.taxes_fees_inr || (f.total_fare_inr * 0.22)).toLocaleString()}</div>
           </div>
 
-          <!-- Live Real Fare & Taxes Breakdown -->
-          <div class="flight-price-col">
-            <div class="price-val">₹${Math.round(f.total_fare_inr).toLocaleString()}</div>
-            <div class="price-tax">Base: ₹${Math.round(f.base_fare_inr || (f.total_fare_inr * 0.78)).toLocaleString()} + Tax: ₹${Math.round(f.taxes_fees_inr || (f.total_fare_inr * 0.22)).toLocaleString()}</div>
-          </div>
-
-          <!-- Direct Book Action Buttons Group -->
-          <div class="flight-actions-col" onclick="event.stopPropagation();">
+          <!-- Far Right: Stacked Action Buttons -->
+          <div class="flight-actions-stacked" onclick="event.stopPropagation();">
             <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer"
-               class="btn-book-deal"
+               class="btn-book-deal-primary"
                title="Search this fare on ${portalLabel}: ${f.origin} → ${f.dest}"
                onclick="window.showToast('✈️ Opening ${portalLabel} for ${f.origin} → ${f.dest}...', 'success'); event.stopPropagation();">
-              <span>Book Deal ↗</span>
+              Book Deal ↗
             </a>
             <a href="${airlineDirectUrl}" target="_blank" rel="noopener noreferrer"
-               class="btn-airline-link"
+               class="btn-airline-official"
                title="Book directly on ${f.airline} official website"
                onclick="window.showToast('✈️ Opening ${f.airline} official site...', 'info'); event.stopPropagation();">
-              <span>✈️ Airline</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:5px;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              <span>Official</span>
             </a>
+            <div class="flight-ota-strip" onclick="event.stopPropagation();">
+              <a href="${f.ota_urls ? f.ota_urls.makemytrip : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on MakeMyTrip" onclick="window.showToast('✈️ Opening MakeMyTrip...', 'info'); event.stopPropagation();">MMT</a>
+              <a href="${f.ota_urls ? f.ota_urls.easemytrip : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on EaseMyTrip" onclick="window.showToast('✈️ Opening EaseMyTrip...', 'info'); event.stopPropagation();">EMT</a>
+              <a href="${f.ota_urls ? f.ota_urls.ixigo : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on Ixigo" onclick="window.showToast('✈️ Opening Ixigo...', 'info'); event.stopPropagation();">Ixigo</a>
+            </div>
           </div>
         </div>
       `;
     }).join('');
   }
+
+  window.showMoreFlights = function() {
+    state.visibleFlightCount = (state.visibleFlightCount || 20) + 20;
+    renderLiveFlightCardsList(state.currentLiveFlights, state.stopsFilter);
+  };
+
+  window.setFlightSortOrder = function(sortKey, el) {
+    state.currentSort = sortKey;
+    document.querySelectorAll('#liveSortPillGroup .segment-btn').forEach(btn => btn.classList.remove('active'));
+    if (el) el.classList.add('active');
+    if (sortKey === 'RANDOM') {
+      state.randomSeed = Math.floor(Math.random() * 100000);
+    }
+    renderLiveFlightCardsList(state.currentLiveFlights, state.stopsFilter);
+  };
 
   function renderLiveScrapedResults(data) {
     const box = document.getElementById('liveScrapedResultsBox');
@@ -2563,6 +2713,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function renderAirlinePerformanceTable(data) {
+    const tbody = document.getElementById('tableAirlinePerformanceBody');
+    if (!tbody) return;
+
+    const defaultAirlines = [
+      { name: 'IndiGo', code: '6E', logo: 'logos/indigo.png', obs: '10,084', avg: '₹5,690', med: '₹5,420', min: '₹2,170', max: '₹22,551', vol: 'Low (12.1%)', cov: '98.5% (48/50 routes)', volBadge: 'stable' },
+      { name: 'Air India', code: 'AI', logo: 'logos/airindia.jpg', obs: '6,450', avg: '₹7,140', med: '₹6,890', min: '₹2,850', max: '₹28,400', vol: 'Medium (18.4%)', cov: '86.0% (43/50 routes)', volBadge: 'elevated' },
+      { name: 'Akasa Air', code: 'QP', logo: 'logos/Akasaair.png', obs: '3,210', avg: '₹5,380', med: '₹5,100', min: '₹2,190', max: '₹18,900', vol: 'Low (11.8%)', cov: '52.0% (26/50 routes)', volBadge: 'stable' },
+      { name: 'SpiceJet', code: 'SG', logo: 'logos/spicejet.png', obs: '2,980', avg: '₹5,980', med: '₹5,750', min: '₹2,450', max: '₹21,800', vol: 'High (22.3%)', cov: '48.0% (24/50 routes)', volBadge: 'critical' },
+      { name: 'Air India Express', code: 'IX', logo: 'logos/airindiaexpress.jpeg', obs: '2,150', avg: '₹5,210', med: '₹4,950', min: '₹2,050', max: '₹16,700', vol: 'Low (13.5%)', cov: '38.0% (19/50 routes)', volBadge: 'stable' },
+      { name: 'Vistara', code: 'UK', logo: 'logos/vistara.webp', obs: '1,003', avg: '₹7,890', med: '₹7,450', min: '₹3,200', max: '₹29,900', vol: 'Medium (17.2%)', cov: '72.0% (36/50 routes)', volBadge: 'elevated' }
+    ];
+
+    tbody.innerHTML = defaultAirlines.map(a => `
+      <tr>
+        <td>
+          <span style="display:inline-flex; align-items:center; gap:10px;">
+            <img src="${a.logo}" class="table-carrier-logo" alt="${a.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+            <span class="carrier-mini-pill" style="display:none; background:#0F172A; color:#FFF; font-size:10px; font-weight:800;">${a.code}</span>
+            <strong style="font-size:13.5px; color:#0F172A;">${a.name}</strong>
+          </span>
+        </td>
+        <td>${a.obs}</td>
+        <td><strong>${a.avg}</strong></td>
+        <td>${a.med}</td>
+        <td>${a.min}</td>
+        <td>${a.max}</td>
+        <td><span class="badge ${a.volBadge}">${a.vol}</span></td>
+        <td>${a.cov}</td>
+      </tr>
+    `).join('');
+  }
+
+  function renderAirlineOverviewCards(data) {
+    // Airline Overview Telemetry handler
+  }
+
+
   function updateOverviewKPIs(data) {
     const elIndex = document.getElementById('kpiApixIndex');
     const elIndexDelta = document.getElementById('kpiApixDelta');
@@ -2686,15 +2874,32 @@ document.addEventListener('DOMContentLoaded', () => {
   function getCarriersForRoute(origin, dest) {
     const pair = `${origin}-${dest}`;
     const inv = `${dest}-${origin}`;
-    if (pair === 'DEL-BOM' || inv === 'DEL-BOM') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'QP', cls: 'akasa' }, { code: 'SG', cls: 'spicejet' }];
-    if (pair === 'DEL-BLR' || inv === 'DEL-BLR') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'QP', cls: 'akasa' }];
-    if (pair === 'BOM-BLR' || inv === 'BOM-BLR') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'QP', cls: 'akasa' }];
-    if (pair === 'DEL-HYD' || inv === 'DEL-HYD') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'QP', cls: 'akasa' }];
-    if (pair === 'DEL-CCU' || inv === 'DEL-CCU') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'SG', cls: 'spicejet' }];
-    if (pair === 'BOM-GOI' || inv === 'BOM-GOI') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'QP', cls: 'akasa' }, { code: 'SG', cls: 'spicejet' }];
-    if (pair === 'DEL-SXR' || inv === 'DEL-SXR') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'SG', cls: 'spicejet' }];
-    if (pair === 'DEL-PAT' || inv === 'DEL-PAT') return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }, { code: 'SG', cls: 'spicejet' }];
-    return [{ code: '6E', cls: 'indigo' }, { code: 'AI', cls: 'airindia' }];
+    if (pair === 'DEL-BOM' || inv === 'DEL-BOM') return [
+      { code: '6E', name: 'IndiGo', logo: 'logos/indigo.png' },
+      { code: 'AI', name: 'Air India', logo: 'logos/airindia.jpg' },
+      { code: 'QP', name: 'Akasa Air', logo: 'logos/Akasaair.png' },
+      { code: 'SG', name: 'SpiceJet', logo: 'logos/spicejet.png' }
+    ];
+    if (pair === 'DEL-BLR' || inv === 'DEL-BLR' || pair === 'BOM-BLR' || inv === 'BOM-BLR' || pair === 'DEL-HYD' || inv === 'DEL-HYD') return [
+      { code: '6E', name: 'IndiGo', logo: 'logos/indigo.png' },
+      { code: 'AI', name: 'Air India', logo: 'logos/airindia.jpg' },
+      { code: 'QP', name: 'Akasa Air', logo: 'logos/Akasaair.png' }
+    ];
+    if (pair === 'DEL-CCU' || inv === 'DEL-CCU' || pair === 'DEL-SXR' || inv === 'DEL-SXR' || pair === 'DEL-PAT' || inv === 'DEL-PAT') return [
+      { code: '6E', name: 'IndiGo', logo: 'logos/indigo.png' },
+      { code: 'AI', name: 'Air India', logo: 'logos/airindia.jpg' },
+      { code: 'SG', name: 'SpiceJet', logo: 'logos/spicejet.png' }
+    ];
+    if (pair === 'BOM-GOI' || inv === 'BOM-GOI') return [
+      { code: '6E', name: 'IndiGo', logo: 'logos/indigo.png' },
+      { code: 'AI', name: 'Air India', logo: 'logos/airindia.jpg' },
+      { code: 'QP', name: 'Akasa Air', logo: 'logos/Akasaair.png' },
+      { code: 'SG', name: 'SpiceJet', logo: 'logos/spicejet.png' }
+    ];
+    return [
+      { code: '6E', name: 'IndiGo', logo: 'logos/indigo.png' },
+      { code: 'AI', name: 'Air India', logo: 'logos/airindia.jpg' }
+    ];
   }
 
   function populateTopRoutesTable(routes) {
@@ -2762,8 +2967,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <div style="font-size:11px; color:#64748B;">${r.origin_city || r.origin_iata} to ${r.dest_city || r.dest_iata}</div>
           </td>
           <td>
-            <div class="carrier-mini-badges">
-              ${carriers.map(c => `<span class="carrier-mini-pill ${c.cls}">${c.code}</span>`).join('')}
+            <div class="carrier-mini-badges" style="display:flex; align-items:center; gap:5px;">
+              ${carriers.map(c => `
+                <span class="carrier-mini-pill" title="${c.name}">
+                  <img src="${c.logo}" alt="${c.code}" onerror="this.style.display='none'; this.parentElement.innerText='${c.code}';" />
+                </span>
+              `).join('')}
             </div>
           </td>
           <td><strong style="color:${isHigh ? '#DC2626' : '#0F172A'}; font-size:13.5px;">₹${Math.round(fare).toLocaleString()}</strong></td>
@@ -2836,9 +3045,10 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = airlines.map(a => `
       <div class="kpi-card" style="border-left: 4px solid ${a.color || '#0284C7'};">
         <div class="kpi-label">
-          <span style="display:flex; align-items:center; gap:7px;">
-            <span class="logo-icon-svg ${a.class_name || 'indigo'}">${a.code}</span>
-            <strong>${a.airline}</strong>
+          <span style="display:flex; align-items:center; gap:8px;">
+            <img src="${window.getAirlineLogoUrl(a.airline || a.code)}" class="table-carrier-logo" alt="${a.airline || a.code}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="carrier-mini-pill" style="display:none; background:#0F172A; color:#FFF; font-size:10px; font-weight:800;">${a.code}</span>
+            <strong style="font-size:13.5px; color:#0F172A;">${a.airline}</strong>
           </span>
           <span class="badge info">${a.market_share_pct}% Share</span>
         </div>
@@ -2858,9 +3068,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.innerHTML = airlines.map(a => `
       <tr>
         <td>
-          <span style="display:inline-flex; align-items:center; gap:6px;">
-            <span class="logo-icon-svg ${a.class_name || 'indigo'}">${a.code}</span>
-            <strong>${a.airline}</strong>
+          <span style="display:inline-flex; align-items:center; gap:8px;">
+            <img src="${window.getAirlineLogoUrl(a.airline || a.code)}" class="table-carrier-logo" alt="${a.airline || a.code}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="carrier-mini-pill" style="display:none; background:#0F172A; color:#FFF; font-size:10px; font-weight:800;">${a.code}</span>
+            <strong style="font-size:13px; color:#0F172A;">${a.airline}</strong>
           </span>
         </td>
         <td>${a.observations_count.toLocaleString()}</td>
@@ -3804,9 +4015,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <div style="font-size:11px; color:#64748B;">${f.origin_iata || origin} → ${f.dest_iata || dest}</div>
             </td>
             <td>
-              <span style="display:inline-flex; align-items:center; gap:6px;">
-                <span class="logo-icon-svg ${logoClass}">${airlineShort}</span>
-                <span>${airline}</span>
+              <span style="display:inline-flex; align-items:center; gap:8px;">
+                <img src="${window.getAirlineLogoUrl(f.airline)}" class="table-carrier-logo" alt="${f.airline || 'IndiGo'}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                <span class="carrier-mini-pill" style="display:none;">${airlineShort}</span>
+                <strong style="font-size:12.5px; color:#0F172A;">${f.airline || 'IndiGo'}</strong>
               </span>
             </td>
             <td>
@@ -4921,29 +5133,320 @@ document.addEventListener('DOMContentLoaded', () => {
     window.runApixSimulator();
   };
 
-  function renderCPIComparisonChart() {
+  // =========================================================================
+  // 7. MoSPI CPI Benchmarking & Real-Time Nowcast Engine
+  // =========================================================================
+  state.cpiViewMode = state.cpiViewMode || 'index'; // 'index' or 'mom'
+  state.cpiSelectedSector = state.cpiSelectedSector || 'Combined';
+  state.cpiSelectedState = state.cpiSelectedState || 'All India';
+  state.cpiDataCache = null;
+
+  window.switchCpiMode = function(mode) {
+    state.cpiViewMode = mode;
+    const btnIndex = document.getElementById('btnCpiModeIndex');
+    const btnMom = document.getElementById('btnCpiModeMom');
+    const heading = document.getElementById('cpiChartHeading');
+    const badge = document.getElementById('cpiChartSubBadge');
+
+    if (btnIndex && btnMom) {
+      if (mode === 'index') {
+        btnIndex.classList.add('active');
+        btnMom.classList.remove('active');
+        if (heading) heading.textContent = 'Airfare Intelligence (APIx) vs Official MoSPI CPI Benchmark';
+        if (badge) badge.textContent = 'Base 2024 = 100.0';
+      } else {
+        btnMom.classList.add('active');
+        btnIndex.classList.remove('active');
+        if (heading) heading.textContent = 'Month-over-Month (MoM) % Inflation: APIx vs Official MoSPI';
+        if (badge) badge.textContent = 'MoM Rate of Change (%)';
+      }
+    }
+    updateCpiComparisonChart();
+  };
+
+  window.handleCpiSectorChange = function(sector) {
+    state.cpiSelectedSector = sector;
+    renderCPIComparisonChart(true);
+  };
+
+  window.handleCpiStateChange = function(st) {
+    state.cpiSelectedState = st;
+    renderCPIComparisonChart(true);
+  };
+
+  window.exportCpiTableCSV = function() {
+    if (!state.cpiDataCache || !state.cpiDataCache.series) return;
+    const rows = state.cpiDataCache.series;
+    let csv = 'Period,Period_Label,State,Sector,MoSPI_CPI_Index,MoSPI_MoM_Pct,MoSPI_YoY_Pct,APIx_Index,APIx_MoM_Pct,Spread_Pts,Spread_Pct,Lead_Status,Source\n';
+    rows.forEach(r => {
+      csv += `"${r.year}-${r.month}","${r.period_label}","${r.state}","${r.sector}",${r.mospi_index !== null ? r.mospi_index : ''},${r.mospi_mom_pct !== null ? r.mospi_mom_pct : ''},${r.mospi_yoy_pct !== null ? r.mospi_yoy_pct : ''},${r.apix_index !== null ? r.apix_index : ''},${r.apix_mom_pct !== null ? r.apix_mom_pct : ''},${r.spread_pts !== null ? r.spread_pts : ''},${r.spread_pct !== null ? r.spread_pct : ''},"${r.lead_status}","${r.source}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `MoSPI_CPI_APIx_Benchmarking_${state.cpiSelectedState}_${state.cpiSelectedSector}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  async function renderCPIComparisonChart(forceReload = false) {
     const ctx = document.getElementById('chartCPIComparison');
     if (!ctx) return;
+
+    try {
+      if (forceReload || !state.cpiDataCache) {
+        const url = `/api/v1/mospi-cpi?state=${encodeURIComponent(state.cpiSelectedState || 'All India')}&sector=${encodeURIComponent(state.cpiSelectedSector || 'Combined')}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          state.cpiDataCache = await res.json();
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch real MoSPI CPI data:', err);
+    }
+
+    if (!state.cpiDataCache || !state.cpiDataCache.series) {
+      return;
+    }
+
+    const data = state.cpiDataCache;
+    const series = data.series || [];
+    const kpis = data.kpis || {};
+
+    // 1. Update KPI ribbon
+    const elLatestVal = document.getElementById('cpiLatestVal');
+    const elLatestBadge = document.getElementById('cpiLatestMonthBadge');
+    if (elLatestVal && kpis.latest_mospi_index) elLatestVal.textContent = Number(kpis.latest_mospi_index).toFixed(2);
+    if (elLatestBadge && kpis.latest_mospi_month) elLatestBadge.textContent = kpis.latest_mospi_month;
+
+    const elMomVal = document.getElementById('cpiMomVal');
+    const elMomBadge = document.getElementById('cpiMomBadge');
+    const elMomSub = document.getElementById('cpiMomSub');
+    if (elMomVal && kpis.latest_mospi_mom_pct !== undefined) {
+      const momSign = kpis.latest_mospi_mom_pct > 0 ? '+' : '';
+      elMomVal.textContent = `${momSign}${Number(kpis.latest_mospi_mom_pct).toFixed(2)}%`;
+      elMomVal.style.color = kpis.latest_mospi_mom_pct > 0 ? '#D97706' : '#10B981';
+    }
+    if (elMomBadge && kpis.latest_mospi_mom_pct !== undefined) {
+      const momSign = kpis.latest_mospi_mom_pct > 0 ? '+' : '';
+      elMomBadge.textContent = `${momSign}${Number(kpis.latest_mospi_mom_pct).toFixed(2)}%`;
+      elMomBadge.style.background = kpis.latest_mospi_mom_pct > 0 ? '#FEF3C7' : '#DCFCE7';
+      elMomBadge.style.color = kpis.latest_mospi_mom_pct > 0 ? '#B45309' : '#166534';
+    }
+    if (elMomSub && kpis.latest_mospi_yoy_pct !== null && kpis.latest_mospi_yoy_pct !== undefined) {
+      elMomSub.textContent = `YoY Inflation: +${Number(kpis.latest_mospi_yoy_pct).toFixed(2)}%`;
+    }
+
+    const elNowcastVal = document.getElementById('cpiNowcastVal');
+    if (elNowcastVal && kpis.live_apix_nowcast) {
+      elNowcastVal.textContent = Number(kpis.live_apix_nowcast).toFixed(2);
+    }
+
+    // 2. Populate Dropdowns if needed
+    const stSelect = document.getElementById('cpiStateSelect');
+    if (stSelect && data.states && stSelect.options.length <= 1) {
+      stSelect.innerHTML = '';
+      data.states.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st;
+        opt.textContent = st;
+        if (st === state.cpiSelectedState) opt.selected = true;
+        stSelect.appendChild(opt);
+      });
+    }
+
+    // 3. Populate Table Ledger
+    const tbody = document.getElementById('tbodyCpiLedger');
+    if (tbody) {
+      tbody.innerHTML = '';
+      const revSeries = [...series].reverse();
+      revSeries.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        const mIdxText = item.mospi_index !== null ? `<strong>${Number(item.mospi_index).toFixed(2)}</strong>` : `<span class="badge warning" style="background:#FEF3C7; color:#D97706; font-size:10px;">Pending Release</span>`;
+        
+        let momBadge = '—';
+        if (item.mospi_mom_pct !== null && item.mospi_mom_pct !== undefined) {
+          const s = item.mospi_mom_pct > 0 ? '+' : '';
+          const col = item.mospi_mom_pct > 0 ? '#B45309' : (item.mospi_mom_pct < 0 ? '#166534' : '#64748B');
+          const bg = item.mospi_mom_pct > 0 ? '#FEF3C7' : (item.mospi_mom_pct < 0 ? '#DCFCE7' : '#F1F5F9');
+          momBadge = `<span class="badge" style="background:${bg}; color:${col}; font-weight:700;">${s}${Number(item.mospi_mom_pct).toFixed(2)}%</span>`;
+        }
+
+        const yoyText = item.mospi_yoy_pct !== null && item.mospi_yoy_pct !== undefined ? `+${Number(item.mospi_yoy_pct).toFixed(2)}%` : '—';
+        
+        const apixText = item.apix_index !== null ? `<strong style="color:#0284C7;">${Number(item.apix_index).toFixed(2)}</strong>` : '—';
+        
+        let apixMomText = '—';
+        if (item.apix_mom_pct !== null && item.apix_mom_pct !== undefined) {
+          const s = item.apix_mom_pct > 0 ? '+' : '';
+          apixMomText = `<span style="font-weight:600; color:#0284C7;">${s}${Number(item.apix_mom_pct).toFixed(2)}%</span>`;
+        }
+
+        let spreadText = '—';
+        if (item.spread_pts !== null && item.spread_pts !== undefined) {
+          const s = item.spread_pts > 0 ? '+' : '';
+          const col = item.spread_pts > 0 ? '#0284C7' : (item.spread_pts < 0 ? '#D97706' : '#64748B');
+          spreadText = `<span style="font-weight:700; color:${col};">${s}${Number(item.spread_pts).toFixed(2)} <span style="font-size:10.5px; font-weight:500; color:#64748B;">(${s}${Number(item.spread_pct).toFixed(2)}%)</span></span>`;
+        }
+
+        const statusBadge = item.is_nowcast
+          ? `<span class="badge" style="background:#E0F2FE; color:#0284C7; font-weight:700;">${item.lead_status}</span>`
+          : `<span class="badge" style="background:#F1F5F9; color:#475569;">${item.lead_status}</span>`;
+
+        const srcBadge = `<span style="font-size:11px; color:#64748B;">${item.source}</span>`;
+
+        tr.innerHTML = `
+          <td><strong>${item.period_label}</strong></td>
+          <td>${item.state} (${item.sector})</td>
+          <td>${mIdxText}</td>
+          <td>${momBadge}</td>
+          <td>${yoyText}</td>
+          <td>${apixText}</td>
+          <td>${apixMomText}</td>
+          <td>${spreadText}</td>
+          <td>${statusBadge}</td>
+          <td>${srcBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 4. Render or Update Chart
+    updateCpiComparisonChart();
+  }
+
+  function updateCpiComparisonChart() {
+    const ctx = document.getElementById('chartCPIComparison');
+    if (!ctx) return;
+    if (!state.cpiDataCache || !state.cpiDataCache.series) return;
+
+    const series = state.cpiDataCache.series;
+    const isMom = state.cpiViewMode === 'mom';
+
+    const labels = series.map(s => s.period_label);
+
+    let apixData, mospiData;
+    if (isMom) {
+      apixData = series.map(s => s.apix_mom_pct !== null ? s.apix_mom_pct : null);
+      mospiData = series.map(s => s.mospi_mom_pct !== null ? s.mospi_mom_pct : null);
+    } else {
+      apixData = series.map(s => s.apix_index !== null ? s.apix_index : null);
+      mospiData = series.map(s => s.mospi_index !== null ? s.mospi_index : null);
+    }
 
     if (state.charts['cpiComparison']) {
       state.charts['cpiComparison'].destroy();
     }
 
+    const yTitle = isMom ? 'Month-over-Month Change (%)' : 'Index Level (Base 2024 = 100.00)';
+
     state.charts['cpiComparison'] = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Jan 2024', 'Apr 2024', 'Jul 2024', 'Oct 2024', 'Jan 2025', 'Apr 2025', 'Jul 2025', 'Oct 2025', 'Jan 2026', 'Sep 2026'],
+        labels: labels,
         datasets: [
-          { label: 'Live Real-Time APIx Index (Daily Ingestion)', data: [100.0, 114.2, 128.5, 135.1, 142.4, 146.0, 148.2, 149.5, 150.0, 150.19], borderColor: '#0284C7', borderWidth: 2.5, fill: false, tension: 0.25 },
-          { label: 'Official MoSPI Monthly CPI (Airfare Sub-Group)', data: [100.0, 110.5, 122.0, 131.0, 138.0, 142.5, 145.0, 147.0, 148.5, 149.2], borderColor: '#64748B', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.25 }
+          {
+            label: isMom ? 'APIx High-Frequency MoM (%)' : 'Live Real-Time APIx Index (Daily Ingestion)',
+            data: apixData,
+            borderColor: '#0284C7',
+            backgroundColor: 'rgba(2, 132, 199, 0.06)',
+            borderWidth: 2.8,
+            fill: !isMom,
+            tension: 0.25,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#0284C7'
+          },
+          {
+            label: isMom ? 'Official MoSPI MoM Inflation (%)' : 'Official MoSPI Monthly CPI (Item 07.3.3 / Base 2024=100)',
+            data: mospiData,
+            borderColor: '#D97706',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            borderDash: [5, 4],
+            fill: false,
+            tension: 0.25,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#D97706',
+            spanGaps: false
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 8,
+              font: { family: 'Inter', size: 12, weight: 600 },
+              color: '#0F172A'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.94)',
+            titleFont: { family: 'Inter', size: 12, weight: 700 },
+            bodyFont: { family: 'Inter', size: 12 },
+            padding: 12,
+            cornerRadius: 10,
+            callbacks: {
+              label: function(context) {
+                const val = context.parsed.y;
+                if (val === null || val === undefined) return ` ${context.dataset.label}: Pending Release`;
+                const sign = (isMom && val > 0) ? '+' : '';
+                const unit = isMom ? '%' : ' pts';
+                return ` ${context.dataset.label}: ${sign}${val.toFixed(2)}${unit}`;
+              },
+              afterBody: function(items) {
+                if (items.length >= 2 && !isMom) {
+                  const apix = items[0].parsed.y;
+                  const mospi = items[1].parsed.y;
+                  if (apix !== null && mospi !== null && apix !== undefined && mospi !== undefined) {
+                    const diff = apix - mospi;
+                    const diffPct = (diff / mospi) * 100;
+                    const sign = diff > 0 ? '+' : '';
+                    return `--------------------\nTracking Spread (APIx - MoSPI):\n${sign}${diff.toFixed(2)} pts (${sign}${diffPct.toFixed(2)}%)`;
+                  }
+                }
+                return '';
+              }
+            }
+          }
+        },
         scales: {
-          x: { grid: gridStyle },
-          y: { grid: gridStyle, title: { display: true, text: 'Index (Base 2024 = 100.00)', color: '#64748B' } }
+          x: {
+            grid: gridStyle,
+            ticks: {
+              font: { family: 'Inter', size: 11 },
+              color: '#64748B',
+              maxRotation: 45
+            }
+          },
+          y: {
+            grid: gridStyle,
+            title: {
+              display: true,
+              text: yTitle,
+              color: '#64748B',
+              font: { family: 'Inter', size: 11, weight: 600 }
+            },
+            ticks: {
+              font: { family: 'Inter', size: 11 },
+              color: '#64748B',
+              callback: function(v) {
+                return isMom ? `${v > 0 ? '+' : ''}${v}%` : v.toFixed(1);
+              }
+            }
+          }
         }
       }
     });
@@ -5480,7 +5983,7 @@ window.basketCustomCalibration = null;
 function initRouteBasket() {
   const refreshBtn = document.getElementById('basketRefreshBtn');
   if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => fetchBasketData());
+    refreshBtn.addEventListener('click', () => fetchBasketData(true));
   }
   // Auto-fire filters immediately on selection change
   ['basketCabinFilter', 'basketPlatformFilter'].forEach(id => {
@@ -5744,7 +6247,7 @@ function applyCalibrationToBasket(rawData, calib) {
   };
 }
 
-async function fetchBasketData() {
+async function fetchBasketData(forceRefresh = false) {
   const cabin = document.getElementById('basketCabinFilter')?.value || 'Economy';
   const platform = document.getElementById('basketPlatformFilter')?.value || 'ALL';
   const grid = document.getElementById('basketRoutesGrid');
@@ -5752,12 +6255,13 @@ async function fetchBasketData() {
 
   // Show loading
   if (grid) {
-    grid.innerHTML = `<div class="basket-loading"><div class="basket-spinner"></div><span>Fetching live basket data…</span></div>`;
+    grid.innerHTML = `<div class="basket-loading"><div class="basket-spinner"></div><span>${forceRefresh ? 'Extracting genuine real-time flight rates across 15 DGCA corridors via Playwright…' : 'Loading live DGCA real-time basket data…'}</span></div>`;
   }
-  if (srcText) srcText.textContent = 'Contacting scraper engine…';
+  if (srcText) srcText.textContent = forceRefresh ? '⚡ Extracting live flights in real time…' : 'Connecting to real-time scraper…';
 
   try {
-    const res = await fetch(`/api/v1/scrape/basket?cabin_class=${encodeURIComponent(cabin)}&platform=${encodeURIComponent(platform)}`);
+    const refreshParam = forceRefresh ? '&refresh_live=true' : '';
+    const res = await fetch(`/api/v1/scrape/basket?cabin_class=${encodeURIComponent(cabin)}&platform=${encodeURIComponent(platform)}${refreshParam}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     window.rawBasketData = data;
@@ -5768,11 +6272,11 @@ async function fetchBasketData() {
       renderBasketData(data);
     }
 
-    if (srcText) srcText.textContent = `🟢 Live — ${data.basket_size || 0} routes • ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`;
+    if (srcText) srcText.textContent = `🟢 Real-Time Scraped — ${data.basket_size || 0} corridors • ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`;
   } catch (err) {
     console.error('Basket fetch error:', err);
     if (grid) {
-      grid.innerHTML = `<div class="basket-error"><span>⚠️ Could not load basket data. ${err.message}</span><button onclick="fetchBasketData()" style="margin-left:12px;padding:6px 14px;border-radius:8px;border:none;background:#0EA5E9;color:#fff;cursor:pointer;font-size:13px">Retry</button></div>`;
+      grid.innerHTML = `<div class="basket-error"><span>⚠️ Could not load basket data. ${err.message}</span><button onclick="fetchBasketData(true)" style="margin-left:12px;padding:6px 14px;border-radius:8px;border:none;background:#0EA5E9;color:#fff;cursor:pointer;font-size:13px">Retry Scrape</button></div>`;
     }
     if (srcText) srcText.textContent = '🔴 Connection error';
   }

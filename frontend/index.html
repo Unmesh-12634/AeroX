@@ -22,7 +22,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 
-  <link rel="stylesheet" href="/static/style.css?v=5.2">
+  <link rel="stylesheet" href="/static/style.css?v=5.5">
 </head>
 <body>
   <div class="app-container">
@@ -92,7 +92,7 @@
         </a>
         <a class="nav-item" data-view="view-route-basket" id="navRouteBasket">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <span>DGCA Route Basket</span>
+          <span><span data-tooltip="DGCA">DGCA</span> <span data-tooltip="ROUTE_BASKET">Route Basket</span></span>
           <span class="nav-badge">Top-15</span>
         </a>
 
@@ -325,46 +325,74 @@
                     <div class="u-s77">Select Airline Fleet:</div>
                     <div class="city-picker-list">
                       <div class="city-picker-item" onclick="window.selectAirline('ALL', 'All Airlines', 'IndiGo, Air India, SpiceJet, Akasa', 'ALL'); event.stopPropagation();">
-                        <div>
-                          <strong>All Airlines</strong>
-                          <div class="u-s78">Full Domestic Carrier Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0F172A; color:#FFF; font-size:11px; font-weight:800;">ALL</div>
+                          <div>
+                            <strong>All Airlines</strong>
+                            <div class="u-s78">Full Domestic Carrier Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s79">ALL</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('IndiGo', 'IndiGo', '62% Domestic Share · 6E', '6E'); event.stopPropagation();">
-                        <div>
-                          <strong>IndiGo (6E)</strong>
-                          <div class="u-s78">A320 / A321neo Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/indigo.png" class="picker-logo-img" alt="IndiGo">
+                          <div>
+                            <strong>IndiGo (6E)</strong>
+                            <div class="u-s78">A320 / A321neo Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s80">6E</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Air India', 'Air India', 'Tata Flagship Carrier · AI', 'AI'); event.stopPropagation();">
-                        <div>
-                          <strong>Air India (AI)</strong>
-                          <div class="u-s78">Full Service Carrier</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindia.jpg" class="picker-logo-img" alt="Air India">
+                          <div>
+                            <strong>Air India (AI)</strong>
+                            <div class="u-s78">Full Service Carrier</div>
+                          </div>
                         </div>
                         <span class="u-s81">AI</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('SpiceJet', 'SpiceJet', 'Domestic &amp; Regional · SG', 'SG'); event.stopPropagation();">
-                        <div>
-                          <strong>SpiceJet (SG)</strong>
-                          <div class="u-s78">B737 / Q400 Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/spicejet.png" class="picker-logo-img" alt="SpiceJet">
+                          <div>
+                            <strong>SpiceJet (SG)</strong>
+                            <div class="u-s78">B737 / Q400 Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s82">SG</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Akasa Air', 'Akasa Air', 'Next-Gen B737 MAX · QP', 'QP'); event.stopPropagation();">
-                        <div>
-                          <strong>Akasa Air (QP)</strong>
-                          <div class="u-s78">B737 MAX Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/Akasaair.png" class="picker-logo-img" alt="Akasa Air">
+                          <div>
+                            <strong>Akasa Air (QP)</strong>
+                            <div class="u-s78">B737 MAX Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s83">QP</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectAirline('Air India Express', 'AI Express', 'Low-Cost Carrier · IX', 'IX'); event.stopPropagation();">
-                        <div>
-                          <strong>Air India Express (IX)</strong>
-                          <div class="u-s78">Point-to-Point Fleet</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindiaexpress.jpeg" class="picker-logo-img" alt="Air India Express">
+                          <div>
+                            <strong>Air India Express (IX)</strong>
+                            <div class="u-s78">Point-to-Point Fleet</div>
+                          </div>
                         </div>
                         <span class="u-s84">IX</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectAirline('Vistara', 'Vistara', 'Tata &amp; SIA Carrier · UK', 'UK'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/vistara.webp" class="picker-logo-img" alt="Vistara">
+                          <div>
+                            <strong>Vistara (UK)</strong>
+                            <div class="u-s78">Full Service Network</div>
+                          </div>
+                        </div>
+                        <span class="u-s84">UK</span>
                       </div>
                     </div>
                   </div>
@@ -383,36 +411,163 @@
                   <div class="mmt-field-sub" id="mmtPortalSub">Compare GF, MMT, EMT</div>
 
                   <!-- Portal Popover -->
-                  <div class="city-picker-popover u-s5" id="mmtPortalPopover"  onclick="event.stopPropagation()">
+                  <div class="city-picker-popover u-s5" id="mmtPortalPopover" style="max-height: 380px; overflow-y: auto;" onclick="event.stopPropagation()">
                     <div class="u-s77">Select Source Platform:</div>
                     <div class="city-picker-list">
-                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ALL', 'All Portals', 'Compare GF, MMT, EMT', 'ALL'); event.stopPropagation();">
-                        <div>
-                          <strong>All Sources (Market Basket)</strong>
-                          <div class="u-s78">Cross-Engine Jevons Index</div>
+                      <!-- Basket Groups -->
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ALL', 'All Sources', 'DGCA / MoSPI Basket', 'ALL'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0F172A; color:#FFF; font-size:11px; font-weight:800;">ALL</div>
+                          <div>
+                            <strong>All Sources (DGCA Basket)</strong>
+                            <div class="u-s78">Direct Airlines + OTAs Jevons Index</div>
+                          </div>
                         </div>
                         <span class="u-s79">ALL</span>
                       </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRLINES', 'Direct Airlines', 'IndiGo, AI, Akasa, SpiceJet', 'AIR'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#0284C7; color:#FFF; font-size:11px; font-weight:800;">✈️</div>
+                          <div>
+                            <strong>Direct Airlines Only</strong>
+                            <div class="u-s78">Direct Carrier Booking Engines</div>
+                          </div>
+                        </div>
+                        <span class="u-s80">AIR</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('OTAS', 'Major OTAs', 'GF, MMT, EMT, Yatra, Ixigo', 'OTA'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <div class="carrier-mini-pill" style="background:#059669; color:#FFF; font-size:11px; font-weight:800;">🌐</div>
+                          <div>
+                            <strong>Major OTAs Only</strong>
+                            <div class="u-s78">Commercial Metasearch Portals</div>
+                          </div>
+                        </div>
+                        <span class="u-s85">OTA</span>
+                      </div>
+
+                      <!-- Direct Carrier Engines -->
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('INDIGO', 'IndiGo Direct', 'goindigo.in Direct Engine', '6E'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/indigo.png" class="picker-logo-img" alt="IndiGo Direct">
+                          <div>
+                            <strong>IndiGo Direct (6E)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s80">6E</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRINDIA', 'Air India Direct', 'airindia.com Direct Engine', 'AI'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindia.jpg" class="picker-logo-img" alt="Air India Direct">
+                          <div>
+                            <strong>Air India Direct (AI)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s81">AI</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AKASA', 'Akasa Air Direct', 'akasaair.com Direct Engine', 'QP'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/Akasaair.png" class="picker-logo-img" alt="Akasa Air Direct">
+                          <div>
+                            <strong>Akasa Air Direct (QP)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s83">QP</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('SPICEJET', 'SpiceJet Direct', 'spicejet.com Direct Engine', 'SG'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/spicejet.png" class="picker-logo-img" alt="SpiceJet Direct">
+                          <div>
+                            <strong>SpiceJet Direct (SG)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">SG</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('AIRINDIAEXPRESS', 'AI Express Direct', 'airindiaexpress.com Engine', 'IX'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/airindiaexpress.jpeg" class="picker-logo-img" alt="AI Express Direct">
+                          <div>
+                            <strong>Air India Express (IX)</strong>
+                            <div class="u-s78">Official Direct Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s84">IX</span>
+                      </div>
+
+                      <!-- OTA Portals -->
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('google_flights', 'Google Flights', 'Direct Metasearch Engine', 'GF'); event.stopPropagation();">
-                        <div>
-                          <strong>Google Flights (GF)</strong>
-                          <div class="u-s78">Direct Global Metasearch</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/googleairline.png" class="picker-logo-img" alt="Google Flights">
+                          <div>
+                            <strong>Google Flights (GF)</strong>
+                            <div class="u-s78">Direct Global Metasearch</div>
+                          </div>
                         </div>
                         <span class="u-s85">GF</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('makemytrip', 'MakeMyTrip', 'Primary Domestic OTA', 'MMT'); event.stopPropagation();">
-                        <div>
-                          <strong>MakeMyTrip (MMT)</strong>
-                          <div class="u-s78">India No. 1 OTA Portal</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/makemytrip.webp" class="picker-logo-img" alt="MakeMyTrip">
+                          <div>
+                            <strong>MakeMyTrip (MMT)</strong>
+                            <div class="u-s78">India No. 1 OTA Portal</div>
+                          </div>
                         </div>
                         <span class="u-s86">MMT</span>
                       </div>
                       <div class="city-picker-item" onclick="window.selectSourcePlatform('easemytrip', 'EaseMyTrip', 'Zero Surcharge OTA', 'EMT'); event.stopPropagation();">
-                        <div>
-                          <strong>EaseMyTrip (EMT)</strong>
-                          <div class="u-s78">Zero Convenience Fee OTA</div>
+                        <div class="picker-logo-wrap">
+                          <img src="logos/easemytrip.png" class="picker-logo-img" alt="EaseMyTrip">
+                          <div>
+                            <strong>EaseMyTrip (EMT)</strong>
+                            <div class="u-s78">Zero Convenience Fee OTA</div>
+                          </div>
                         </div>
                         <span class="u-s80">EMT</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('yatra', 'Yatra', 'Corporate & Leisure OTA', 'YTR'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/yatra.png" class="picker-logo-img" alt="Yatra">
+                          <div>
+                            <strong>Yatra (YTR)</strong>
+                            <div class="u-s78">Major Domestic OTA</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">YTR</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('ixigo', 'Ixigo', 'Direct Travel Metasearch', 'IXI'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/ixogo.png" class="picker-logo-img" alt="Ixigo">
+                          <div>
+                            <strong>Ixigo (IXI)</strong>
+                            <div class="u-s78">OTA Aggregator &amp; App</div>
+                          </div>
+                        </div>
+                        <span class="u-s85">IXI</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('cleartrip', 'Cleartrip', 'Corporate & Leisure OTA', 'CT'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/cleartrip.svg" class="picker-logo-img" alt="Cleartrip">
+                          <div>
+                            <strong>Cleartrip (CT)</strong>
+                            <div class="u-s78">Flipkart Travel Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s83">CT</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('goibibo', 'Goibibo', 'Domestic Travel Metasearch', 'GIB'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/goibibo.svg" class="picker-logo-img" alt="Goibibo">
+                          <div>
+                            <strong>Goibibo (GIB)</strong>
+                            <div class="u-s78">Major Domestic OTA</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">GIB</span>
                       </div>
                     </div>
                   </div>
@@ -590,8 +745,42 @@
               </div>
             </div>
 
+            <!-- Flight Sorting & Order Controls Bar -->
+            <div class="live-sort-bar">
+              <div class="live-sort-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 18V4"/></svg>
+                <span>Sort Flights:</span>
+              </div>
+              <div class="live-sort-pills" id="liveSortPillGroup">
+                <button type="button" class="segment-btn active" id="sortLowToHigh" onclick="window.setFlightSortOrder('LOW_TO_HIGH', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                  <span>Price: Low to High</span>
+                </button>
+                <button type="button" class="segment-btn" id="sortHighToLow" onclick="window.setFlightSortOrder('HIGH_TO_LOW', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  <span>Price: High to Low</span>
+                </button>
+                <button type="button" class="segment-btn" id="sortRandom" onclick="window.setFlightSortOrder('RANDOM', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                  <span>Random Shuffle</span>
+                </button>
+              </div>
+              <div class="live-flight-count-indicator" id="liveFlightCountIndicator">
+                Showing <strong id="liveShownCount">0</strong> of <strong id="liveTotalCount">0</strong> flights
+              </div>
+            </div>
+
             <!-- Flights List Cards Container -->
             <div id="liveFlightsListContainer" class="live-flights-list"></div>
+
+            <!-- Show More Flights Pagination Container -->
+            <div class="show-more-container" id="showMoreFlightsContainer" style="display: none;">
+              <button type="button" class="btn-show-more-flights" id="btnShowMoreFlights" onclick="window.showMoreFlights()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"/></svg>
+                <span>Show More Flights (+20)</span>
+              </button>
+              <div class="show-more-sub" id="showMoreSubText">Showing 20 of 0 flights</div>
+            </div>
           </div>
 
           <!-- Top KPI Cards (Balanced 6-Column Responsive Grid) -->
@@ -786,7 +975,7 @@
               <div class="kpi-card u-s24" >
                 <div class="kpi-label">
                   <span class="u-s113">
-                    <span class="logo-icon-svg indigo">6E</span>
+                    <img src="/logos/indigo.png" class="table-carrier-logo" alt="IndiGo">
                     <strong>IndiGo</strong>
                   </span>
                   <span class="badge info">41.3% Share</span>
@@ -802,7 +991,7 @@
               <div class="kpi-card u-s25" >
                 <div class="kpi-label">
                   <span class="u-s113">
-                    <span class="logo-icon-svg airindia">AI</span>
+                    <img src="/logos/airindia.jpg" class="table-carrier-logo" alt="Air India">
                     <strong>Air India</strong>
                   </span>
                   <span class="badge normal">25.9% Share</span>
@@ -818,7 +1007,7 @@
               <div class="kpi-card u-s26" >
                 <div class="kpi-label">
                   <span class="u-s113">
-                    <span class="logo-icon-svg akasa">QP</span>
+                    <img src="/logos/Akasaair.png" class="table-carrier-logo" alt="Akasa Air">
                     <strong>Akasa Air</strong>
                   </span>
                   <span class="badge stable">12.5% Share</span>
@@ -834,7 +1023,7 @@
               <div class="kpi-card u-s27" >
                 <div class="kpi-label">
                   <span class="u-s113">
-                    <span class="logo-icon-svg spicejet">SG</span>
+                    <img src="/logos/spicejet.png" class="table-carrier-logo" alt="SpiceJet">
                     <strong>SpiceJet</strong>
                   </span>
                   <span class="badge warning">9.4% Share</span>
@@ -1749,18 +1938,93 @@
                 <tbody id="tableAirlinePerformanceBody">
                   <tr>
                     <td>
-                      <span class="u-s178">
-                        <span class="logo-icon-svg indigo">6E</span>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/indigo.png" class="table-carrier-logo" alt="IndiGo">
                         <strong>IndiGo</strong>
                       </span>
                     </td>
                     <td>10,084</td>
-                    <td>₹5,690</td>
+                    <td><strong>₹5,690</strong></td>
                     <td>₹5,420</td>
                     <td>₹2,170</td>
                     <td>₹22,551</td>
                     <td><span class="badge stable">Low (12.1%)</span></td>
                     <td>98.5% (48/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/airindia.jpg" class="table-carrier-logo" alt="Air India">
+                        <strong>Air India</strong>
+                      </span>
+                    </td>
+                    <td>6,450</td>
+                    <td><strong>₹7,140</strong></td>
+                    <td>₹6,890</td>
+                    <td>₹2,850</td>
+                    <td>₹28,400</td>
+                    <td><span class="badge elevated">Medium (18.4%)</span></td>
+                    <td>86.0% (43/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/Akasaair.png" class="table-carrier-logo" alt="Akasa Air">
+                        <strong>Akasa Air</strong>
+                      </span>
+                    </td>
+                    <td>3,210</td>
+                    <td><strong>₹5,380</strong></td>
+                    <td>₹5,100</td>
+                    <td>₹2,190</td>
+                    <td>₹18,900</td>
+                    <td><span class="badge stable">Low (11.8%)</span></td>
+                    <td>52.0% (26/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/spicejet.png" class="table-carrier-logo" alt="SpiceJet">
+                        <strong>SpiceJet</strong>
+                      </span>
+                    </td>
+                    <td>2,980</td>
+                    <td><strong>₹5,980</strong></td>
+                    <td>₹5,750</td>
+                    <td>₹2,450</td>
+                    <td>₹21,800</td>
+                    <td><span class="badge critical">High (22.3%)</span></td>
+                    <td>48.0% (24/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/airindiaexpress.jpeg" class="table-carrier-logo" alt="Air India Express">
+                        <strong>Air India Express</strong>
+                      </span>
+                    </td>
+                    <td>2,150</td>
+                    <td><strong>₹5,210</strong></td>
+                    <td>₹4,950</td>
+                    <td>₹2,050</td>
+                    <td>₹16,700</td>
+                    <td><span class="badge stable">Low (13.5%)</span></td>
+                    <td>38.0% (19/50 routes)</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span style="display:inline-flex; align-items:center; gap:10px;">
+                        <img src="logos/vistara.webp" class="table-carrier-logo" alt="Vistara">
+                        <strong>Vistara</strong>
+                      </span>
+                    </td>
+                    <td>1,003</td>
+                    <td><strong>₹7,890</strong></td>
+                    <td>₹7,450</td>
+                    <td>₹3,200</td>
+                    <td>₹29,900</td>
+                    <td><span class="badge elevated">Medium (17.2%)</span></td>
+                    <td>72.0% (36/50 routes)</td>
                   </tr>
                 </tbody>
               </table>
@@ -2335,24 +2599,151 @@
              ================================================================ -->
         <section class="view-section" id="view-cpi-comparison">
           <div class="page-title-block">
-            <h2>Airfare Intelligence vs Official MoSPI CPI</h2>
-            <p>Benchmarking high-frequency real-time airfare index (APIx) against monthly Ministry of Statistics CPI Transport Index.</p>
+            <div class="title-with-actions" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <h2>Airfare Intelligence vs Official MoSPI CPI</h2>
+                <p>Benchmarking high-frequency real-time airfare index (APIx) against monthly Ministry of Statistics (MoSPI) CPI Transport Index (Base 2024 = 100.0).</p>
+              </div>
+              <div class="cpi-controls-header" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Sector:</span>
+                  <select id="cpiSectorSelect" class="filter-select-clean" style="padding: 6px 12px; border-radius: 980px; border: 1px solid #CBD5E1; background: #FFF; font-size: 12px; font-weight: 600; color: #0F172A; cursor: pointer;" onchange="window.handleCpiSectorChange(this.value)">
+                    <option value="Combined" selected>Combined (All India)</option>
+                    <option value="Urban">Urban</option>
+                    <option value="Rural">Rural</option>
+                  </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">State / UT:</span>
+                  <select id="cpiStateSelect" class="filter-select-clean" style="padding: 6px 12px; border-radius: 980px; border: 1px solid #CBD5E1; background: #FFF; font-size: 12px; font-weight: 600; color: #0F172A; cursor: pointer; max-width: 180px;" onchange="window.handleCpiStateChange(this.value)">
+                    <option value="All India" selected>All India</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="card u-s17" >
-            <div class="card-header">
-              <div class="card-title">Real-Time Airfare Index (APIx) vs Official CPI (Airfare Sub-Group)</div>
-              <span class="badge info">Base 2024 = 100.0</span>
+          <!-- 5-Card Top Telemetry Ribbon -->
+          <div class="radar-kpi-grid" id="cpiKpiGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div class="radar-kpi-card" id="cardCpiLatest" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Official MoSPI CPI</span>
+                <span class="badge info" id="cpiLatestMonthBadge" style="font-size: 10px; padding: 2px 7px;">Jul 2026</span>
+              </div>
+              <div class="kpi-value" id="cpiLatestVal" style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 6px 0;">125.46</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Base Year 2024 = 100.00</div>
             </div>
-            <div class="chart-container tall">
+
+            <div class="radar-kpi-card" id="cardCpiMom" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">MoSPI MoM Inflation</span>
+                <span class="badge success" id="cpiMomBadge" style="font-size: 10px; padding: 2px 7px; background: #DCFCE7; color: #166534;">-0.50%</span>
+              </div>
+              <div class="kpi-value" id="cpiMomVal" style="font-size: 24px; font-weight: 800; color: #10B981; margin: 6px 0;">-0.50%</div>
+              <div class="kpi-sub" id="cpiMomSub" style="font-size: 11.5px; color: #64748B;">Prior Month: -1.20% (Jun 2026)</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiNowcast" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">APIx T+0 Nowcast</span>
+                <span class="badge" style="font-size: 10px; padding: 2px 7px; background: #E0F2FE; color: #0284C7;" id="cpiNowcastBadge">Sep 2026 Flash</span>
+              </div>
+              <div class="kpi-value" id="cpiNowcastVal" style="font-size: 24px; font-weight: 800; color: #0284C7; margin: 6px 0;">128.40</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Real-time scraped dynamic yield</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiLead" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Reporting Lead</span>
+                <span class="badge warning" style="font-size: 10px; padding: 2px 7px; background: #FEF3C7; color: #D97706;">High Frequency</span>
+              </div>
+              <div class="kpi-value" style="font-size: 24px; font-weight: 800; color: #D97706; margin: 6px 0;">+12 to 45 Days</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Ahead of official monthly release</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiWeight" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Transport Sub-Weight</span>
+                <span class="badge" style="font-size: 10px; padding: 2px 7px; background: #F1F5F9; color: #475569;">MoSPI Standard</span>
+              </div>
+              <div class="kpi-value" style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 6px 0;">7.57%</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Share of Headline CPI Basket</div>
+            </div>
+          </div>
+
+          <!-- Main Overlapping Comparison Chart Card -->
+          <div class="card" style="margin-bottom: 22px; background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #F1F5F9;">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div class="card-title" id="cpiChartHeading" style="font-size: 15px; font-weight: 700; color: #0F172A;">Airfare Intelligence (APIx) vs Official MoSPI CPI Benchmark</div>
+                <span class="badge info" id="cpiChartSubBadge" style="font-size: 10.5px; padding: 3px 8px;">Base 2024 = 100.0</span>
+              </div>
+              <div class="segmented-control" id="cpiModeSegmentedControl">
+                <button type="button" class="segment-btn active" id="btnCpiModeIndex" onclick="window.switchCpiMode('index')">
+                  Base 2024 = 100
+                </button>
+                <button type="button" class="segment-btn" id="btnCpiModeMom" onclick="window.switchCpiMode('mom')">
+                  MoM % Inflation
+                </button>
+              </div>
+            </div>
+            <div class="chart-container tall" style="position: relative; height: 380px; margin-top: 14px;">
               <canvas id="chartCPIComparison"></canvas>
             </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #F1F5F9; font-size: 11.5px; color: #64748B; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <strong style="color: #0284C7;">Cyan Line:</strong> Real-Time APIx Index (Daily Ingestion &amp; Live Nowcast) &nbsp;|&nbsp;
+                <strong style="color: #D97706;">Amber Line:</strong> Official MoSPI Monthly Airfare CPI (Item Code: 07.3.3)
+              </div>
+              <div>
+                <span>Source: Ministry of Statistics &amp; DGCA Route Basket Ledgers</span>
+              </div>
+            </div>
           </div>
 
-          <div class="card u-s72" >
-            <div class="card-title u-s73" >Statistical Briefing for Economists &amp; MoSPI Officers</div>
+          <!-- Audited Official MoSPI CPI & APIx Time Series Ledger Table -->
+          <div class="card" style="margin-bottom: 22px; background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+              <div>
+                <div class="card-title" style="font-size: 15px; font-weight: 700; color: #0F172A;">Audited MoSPI CPI &amp; APIx Empirical Ledger</div>
+                <span style="font-size: 11.5px; color: #64748B;">Official government survey returns (Base 2024 = 100) benchmarked against high-frequency APIx nowcasts.</span>
+              </div>
+              <div>
+                <button type="button" class="action-btn" onclick="window.exportCpiTableCSV()" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 980px; background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; cursor: pointer; transition: all 0.2s ease;">
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            <div class="table-wrapper" style="max-height: 420px; overflow-y: auto;">
+              <table class="apple-table" id="tableCpiLedger">
+                <thead>
+                  <tr>
+                    <th scope="col">Period</th>
+                    <th scope="col">Sector / Geography</th>
+                    <th scope="col">MoSPI CPI Index</th>
+                    <th scope="col">MoSPI MoM (%)</th>
+                    <th scope="col">MoSPI YoY (%)</th>
+                    <th scope="col">APIx Benchmark</th>
+                    <th scope="col">APIx MoM (%)</th>
+                    <th scope="col">Spread (Δ Pts / %)</th>
+                    <th scope="col">Reporting Status</th>
+                    <th scope="col">Data Verification</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyCpiLedger">
+                  <!-- Populated dynamically by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Statistical Briefing for Economists & MoSPI Officers -->
+          <div class="card u-s72">
+            <div class="card-title u-s73">Statistical Briefing for Economists &amp; MoSPI Officers</div>
             <p class="u-s214">
-              Official CPI is published on a monthly cycle with a 12-day reporting lag. <strong>Airfare Intelligence APIx</strong> provides high-frequency daily price observations across all major Indian airlines and travel aggregators, delivering an early lead indicator for transport basket inflation and cost-of-living tracking.
+              Official Consumer Price Index (CPI) for air transport is compiled under National Item Code <strong>07.3.3.1.2.01</strong> (Passenger transport by air, domestic) by the National Statistical Office (NSO / MoSPI), released monthly with a standard 12-day compilation lag. 
+              <strong>AeroX APIx (Airfare Price Index)</strong> provides an un-lagged, daily continuous elementary Jevons geometric index across 15 DGCA-weighted trunk routes. 
+              Because aviation forward bookings follow dynamic yield revenue management (Rule 135 of Aircraft Rules 1937), APIx captures fare surges and capacity shocks in real-time, functioning as a high-frequency <strong>T+0 Flash Nowcast</strong> for the MoSPI transport subgroup and RBI monetary policy surveillance.
             </p>
           </div>
         </section>
@@ -2569,16 +2960,16 @@
              ================================================================ -->
         <section class="view-section" id="view-route-basket">
           <div class="page-title-block">
-            <h2>DGCA Top-15 Domestic Route Basket &amp; Unbundled Fare Console</h2>
-            <p>Live-scraped national fare basket with Jevons Geometric Mean Index and per-component fare decomposition (Base, Fuel, UDF/PSF, GST, Convenience Fee) across India's highest-traffic corridors.</p>
+            <h2><span data-tooltip="DGCA">DGCA</span> Top-15 Domestic <span data-tooltip="ROUTE_BASKET">Route Basket</span> &amp; Unbundled Fare Console</h2>
+            <p>Live-scraped national fare basket with Jevons Geometric Mean Index and per-component fare decomposition (<span data-tooltip="BASE_FARE">Base</span>, <span data-tooltip="FUEL_SURCHARGE">Fuel</span>, <span data-tooltip="UDF">UDF</span>/<span data-tooltip="PSF">PSF</span>, <span data-tooltip="GST">GST</span>, Convenience Fee) across India's highest-traffic corridors.</p>
           </div>
 
           <!-- National Basket KPI Row -->
           <div class="basket-kpi-row" id="basketKpiRow">
             <div class="basket-kpi-card" id="bkpiJevons">
-              <div class="bkpi-label">National Basket Jevons Index</div>
+              <div class="bkpi-label"><span data-tooltip="APIX">National Basket Jevons Index</span></div>
               <div class="bkpi-value" id="bkpiJevonsVal">—</div>
-              <div class="bkpi-sub">Geometric mean weighted by DGCA PSD traffic</div>
+              <div class="bkpi-sub">Geometric mean weighted by <span data-tooltip="DGCA">DGCA</span> <span data-tooltip="PSD">PSD</span> traffic</div>
             </div>
             <div class="basket-kpi-card" id="bkpiMean">
               <div class="bkpi-label">Basket Mean Fare</div>
@@ -2615,23 +3006,23 @@
             <div class="bstrip-bars" id="bstripBars">
               <div class="bstrip-segment" id="bsBase">
                 <div class="bstrip-bar-fill" style="background:#0284C7"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Base Fare</span><span class="bstrip-amt" id="bsBaseAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="BASE_FARE" data-tooltip-compact>Base Fare</span><span class="bstrip-amt" id="bsBaseAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsFuel">
                 <div class="bstrip-bar-fill" style="background:#10B981"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Fuel Surcharge</span><span class="bstrip-amt" id="bsFuelAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="FUEL_SURCHARGE" data-tooltip-compact>Fuel Surcharge</span><span class="bstrip-amt" id="bsFuelAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsUdf">
                 <div class="bstrip-bar-fill" style="background:#F59E0B"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">UDF / PSF</span><span class="bstrip-amt" id="bsUdfAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name"><span data-tooltip="UDF" data-tooltip-compact>UDF</span> / <span data-tooltip="PSF" data-tooltip-compact>PSF</span></span><span class="bstrip-amt" id="bsUdfAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsGst">
                 <div class="bstrip-bar-fill" style="background:#EF4444"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name" id="bsGstLabel">GST (5%)</span><span class="bstrip-amt" id="bsGstAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" id="bsGstLabel" data-tooltip="GST" data-tooltip-compact>GST (5%)</span><span class="bstrip-amt" id="bsGstAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsConv">
                 <div class="bstrip-bar-fill" style="background:#64748B"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Convenience Fee</span><span class="bstrip-amt" id="bsConvAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="CONVENIENCE_FEE" data-tooltip-compact>Convenience Fee</span><span class="bstrip-amt" id="bsConvAmt">—</span></div>
               </div>
             </div>
 
@@ -2661,7 +3052,7 @@
                   <div class="brule-card" style="border-left: 3px solid #0284C7;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(2, 132, 199, 0.15); color: #0284C7;">Yield Component (~55%–70%)</span>
-                      <h4>Base Fare</h4>
+                      <h4><span data-tooltip="BASE_FARE">Base Fare</span></h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Rule 135 of The Aircraft Rules, 1937. Tariff is formally deregulated; airlines establish revenue via dynamic yield management inventory buckets (RBDs).</p>
                     <div class="brule-calc">
@@ -2673,7 +3064,7 @@
                   <div class="brule-card" style="border-left: 3px solid #10B981;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">Volatile Energy Surcharge (~25%–35%)</span>
-                      <h4>Fuel Surcharge (ATF)</h4>
+                      <h4><span data-tooltip="FUEL_SURCHARGE">Fuel Surcharge</span> (<span data-tooltip="ATF">ATF</span> Cost)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Ministry of Civil Aviation Circular (2008). Permitted unbundling of jet fuel costs to absorb OMC (IOCL, BPCL, HPCL) benchmark fluctuations without altering base fare tables.</p>
                     <div class="brule-calc">
@@ -2685,7 +3076,7 @@
                   <div class="brule-card" style="border-left: 3px solid #F59E0B;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">Airport &amp; Security Levy (₹250–₹710)</span>
-                      <h4>UDF / PSF (Airport Charges)</h4>
+                      <h4><span data-tooltip="UDF">UDF</span> / <span data-tooltip="PSF">PSF</span> (Airport Charges)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Section 13 of AERA Act, 2008 &amp; BCAS Aviation Security Order. Fixed per-passenger charges for airport modernization, runway CAPEX, and CISF security.</p>
                     <div class="brule-calc">
@@ -2697,7 +3088,7 @@
                   <div class="brule-card" style="border-left: 3px solid #EF4444;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">Statutory Tax (5% Eco / 12% Biz)</span>
-                      <h4>Goods and Services Tax (GST)</h4>
+                      <h4>Goods and Services Tax (<span data-tooltip="GST">GST</span>)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> CBIC Notification No. 11/2017-Central Tax (Rate), HSN Code 9964. Economy passenger air transport attracts 5% GST (without input tax credit on goods). Business class attracts 12% GST with full ITC.</p>
                     <div class="brule-calc">
@@ -2708,8 +3099,8 @@
 
                   <div class="brule-card" style="border-left: 3px solid #64748B;">
                     <div class="brule-head">
-                      <span class="brule-tag" style="background: rgba(100, 116, 139, 0.15); color: #94A3B8;">OTA Checkout Surcharge (₹0–₹350)</span>
-                      <h4>Convenience Fee</h4>
+                      <span class="brule-tag" style="background: rgba(100, 116, 139, 0.15); color: #94A3B8;"><span data-tooltip="OTA">OTA</span> Checkout Surcharge (₹0–₹350)</span>
+                      <h4><span data-tooltip="CONVENIENCE_FEE">Convenience Fee</span></h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> DGCA CAR Series M Part IV &amp; Consumer Protection E-Commerce Rules. Non-refundable payment gateway handling and booking service fee applied per ticket segment.</p>
                     <div class="brule-calc">
@@ -2893,6 +3284,9 @@
   </div>
 
   <!-- Main JavaScript Controller -->
-  <script src="/static/app.js?v=5.5"></script>
+  <script src="/static/app.js?v=5.6"></script>
+
+  <!-- AeroX Global Information Tooltip System -->
+  <script src="/static/term_definitions.js"></script>
 </body>
 </html>

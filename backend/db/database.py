@@ -28,6 +28,7 @@ class DataRepository:
         self._load_airports()
 
     def _load_master_data(self):
+        dfs = []
         if settings.MASTER_CSV_PATH.exists():
             try:
                 df = pd.read_csv(settings.MASTER_CSV_PATH, low_memory=False)
@@ -35,10 +36,26 @@ class DataRepository:
                 df = df.dropna(subset=['total_fare_inr'])
                 # Enforce valid commercial domestic airfare floor (>= 1500 INR)
                 df = df[df['total_fare_inr'] >= 1500.0]
-                self.master_df = df
+                dfs.append(df)
             except Exception as e:
                 print(f"[-] Error loading master CSV: {e}")
-                self.master_df = pd.DataFrame()
+
+        live_master = settings.LIVE_SCRAPED_DIR / "live_scraped_master.csv"
+        if live_master.exists():
+            try:
+                ldf = pd.read_csv(live_master, low_memory=False)
+                ldf['total_fare_inr'] = pd.to_numeric(ldf['total_fare_inr'], errors='coerce')
+                ldf = ldf.dropna(subset=['total_fare_inr'])
+                dfs.append(ldf)
+            except Exception as e:
+                print(f"[-] Error loading live scraped CSV: {e}")
+
+        if dfs:
+            combined = pd.concat(dfs, ignore_index=True)
+            subset_cols = [c for c in ['route', 'travel_date', 'airline_standardized', 'departure_time', 'total_fare_inr'] if c in combined.columns]
+            if subset_cols:
+                combined = combined.drop_duplicates(subset=subset_cols)
+            self.master_df = combined
         else:
             self.master_df = pd.DataFrame()
 
