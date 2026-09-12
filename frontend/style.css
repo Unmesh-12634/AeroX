@@ -5921,141 +5921,103 @@ body {
   padding-top: 7px;
 }
 
-/* =========================================================================
-   Interactive Eye Button & Math Calculation Tooltip
-   ========================================================================= */
-.apix-telemetry-card .kpi-label {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
+/* ==========================================================================
+   AeroX Global Information Tooltip System
+   data-tooltip="TERM_KEY" on any element → hover/focus shows tooltip
+   ========================================================================== */
+
+/* ── Anchor term styling ─────────────────────────────────────────────────── */
+.agt-term {
+  cursor: help;
+  border-bottom: 1px dashed rgba(2, 132, 199, 0.45);   /* --accent-blue at 45% */
+  transition: border-color 0.15s ease, color 0.15s ease;
+  display: inline;
 }
 
-.card-title-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
-}
-
-.card-title-wrap span {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-muted, #64748B);
-  white-space: normal;
-  word-break: normal;
-  overflow-wrap: normal;
-  line-height: 1.4;
-}
-
-.apix-telemetry-card .badge {
-  font-size: 10px;
-  padding: 2px 7px;
-  align-self: flex-start;
-}
-
-.eye-info-btn {
-  background: transparent;
-  border: none;
-  padding: 2px 4px;
-  cursor: pointer;
-  color: #94A3B8;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: all 0.18s ease;
-  position: relative;
-}
-
-.eye-info-btn:hover {
+.agt-term:hover,
+.agt-term:focus {
+  border-bottom-color: #0284C7;
   color: #0284C7;
-  background: rgba(2, 132, 199, 0.08);
+  outline: none;
 }
 
-.eye-info-btn .eye-tooltip {
-  visibility: hidden;
-  opacity: 0;
+/* ── Tooltip bubble ──────────────────────────────────────────────────────── */
+#aerox-global-tooltip {
   position: absolute;
-  top: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-4px);
-  width: 290px;
-  background: #0B132B;
-  color: #F1F5F9;
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 13px 15px;
-  border-radius: 12px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.3);
+  top: 0;
+  left: 0;
   z-index: 99999;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  width: 296px;
+  max-width: min(296px, calc(100vw - 16px));
   pointer-events: none;
-  font-weight: 400;
-  text-align: left;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  opacity: 0;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Hidden by default; .agt-visible makes it paint-relevant */
+  visibility: hidden;
 }
 
-.kpi-card:nth-child(4) .eye-tooltip,
-.kpi-card:nth-child(5) .eye-tooltip {
-  left: auto;
-  right: -10px;
-  transform: translateY(-4px);
-}
-
-.kpi-card:first-child .eye-tooltip {
-  left: -10px;
-  transform: translateY(-4px);
-}
-
-.eye-info-btn:hover .eye-tooltip {
+#aerox-global-tooltip.agt-visible {
   visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
-.kpi-card:nth-child(4) .eye-info-btn:hover .eye-tooltip,
-.kpi-card:nth-child(5) .eye-info-btn:hover .eye-tooltip,
-.kpi-card:first-child .eye-info-btn:hover .eye-tooltip {
-  transform: translateY(0);
+.agt-inner {
+  background: rgba(15, 23, 42, 0.94);         /* --text-primary near-opaque */
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px 13px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.25),
+    0 10px 28px -4px rgba(0, 0, 0, 0.35),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset;
 }
 
-.eye-tooltip-title {
-  font-size: 12.5px;
+/* Arrow / caret (CSS-only, points downward by default = tooltip above anchor) */
+.agt-inner::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 6px;
+  background: rgba(15, 23, 42, 0.94);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.agt-title {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
   font-weight: 700;
-  color: #38BDF8;
-  margin-bottom: 7px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: #F8FAFC;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  margin-bottom: 5px;
 }
 
-.eye-tooltip-formula {
-  background: rgba(15, 23, 42, 0.9);
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #7DD3FC;
-  margin: 8px 0;
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  border-left: 3px solid #0284C7;
-  word-break: break-word;
+.agt-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(203, 213, 225, 0.92);           /* --text-dim lightened */
+  line-height: 1.55;
 }
 
-.eye-tooltip-source {
-  font-size: 11px;
-  color: #94A3B8;
-  margin-top: 8px;
-  display: block;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding-top: 7px;
+/* ── Reduced-motion support ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  #aerox-global-tooltip {
+    transition: none;
+  }
+  .agt-term {
+    transition: none;
+  }
+}
+
+/* ── Mobile: slightly narrower ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+  #aerox-global-tooltip {
+    width: calc(100vw - 24px);
+  }
 }
 

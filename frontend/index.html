@@ -92,7 +92,7 @@
         </a>
         <a class="nav-item" data-view="view-route-basket" id="navRouteBasket">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          <span>DGCA Route Basket</span>
+          <span><span data-tooltip="DGCA">DGCA</span> <span data-tooltip="ROUTE_BASKET">Route Basket</span></span>
           <span class="nav-badge">Top-15</span>
         </a>
 
@@ -2836,16 +2836,16 @@
              ================================================================ -->
         <section class="view-section" id="view-route-basket">
           <div class="page-title-block">
-            <h2>DGCA Top-15 Domestic Route Basket &amp; Unbundled Fare Console</h2>
-            <p>Live-scraped national fare basket with Jevons Geometric Mean Index and per-component fare decomposition (Base, Fuel, UDF/PSF, GST, Convenience Fee) across India's highest-traffic corridors.</p>
+            <h2><span data-tooltip="DGCA">DGCA</span> Top-15 Domestic <span data-tooltip="ROUTE_BASKET">Route Basket</span> &amp; Unbundled Fare Console</h2>
+            <p>Live-scraped national fare basket with Jevons Geometric Mean Index and per-component fare decomposition (<span data-tooltip="BASE_FARE">Base</span>, <span data-tooltip="FUEL_SURCHARGE">Fuel</span>, <span data-tooltip="UDF">UDF</span>/<span data-tooltip="PSF">PSF</span>, <span data-tooltip="GST">GST</span>, Convenience Fee) across India's highest-traffic corridors.</p>
           </div>
 
           <!-- National Basket KPI Row -->
           <div class="basket-kpi-row" id="basketKpiRow">
             <div class="basket-kpi-card" id="bkpiJevons">
-              <div class="bkpi-label">National Basket Jevons Index</div>
+              <div class="bkpi-label"><span data-tooltip="APIX">National Basket Jevons Index</span></div>
               <div class="bkpi-value" id="bkpiJevonsVal">—</div>
-              <div class="bkpi-sub">Geometric mean weighted by DGCA PSD traffic</div>
+              <div class="bkpi-sub">Geometric mean weighted by <span data-tooltip="DGCA">DGCA</span> <span data-tooltip="PSD">PSD</span> traffic</div>
             </div>
             <div class="basket-kpi-card" id="bkpiMean">
               <div class="bkpi-label">Basket Mean Fare</div>
@@ -2882,23 +2882,23 @@
             <div class="bstrip-bars" id="bstripBars">
               <div class="bstrip-segment" id="bsBase">
                 <div class="bstrip-bar-fill" style="background:#0284C7"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Base Fare</span><span class="bstrip-amt" id="bsBaseAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="BASE_FARE" data-tooltip-compact>Base Fare</span><span class="bstrip-amt" id="bsBaseAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsFuel">
                 <div class="bstrip-bar-fill" style="background:#10B981"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Fuel Surcharge</span><span class="bstrip-amt" id="bsFuelAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="FUEL_SURCHARGE" data-tooltip-compact>Fuel Surcharge</span><span class="bstrip-amt" id="bsFuelAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsUdf">
                 <div class="bstrip-bar-fill" style="background:#F59E0B"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">UDF / PSF</span><span class="bstrip-amt" id="bsUdfAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name"><span data-tooltip="UDF" data-tooltip-compact>UDF</span> / <span data-tooltip="PSF" data-tooltip-compact>PSF</span></span><span class="bstrip-amt" id="bsUdfAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsGst">
                 <div class="bstrip-bar-fill" style="background:#EF4444"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name" id="bsGstLabel">GST (5%)</span><span class="bstrip-amt" id="bsGstAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" id="bsGstLabel" data-tooltip="GST" data-tooltip-compact>GST (5%)</span><span class="bstrip-amt" id="bsGstAmt">—</span></div>
               </div>
               <div class="bstrip-segment" id="bsConv">
                 <div class="bstrip-bar-fill" style="background:#64748B"></div>
-                <div class="bstrip-seg-label"><span class="bstrip-name">Convenience Fee</span><span class="bstrip-amt" id="bsConvAmt">—</span></div>
+                <div class="bstrip-seg-label"><span class="bstrip-name" data-tooltip="CONVENIENCE_FEE" data-tooltip-compact>Convenience Fee</span><span class="bstrip-amt" id="bsConvAmt">—</span></div>
               </div>
             </div>
 
@@ -2928,7 +2928,7 @@
                   <div class="brule-card" style="border-left: 3px solid #0284C7;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(2, 132, 199, 0.15); color: #0284C7;">Yield Component (~55%–70%)</span>
-                      <h4>Base Fare</h4>
+                      <h4><span data-tooltip="BASE_FARE">Base Fare</span></h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Rule 135 of The Aircraft Rules, 1937. Tariff is formally deregulated; airlines establish revenue via dynamic yield management inventory buckets (RBDs).</p>
                     <div class="brule-calc">
@@ -2940,7 +2940,7 @@
                   <div class="brule-card" style="border-left: 3px solid #10B981;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">Volatile Energy Surcharge (~25%–35%)</span>
-                      <h4>Fuel Surcharge (ATF)</h4>
+                      <h4><span data-tooltip="FUEL_SURCHARGE">Fuel Surcharge</span> (<span data-tooltip="ATF">ATF</span> Cost)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Ministry of Civil Aviation Circular (2008). Permitted unbundling of jet fuel costs to absorb OMC (IOCL, BPCL, HPCL) benchmark fluctuations without altering base fare tables.</p>
                     <div class="brule-calc">
@@ -2952,7 +2952,7 @@
                   <div class="brule-card" style="border-left: 3px solid #F59E0B;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">Airport &amp; Security Levy (₹250–₹710)</span>
-                      <h4>UDF / PSF (Airport Charges)</h4>
+                      <h4><span data-tooltip="UDF">UDF</span> / <span data-tooltip="PSF">PSF</span> (Airport Charges)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> Section 13 of AERA Act, 2008 &amp; BCAS Aviation Security Order. Fixed per-passenger charges for airport modernization, runway CAPEX, and CISF security.</p>
                     <div class="brule-calc">
@@ -2964,7 +2964,7 @@
                   <div class="brule-card" style="border-left: 3px solid #EF4444;">
                     <div class="brule-head">
                       <span class="brule-tag" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">Statutory Tax (5% Eco / 12% Biz)</span>
-                      <h4>Goods and Services Tax (GST)</h4>
+                      <h4>Goods and Services Tax (<span data-tooltip="GST">GST</span>)</h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> CBIC Notification No. 11/2017-Central Tax (Rate), HSN Code 9964. Economy passenger air transport attracts 5% GST (without input tax credit on goods). Business class attracts 12% GST with full ITC.</p>
                     <div class="brule-calc">
@@ -2975,8 +2975,8 @@
 
                   <div class="brule-card" style="border-left: 3px solid #64748B;">
                     <div class="brule-head">
-                      <span class="brule-tag" style="background: rgba(100, 116, 139, 0.15); color: #94A3B8;">OTA Checkout Surcharge (₹0–₹350)</span>
-                      <h4>Convenience Fee</h4>
+                      <span class="brule-tag" style="background: rgba(100, 116, 139, 0.15); color: #94A3B8;"><span data-tooltip="OTA">OTA</span> Checkout Surcharge (₹0–₹350)</span>
+                      <h4><span data-tooltip="CONVENIENCE_FEE">Convenience Fee</span></h4>
                     </div>
                     <p class="brule-body"><strong>Governing Rule:</strong> DGCA CAR Series M Part IV &amp; Consumer Protection E-Commerce Rules. Non-refundable payment gateway handling and booking service fee applied per ticket segment.</p>
                     <div class="brule-calc">
@@ -3161,5 +3161,8 @@
 
   <!-- Main JavaScript Controller -->
   <script src="/static/app.js?v=5.6"></script>
+
+  <!-- AeroX Global Information Tooltip System -->
+  <script src="/static/term_definitions.js"></script>
 </body>
 </html>
