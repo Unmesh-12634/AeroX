@@ -21,12 +21,12 @@ def detect_fare_outliers_iqr(df: pd.DataFrame, fare_col: str = "total_fare_inr",
         q75 = np.percentile(fares, 75)
         iqr = q75 - q25
         
-        # 1.5x IQR (Mild Outlier / Surge)
-        lower_mild = max(1000.0, q25 - 1.5 * iqr)
+        # 1.5x IQR (Mild Outlier / Surge) - lower bound clamped to valid commercial airfare floor (>= 1500 INR)
+        lower_mild = max(1500.0, q25 - 1.5 * iqr)
         upper_mild = q75 + 1.5 * iqr
         
-        # 3.0x IQR (Extreme Outlier / Error)
-        lower_extreme = max(500.0, q25 - 3.0 * iqr)
+        # 3.0x IQR (Extreme Outlier / Error) - lower bound clamped to valid commercial airfare floor (>= 1500 INR)
+        lower_extreme = max(1500.0, q25 - 3.0 * iqr)
         upper_extreme = q75 + 3.0 * iqr
         
         mild_mask = (df[group_col] == route) & ((df[fare_col] < lower_mild) | (df[fare_col] > upper_mild))
