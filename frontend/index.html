@@ -17,7 +17,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
-  <link rel="stylesheet" href="/static/style.css?v=5.4">
+  <link rel="stylesheet" href="/static/style.css?v=5.5">
 </head>
 <body>
   <div class="app-container">
@@ -544,6 +544,26 @@
                         </div>
                         <span class="u-s85">IXI</span>
                       </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('cleartrip', 'Cleartrip', 'Corporate & Leisure OTA', 'CT'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/cleartrip.svg" class="picker-logo-img" alt="Cleartrip">
+                          <div>
+                            <strong>Cleartrip (CT)</strong>
+                            <div class="u-s78">Flipkart Travel Portal</div>
+                          </div>
+                        </div>
+                        <span class="u-s83">CT</span>
+                      </div>
+                      <div class="city-picker-item" onclick="window.selectSourcePlatform('goibibo', 'Goibibo', 'Domestic Travel Metasearch', 'GIB'); event.stopPropagation();">
+                        <div class="picker-logo-wrap">
+                          <img src="logos/goibibo.svg" class="picker-logo-img" alt="Goibibo">
+                          <div>
+                            <strong>Goibibo (GIB)</strong>
+                            <div class="u-s78">Major Domestic OTA</div>
+                          </div>
+                        </div>
+                        <span class="u-s82">GIB</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -720,8 +740,42 @@
               </div>
             </div>
 
+            <!-- Flight Sorting & Order Controls Bar -->
+            <div class="live-sort-bar">
+              <div class="live-sort-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 5h10M11 9h7M11 13h4M3 17l3 3 3-3M6 18V4"/></svg>
+                <span>Sort Flights:</span>
+              </div>
+              <div class="live-sort-pills" id="liveSortPillGroup">
+                <button type="button" class="segment-btn active" id="sortLowToHigh" onclick="window.setFlightSortOrder('LOW_TO_HIGH', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                  <span>Price: Low to High</span>
+                </button>
+                <button type="button" class="segment-btn" id="sortHighToLow" onclick="window.setFlightSortOrder('HIGH_TO_LOW', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                  <span>Price: High to Low</span>
+                </button>
+                <button type="button" class="segment-btn" id="sortRandom" onclick="window.setFlightSortOrder('RANDOM', this)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                  <span>Random Shuffle</span>
+                </button>
+              </div>
+              <div class="live-flight-count-indicator" id="liveFlightCountIndicator">
+                Showing <strong id="liveShownCount">0</strong> of <strong id="liveTotalCount">0</strong> flights
+              </div>
+            </div>
+
             <!-- Flights List Cards Container -->
             <div id="liveFlightsListContainer" class="live-flights-list"></div>
+
+            <!-- Show More Flights Pagination Container -->
+            <div class="show-more-container" id="showMoreFlightsContainer" style="display: none;">
+              <button type="button" class="btn-show-more-flights" id="btnShowMoreFlights" onclick="window.showMoreFlights()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"/></svg>
+                <span>Show More Flights (+20)</span>
+              </button>
+              <div class="show-more-sub" id="showMoreSubText">Showing 20 of 0 flights</div>
+            </div>
           </div>
 
           <!-- Top KPI Cards (Balanced 6-Column Responsive Grid) -->
@@ -3091,6 +3145,6 @@
   </div>
 
   <!-- Main JavaScript Controller -->
-  <script src="/static/app.js?v=5.4"></script>
+  <script src="/static/app.js?v=5.6"></script>
 </body>
 </html>

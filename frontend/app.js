@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     airline: 'ALL',
     source: 'ALL',
     stopsFilter: 'ALL',
+    visibleFlightCount: 20,
+    currentSort: 'LOW_TO_HIGH',
+    randomSeed: 42,
     currentLiveFlights: [],
     airportsList: [],
     overviewData: null,
@@ -324,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSearchScrape) {
       btnSearchScrape.addEventListener('click', async (e) => {
         e.preventDefault();
+        state.visibleFlightCount = 20;
         btnSearchScrape.disabled = true;
         const originalText = btnSearchScrape.innerHTML;
         btnSearchScrape.innerHTML = `
@@ -915,6 +919,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (p.includes('easemytrip') || p.includes('emt')) return '/logos/easemytrip.png';
     if (p.includes('ixigo') || p.includes('ixi')) return '/logos/ixogo.png';
     if (p.includes('yatra')) return '/logos/yatra.png';
+    if (p.includes('cleartrip') || p.includes('ct')) return '/logos/cleartrip.svg';
+    if (p.includes('goibibo') || p.includes('gib')) return '/logos/goibibo.svg';
     if (p.includes('indigo')) return '/logos/indigo.png';
     if (p.includes('airindiaexpress') || p.includes('aix')) return '/logos/airindiaexpress.jpeg';
     if (p.includes('airindia')) return '/logos/airindia.jpg';
@@ -954,13 +960,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const platform = (f.source_platform || '').toLowerCase();
     const airline  = (f.airline || '').toLowerCase();
+    const flightNum = (f.flight_number || '').trim();
+    const flightNumClean = flightNum.replace(/\s+/g, '');
 
-    // ── 1. OTA Platform-Specific Deep-Links ──────────────────────────────────
+    // ── 1. OTA Platform-Specific Flight-Level Deep-Links ──────────────────────
     if (platform.includes('makemytrip') || platform.includes('mmt')) {
       return `https://www.makemytrip.com/flight/search?itinerary=${origin}-${dest}-${dd_mm_yyyy}&tripType=O&paxType=A-1_C-0_I-0&intl=false&cabinClass=E`;
     }
     if (platform.includes('easemytrip') || platform.includes('emt')) {
-      return `https://flight.easemytrip.com/FlightList/Index?org=${origin}&dest=${dest}&adt=1&chd=0&inf=0&cls=0&dref=${yyyy_mm_dd}`;
+      return `https://flight.easemytrip.com/FlightList/Index?org=${origin}&dest=${dest}&adt=1&chd=0&inf=0&cls=0&dref=${dd_mm_yyyy}`;
     }
     if (platform.includes('ixigo')) {
       return `https://www.ixigo.com/search/result/flight/${origin}/${dest}/${ddmmyyyy}//1/0/0/e/0`;
@@ -969,7 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://flight.yatra.com/air-search/dom2/trigger?type=O&viewName=normal&flexi=0&noOfSegments=1&origin=${origin}&originCode=${origin}&destination=${dest}&destinationCode=${dest}&flight_depart_date=${dd_mm_yyyy}&ADT=1&CHD=0&INF=0&class=Economy`;
     }
     if (platform.includes('cleartrip')) {
-      return `https://www.cleartrip.com/flights/results?adults=1&childs=0&infants=0&class=Economy&depart_date=${mmddyyyy_slash}&from=${origin}&to=${dest}&intl=n`;
+      return `https://www.cleartrip.com/flights/results?adults=1&childs=0&infants=0&class=Economy&depart_date=${dd_mm_yyyy}&from=${origin}&to=${dest}&intl=n`;
     }
     if (platform.includes('goibibo')) {
       return `https://www.goibibo.com/flights/air-${origin}-${dest}-${yyyymmdd}--1-0-0-E-D/`;
@@ -977,7 +985,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (platform.includes('google')) {
       const originCity = IATA_TO_CITY_MAP[origin] || origin;
       const destCity   = IATA_TO_CITY_MAP[dest] || dest;
-      const gfQuery = `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
+      const gfQuery = f.airline && f.airline.toLowerCase() !== 'all'
+        ? `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway ${f.airline}`
+        : `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
       return `https://www.google.com/travel/flights?q=${encodeURIComponent(gfQuery)}&curr=INR&hl=en`;
     }
 
@@ -986,7 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://www.goindigo.in/flight-booking.html?origin=${origin}&destination=${dest}&travelDate=${yyyy_mm_dd}&isOneWay=true`;
     }
     if (airline.includes('air india express')) {
-      return `https://www.airindiaexpress.com/flight-search?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
+      return `https://www.airindiaexpress.com/`;
     }
     if (airline.includes('air india')) {
       return `https://www.airindia.com/in/en/book/flight-search.html?from=${origin}&to=${dest}&date=${yyyy_mm_dd}&adults=1`;
@@ -997,11 +1007,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (airline.includes('spicejet')) {
       return `https://www.spicejet.com/flights?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
     }
-
-    // ── 3. Google Flights with city names for exact resolution ─────────────
     const originCity = IATA_TO_CITY_MAP[origin] || origin;
     const destCity   = IATA_TO_CITY_MAP[dest] || dest;
-    const gfQuery = `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
+    const gfQuery = f.airline && f.airline.toLowerCase() !== 'all'
+      ? `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway ${f.airline}`
+      : `Flights to ${destCity} from ${originCity} on ${yyyy_mm_dd} oneway`;
     return `https://www.google.com/travel/flights?q=${encodeURIComponent(gfQuery)}&curr=INR&hl=en`;
   };
 
@@ -1034,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `https://www.goindigo.in/flight-booking.html?origin=${origin}&destination=${dest}&travelDate=${yyyy_mm_dd}&isOneWay=true`;
     }
     if (airline.includes('air india express')) {
-      return `https://www.airindiaexpress.com/flight-search?origin=${origin}&destination=${dest}&date=${yyyy_mm_dd}`;
+      return `https://www.airindiaexpress.com/`;
     }
     if (airline.includes('air india')) {
       return `https://www.airindia.com/in/en/book/flight-search.html?from=${origin}&to=${dest}&date=${yyyy_mm_dd}&adults=1`;
@@ -1148,11 +1158,13 @@ document.addEventListener('DOMContentLoaded', () => {
           return plat.includes('direct') || plat.includes('indigo') || plat.includes('air_india') || plat.includes('airindia') || plat.includes('akasa') || plat.includes('spicejet');
         }
         if (targetPlat === 'otas' || targetPlat === 'ota') {
-          return plat.includes('google') || plat.includes('makemytrip') || plat.includes('easemytrip') || plat.includes('yatra') || plat.includes('ixigo');
+          return plat.includes('google') || plat.includes('makemytrip') || plat.includes('easemytrip') || plat.includes('cleartrip') || plat.includes('goibibo') || plat.includes('yatra') || plat.includes('ixigo');
         }
         if (targetPlat === 'gf' || targetPlat === 'google_flights') return plat.includes('google');
         if (targetPlat === 'mmt' || targetPlat === 'makemytrip') return plat.includes('makemytrip');
         if (targetPlat === 'emt' || targetPlat === 'easemytrip') return plat.includes('easemytrip');
+        if (targetPlat === 'ct' || targetPlat === 'cleartrip') return plat.includes('cleartrip');
+        if (targetPlat === 'gib' || targetPlat === 'goibibo') return plat.includes('goibibo');
         if (targetPlat === 'ytr' || targetPlat === 'yatra') return plat.includes('yatra');
         if (targetPlat === 'ixi' || targetPlat === 'ixigo') return plat.includes('ixigo');
         if (targetPlat === 'indigo' || targetPlat === '6e') return plat.includes('indigo');
@@ -1218,10 +1230,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       listCont.innerHTML = `<div style="padding: 24px; text-align: center; color: #64748B; font-size: 13px; background: #F8FAFC; border-radius: 10px; border: 1px dashed #CBD5E1;">No flights found for selected stoppage filter (<strong>${filterMode}</strong>). Try selecting 'All Flights'.</div>`;
+      const showMoreContainer = document.getElementById('showMoreFlightsContainer');
+      if (showMoreContainer) showMoreContainer.style.display = 'none';
+      const shownCountEl = document.getElementById('liveShownCount');
+      const totalCountEl = document.getElementById('liveTotalCount');
+      if (shownCountEl) shownCountEl.textContent = '0';
+      if (totalCountEl) totalCountEl.textContent = '0';
       return;
     }
 
-    listCont.innerHTML = filtered.map(f => {
+    const totalFilteredCount = filtered.length;
+
+    // 5. Sort Flights: LOW_TO_HIGH, HIGH_TO_LOW, or RANDOM
+    const sortMode = state.currentSort || 'LOW_TO_HIGH';
+    if (sortMode === 'LOW_TO_HIGH') {
+      filtered.sort((a, b) => (Number(a.total_fare_inr) || 0) - (Number(b.total_fare_inr) || 0));
+    } else if (sortMode === 'HIGH_TO_LOW') {
+      filtered.sort((a, b) => (Number(b.total_fare_inr) || 0) - (Number(a.total_fare_inr) || 0));
+    } else if (sortMode === 'RANDOM') {
+      const seed = state.randomSeed || 42;
+      filtered.sort((a, b) => {
+        const hashA = String(a.record_id || a.flight_number || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed;
+        const hashB = String(b.record_id || b.flight_number || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) + seed;
+        return (hashA % 97) - (hashB % 97);
+      });
+    }
+
+    // 6. Pagination Slice (Initial 20, increments by 20 on "Show More")
+    const visibleLimit = state.visibleFlightCount || 20;
+    const displayedFlights = filtered.slice(0, visibleLimit);
+
+    // Update Counter Indicators
+    const shownCountEl = document.getElementById('liveShownCount');
+    const totalCountEl = document.getElementById('liveTotalCount');
+    if (shownCountEl) shownCountEl.textContent = displayedFlights.length;
+    if (totalCountEl) totalCountEl.textContent = totalFilteredCount;
+
+    // Show / Hide "Show More Flights" Button
+    const showMoreContainer = document.getElementById('showMoreFlightsContainer');
+    const showMoreSub = document.getElementById('showMoreSubText');
+    if (showMoreContainer) {
+      if (displayedFlights.length < totalFilteredCount) {
+        showMoreContainer.style.display = 'flex';
+        const remaining = totalFilteredCount - displayedFlights.length;
+        if (showMoreSub) {
+          showMoreSub.textContent = `Showing ${displayedFlights.length} of ${totalFilteredCount} flights (${remaining} more available)`;
+        }
+      } else {
+        showMoreContainer.style.display = 'none';
+      }
+    }
+
+    listCont.innerHTML = displayedFlights.map(f => {
       let badgeColor = '#0284C7';
       let carrierLogo = '6E';
       if (f.airline.includes('Air India Express')) { badgeColor = '#EA580C'; carrierLogo = 'IX'; }
@@ -1355,11 +1415,31 @@ document.addEventListener('DOMContentLoaded', () => {
               </svg>
               <span>Official</span>
             </a>
+            <div class="flight-ota-strip" onclick="event.stopPropagation();">
+              <a href="${f.ota_urls ? f.ota_urls.makemytrip : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on MakeMyTrip" onclick="window.showToast('✈️ Opening MakeMyTrip...', 'info'); event.stopPropagation();">MMT</a>
+              <a href="${f.ota_urls ? f.ota_urls.easemytrip : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on EaseMyTrip" onclick="window.showToast('✈️ Opening EaseMyTrip...', 'info'); event.stopPropagation();">EMT</a>
+              <a href="${f.ota_urls ? f.ota_urls.ixigo : (f.booking_url || '#')}" target="_blank" rel="noopener noreferrer" class="ota-micro-link" title="Book on Ixigo" onclick="window.showToast('✈️ Opening Ixigo...', 'info'); event.stopPropagation();">Ixigo</a>
+            </div>
           </div>
         </div>
       `;
     }).join('');
   }
+
+  window.showMoreFlights = function() {
+    state.visibleFlightCount = (state.visibleFlightCount || 20) + 20;
+    renderLiveFlightCardsList(state.currentLiveFlights, state.stopsFilter);
+  };
+
+  window.setFlightSortOrder = function(sortKey, el) {
+    state.currentSort = sortKey;
+    document.querySelectorAll('#liveSortPillGroup .segment-btn').forEach(btn => btn.classList.remove('active'));
+    if (el) el.classList.add('active');
+    if (sortKey === 'RANDOM') {
+      state.randomSeed = Math.floor(Math.random() * 100000);
+    }
+    renderLiveFlightCardsList(state.currentLiveFlights, state.stopsFilter);
+  };
 
   function renderLiveScrapedResults(data) {
     const box = document.getElementById('liveScrapedResultsBox');
@@ -5393,7 +5473,7 @@ window.basketCustomCalibration = null;
 function initRouteBasket() {
   const refreshBtn = document.getElementById('basketRefreshBtn');
   if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => fetchBasketData());
+    refreshBtn.addEventListener('click', () => fetchBasketData(true));
   }
   // Auto-fire filters immediately on selection change
   ['basketCabinFilter', 'basketPlatformFilter'].forEach(id => {
@@ -5657,7 +5737,7 @@ function applyCalibrationToBasket(rawData, calib) {
   };
 }
 
-async function fetchBasketData() {
+async function fetchBasketData(forceRefresh = false) {
   const cabin = document.getElementById('basketCabinFilter')?.value || 'Economy';
   const platform = document.getElementById('basketPlatformFilter')?.value || 'ALL';
   const grid = document.getElementById('basketRoutesGrid');
@@ -5665,12 +5745,13 @@ async function fetchBasketData() {
 
   // Show loading
   if (grid) {
-    grid.innerHTML = `<div class="basket-loading"><div class="basket-spinner"></div><span>Fetching live basket data…</span></div>`;
+    grid.innerHTML = `<div class="basket-loading"><div class="basket-spinner"></div><span>${forceRefresh ? 'Extracting genuine real-time flight rates across 15 DGCA corridors via Playwright…' : 'Loading live DGCA real-time basket data…'}</span></div>`;
   }
-  if (srcText) srcText.textContent = 'Contacting scraper engine…';
+  if (srcText) srcText.textContent = forceRefresh ? '⚡ Extracting live flights in real time…' : 'Connecting to real-time scraper…';
 
   try {
-    const res = await fetch(`/api/v1/scrape/basket?cabin_class=${encodeURIComponent(cabin)}&platform=${encodeURIComponent(platform)}`);
+    const refreshParam = forceRefresh ? '&refresh_live=true' : '';
+    const res = await fetch(`/api/v1/scrape/basket?cabin_class=${encodeURIComponent(cabin)}&platform=${encodeURIComponent(platform)}${refreshParam}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     window.rawBasketData = data;
@@ -5681,11 +5762,11 @@ async function fetchBasketData() {
       renderBasketData(data);
     }
 
-    if (srcText) srcText.textContent = `🟢 Live — ${data.basket_size || 0} routes • ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`;
+    if (srcText) srcText.textContent = `🟢 Real-Time Scraped — ${data.basket_size || 0} corridors • ${new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'})} IST`;
   } catch (err) {
     console.error('Basket fetch error:', err);
     if (grid) {
-      grid.innerHTML = `<div class="basket-error"><span>⚠️ Could not load basket data. ${err.message}</span><button onclick="fetchBasketData()" style="margin-left:12px;padding:6px 14px;border-radius:8px;border:none;background:#0EA5E9;color:#fff;cursor:pointer;font-size:13px">Retry</button></div>`;
+      grid.innerHTML = `<div class="basket-error"><span>⚠️ Could not load basket data. ${err.message}</span><button onclick="fetchBasketData(true)" style="margin-left:12px;padding:6px 14px;border-radius:8px;border:none;background:#0EA5E9;color:#fff;cursor:pointer;font-size:13px">Retry Scrape</button></div>`;
     }
     if (srcText) srcText.textContent = '🔴 Connection error';
   }
