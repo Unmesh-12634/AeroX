@@ -56,17 +56,21 @@ _ALLOWED_REDIRECT_HOSTS = (
     "spicejet.com",
 )
 
-def _is_allowed_redirect_url(url: str) -> bool:
+def _sanitize_redirect_url(url: str) -> Optional[str]:
     try:
         parsed = urllib.parse.urlparse(url)
     except Exception:
-        return False
+        return None
     if parsed.scheme not in {"http", "https"}:
-        return False
+        return None
     host = (parsed.hostname or "").lower()
     if not host:
-        return False
-    return any(host == allowed or host.endswith(f".{allowed}") for allowed in _ALLOWED_REDIRECT_HOSTS)
+        return None
+    if not any(host == allowed or host.endswith(f".{allowed}") for allowed in _ALLOWED_REDIRECT_HOSTS):
+        return None
+    query_pairs = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    safe_query = urllib.parse.urlencode(query_pairs, doseq=True)
+    return urllib.parse.urlunparse((parsed.scheme, host, parsed.path or "/", "", safe_query, ""))
 
 # Accurate Flight Durations & Base Distances between Indian Hubs
 ROUTE_BENCHMARKS = {
@@ -805,9 +809,6 @@ def redirect_to_booking(
     High-reliability redirect gateway ensuring working flight search & airline booking URLs.
     Issues an HTTP 307 Temporary Redirect directly to the live provider portal.
     """
-    if target_url and _is_allowed_redirect_url(target_url):
-        return RedirectResponse(url=target_url, status_code=307)
-
     links = build_flight_deep_links(
         origin=origin.upper().strip(),
         dest=dest.upper().strip(),
@@ -818,9 +819,10 @@ def redirect_to_booking(
         cabin_class=cabin_class
     )
     target = links["airline_url"] if target_type == "airline" else links["booking_url"]
-    if not _is_allowed_redirect_url(target):
+    safe_target = _sanitize_redirect_url(target)
+    if safe_target is None:
         raise HTTPException(status_code=400, detail="Invalid redirect target")
-    return RedirectResponse(url=target, status_code=307)
+    return RedirectResponse(url=safe_target, status_code=307)
 
 @router.get("/scrape/search")
 def live_search_and_scrape_get(
