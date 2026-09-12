@@ -5001,29 +5001,299 @@ document.addEventListener('DOMContentLoaded', () => {
     window.runApixSimulator();
   };
 
-  function renderCPIComparisonChart() {
+  // =========================================================================
+  // 7. MoSPI CPI Benchmarking & Real-Time Nowcast Engine
+  // =========================================================================
+  state.cpiViewMode = state.cpiViewMode || 'index'; // 'index' or 'mom'
+  state.cpiSelectedSector = state.cpiSelectedSector || 'Combined';
+  state.cpiSelectedState = state.cpiSelectedState || 'All India';
+  state.cpiDataCache = null;
+
+  window.switchCpiMode = function(mode) {
+    state.cpiViewMode = mode;
+    const btnIndex = document.getElementById('btnCpiModeIndex');
+    const btnMom = document.getElementById('btnCpiModeMom');
+    const heading = document.getElementById('cpiChartHeading');
+    const badge = document.getElementById('cpiChartSubBadge');
+
+    if (btnIndex && btnMom) {
+      if (mode === 'index') {
+        btnIndex.classList.add('active');
+        btnMom.classList.remove('active');
+        if (heading) heading.textContent = 'Airfare Intelligence (APIx) vs Official MoSPI CPI Benchmark';
+        if (badge) badge.textContent = 'Base 2024 = 100.0';
+      } else {
+        btnMom.classList.add('active');
+        btnIndex.classList.remove('active');
+        if (heading) heading.textContent = 'Month-over-Month (MoM) % Inflation: APIx vs Official MoSPI';
+        if (badge) badge.textContent = 'MoM Rate of Change (%)';
+      }
+    }
+    updateCpiComparisonChart();
+  };
+
+  window.handleCpiSectorChange = function(sector) {
+    state.cpiSelectedSector = sector;
+    renderCPIComparisonChart(true);
+  };
+
+  window.handleCpiStateChange = function(st) {
+    state.cpiSelectedState = st;
+    renderCPIComparisonChart(true);
+  };
+
+  window.exportCpiTableCSV = function() {
+    if (!state.cpiDataCache || !state.cpiDataCache.series) return;
+    const rows = state.cpiDataCache.series;
+    let csv = 'Period,Period_Label,State,Sector,MoSPI_CPI_Index,MoSPI_MoM_Pct,MoSPI_YoY_Pct,APIx_Index,APIx_MoM_Pct,Lead_Status,Source\n';
+    rows.forEach(r => {
+      csv += `"${r.year}-${r.month}","${r.period_label}","${r.state}","${r.sector}",${r.mospi_index !== null ? r.mospi_index : ''},${r.mospi_mom_pct !== null ? r.mospi_mom_pct : ''},${r.mospi_yoy_pct !== null ? r.mospi_yoy_pct : ''},${r.apix_index !== null ? r.apix_index : ''},${r.apix_mom_pct !== null ? r.apix_mom_pct : ''},"${r.lead_status}","${r.source}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `MoSPI_CPI_APIx_Benchmarking_${state.cpiSelectedState}_${state.cpiSelectedSector}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  async function renderCPIComparisonChart(forceReload = false) {
     const ctx = document.getElementById('chartCPIComparison');
     if (!ctx) return;
+
+    try {
+      if (forceReload || !state.cpiDataCache) {
+        const url = `/api/v1/analytics/mospi-cpi?state=${encodeURIComponent(state.cpiSelectedState || 'All India')}&sector=${encodeURIComponent(state.cpiSelectedSector || 'Combined')}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          state.cpiDataCache = await res.json();
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch real MoSPI CPI data:', err);
+    }
+
+    if (!state.cpiDataCache || !state.cpiDataCache.series) {
+      return;
+    }
+
+    const data = state.cpiDataCache;
+    const series = data.series || [];
+    const kpis = data.kpis || {};
+
+    // 1. Update KPI ribbon
+    const elLatestVal = document.getElementById('cpiLatestVal');
+    const elLatestBadge = document.getElementById('cpiLatestMonthBadge');
+    if (elLatestVal && kpis.latest_mospi_index) elLatestVal.textContent = Number(kpis.latest_mospi_index).toFixed(2);
+    if (elLatestBadge && kpis.latest_mospi_month) elLatestBadge.textContent = kpis.latest_mospi_month;
+
+    const elMomVal = document.getElementById('cpiMomVal');
+    const elMomBadge = document.getElementById('cpiMomBadge');
+    const elMomSub = document.getElementById('cpiMomSub');
+    if (elMomVal && kpis.latest_mospi_mom_pct !== undefined) {
+      const momSign = kpis.latest_mospi_mom_pct > 0 ? '+' : '';
+      elMomVal.textContent = `${momSign}${Number(kpis.latest_mospi_mom_pct).toFixed(2)}%`;
+      elMomVal.style.color = kpis.latest_mospi_mom_pct > 0 ? '#D97706' : '#10B981';
+    }
+    if (elMomBadge && kpis.latest_mospi_mom_pct !== undefined) {
+      const momSign = kpis.latest_mospi_mom_pct > 0 ? '+' : '';
+      elMomBadge.textContent = `${momSign}${Number(kpis.latest_mospi_mom_pct).toFixed(2)}%`;
+      elMomBadge.style.background = kpis.latest_mospi_mom_pct > 0 ? '#FEF3C7' : '#DCFCE7';
+      elMomBadge.style.color = kpis.latest_mospi_mom_pct > 0 ? '#B45309' : '#166534';
+    }
+    if (elMomSub && kpis.latest_mospi_yoy_pct !== null && kpis.latest_mospi_yoy_pct !== undefined) {
+      elMomSub.textContent = `YoY Inflation: +${Number(kpis.latest_mospi_yoy_pct).toFixed(2)}%`;
+    }
+
+    const elNowcastVal = document.getElementById('cpiNowcastVal');
+    if (elNowcastVal && kpis.live_apix_nowcast) {
+      elNowcastVal.textContent = Number(kpis.live_apix_nowcast).toFixed(2);
+    }
+
+    // 2. Populate Dropdowns if needed
+    const stSelect = document.getElementById('cpiStateSelect');
+    if (stSelect && data.states && stSelect.options.length <= 1) {
+      stSelect.innerHTML = '';
+      data.states.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = st;
+        opt.textContent = st;
+        if (st === state.cpiSelectedState) opt.selected = true;
+        stSelect.appendChild(opt);
+      });
+    }
+
+    // 3. Populate Table Ledger
+    const tbody = document.getElementById('tbodyCpiLedger');
+    if (tbody) {
+      tbody.innerHTML = '';
+      const revSeries = [...series].reverse();
+      revSeries.forEach(item => {
+        const tr = document.createElement('tr');
+        
+        const mIdxText = item.mospi_index !== null ? `<strong>${Number(item.mospi_index).toFixed(2)}</strong>` : `<span class="badge warning" style="background:#FEF3C7; color:#D97706; font-size:10px;">Pending Release</span>`;
+        
+        let momBadge = '—';
+        if (item.mospi_mom_pct !== null && item.mospi_mom_pct !== undefined) {
+          const s = item.mospi_mom_pct > 0 ? '+' : '';
+          const col = item.mospi_mom_pct > 0 ? '#B45309' : (item.mospi_mom_pct < 0 ? '#166534' : '#64748B');
+          const bg = item.mospi_mom_pct > 0 ? '#FEF3C7' : (item.mospi_mom_pct < 0 ? '#DCFCE7' : '#F1F5F9');
+          momBadge = `<span class="badge" style="background:${bg}; color:${col}; font-weight:700;">${s}${Number(item.mospi_mom_pct).toFixed(2)}%</span>`;
+        }
+
+        const yoyText = item.mospi_yoy_pct !== null && item.mospi_yoy_pct !== undefined ? `+${Number(item.mospi_yoy_pct).toFixed(2)}%` : '—';
+        
+        const apixText = item.apix_index !== null ? `<strong style="color:#0284C7;">${Number(item.apix_index).toFixed(2)}</strong>` : '—';
+        
+        let apixMomText = '—';
+        if (item.apix_mom_pct !== null && item.apix_mom_pct !== undefined) {
+          const s = item.apix_mom_pct > 0 ? '+' : '';
+          apixMomText = `<span style="font-weight:600; color:#0284C7;">${s}${Number(item.apix_mom_pct).toFixed(2)}%</span>`;
+        }
+
+        const statusBadge = item.is_nowcast
+          ? `<span class="badge" style="background:#E0F2FE; color:#0284C7; font-weight:700;">${item.lead_status}</span>`
+          : `<span class="badge" style="background:#F1F5F9; color:#475569;">${item.lead_status}</span>`;
+
+        const srcBadge = `<span style="font-size:11px; color:#64748B;">${item.source}</span>`;
+
+        tr.innerHTML = `
+          <td><strong>${item.period_label}</strong></td>
+          <td>${item.state} (${item.sector})</td>
+          <td>${mIdxText}</td>
+          <td>${momBadge}</td>
+          <td>${yoyText}</td>
+          <td>${apixText}</td>
+          <td>${apixMomText}</td>
+          <td>${statusBadge}</td>
+          <td>${srcBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 4. Render or Update Chart
+    updateCpiComparisonChart();
+  }
+
+  function updateCpiComparisonChart() {
+    const ctx = document.getElementById('chartCPIComparison');
+    if (!ctx) return;
+    if (!state.cpiDataCache || !state.cpiDataCache.series) return;
+
+    const series = state.cpiDataCache.series;
+    const isMom = state.cpiViewMode === 'mom';
+
+    const labels = series.map(s => s.period_label);
+
+    let apixData, mospiData;
+    if (isMom) {
+      apixData = series.map(s => s.apix_mom_pct !== null ? s.apix_mom_pct : null);
+      mospiData = series.map(s => s.mospi_mom_pct !== null ? s.mospi_mom_pct : null);
+    } else {
+      apixData = series.map(s => s.apix_index !== null ? s.apix_index : null);
+      mospiData = series.map(s => s.mospi_index !== null ? s.mospi_index : null);
+    }
 
     if (state.charts['cpiComparison']) {
       state.charts['cpiComparison'].destroy();
     }
 
+    const yTitle = isMom ? 'Month-over-Month Change (%)' : 'Index Level (Base 2024 = 100.00)';
+
     state.charts['cpiComparison'] = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Jan 2024', 'Apr 2024', 'Jul 2024', 'Oct 2024', 'Jan 2025', 'Apr 2025', 'Jul 2025', 'Oct 2025', 'Jan 2026', 'Sep 2026'],
+        labels: labels,
         datasets: [
-          { label: 'Live Real-Time APIx Index (Daily Ingestion)', data: [100.0, 114.2, 128.5, 135.1, 142.4, 146.0, 148.2, 149.5, 150.0, 150.19], borderColor: '#0284C7', borderWidth: 2.5, fill: false, tension: 0.25 },
-          { label: 'Official MoSPI Monthly CPI (Airfare Sub-Group)', data: [100.0, 110.5, 122.0, 131.0, 138.0, 142.5, 145.0, 147.0, 148.5, 149.2], borderColor: '#64748B', borderWidth: 2, borderDash: [5, 5], fill: false, tension: 0.25 }
+          {
+            label: isMom ? 'APIx High-Frequency MoM (%)' : 'Live Real-Time APIx Index (Daily Ingestion)',
+            data: apixData,
+            borderColor: '#0284C7',
+            backgroundColor: 'rgba(2, 132, 199, 0.06)',
+            borderWidth: 2.8,
+            fill: !isMom,
+            tension: 0.25,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#0284C7'
+          },
+          {
+            label: isMom ? 'Official MoSPI MoM Inflation (%)' : 'Official MoSPI Monthly CPI (Item 07.3.3 / Base 2024=100)',
+            data: mospiData,
+            borderColor: '#D97706',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            borderDash: [5, 4],
+            fill: false,
+            tension: 0.25,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#D97706',
+            spanGaps: false
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 8,
+              font: { family: 'Inter', size: 12, weight: 600 },
+              color: '#0F172A'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15, 23, 42, 0.94)',
+            titleFont: { family: 'Inter', size: 12, weight: 700 },
+            bodyFont: { family: 'Inter', size: 12 },
+            padding: 12,
+            cornerRadius: 10,
+            callbacks: {
+              label: function(context) {
+                const val = context.parsed.y;
+                if (val === null || val === undefined) return ` ${context.dataset.label}: Pending Release`;
+                const sign = (isMom && val > 0) ? '+' : '';
+                const unit = isMom ? '%' : ' pts';
+                return ` ${context.dataset.label}: ${sign}${val.toFixed(2)}${unit}`;
+              }
+            }
+          }
+        },
         scales: {
-          x: { grid: gridStyle },
-          y: { grid: gridStyle, title: { display: true, text: 'Index (Base 2024 = 100.00)', color: '#64748B' } }
+          x: {
+            grid: gridStyle,
+            ticks: {
+              font: { family: 'Inter', size: 11 },
+              color: '#64748B',
+              maxRotation: 45
+            }
+          },
+          y: {
+            grid: gridStyle,
+            title: {
+              display: true,
+              text: yTitle,
+              color: '#64748B',
+              font: { family: 'Inter', size: 11, weight: 600 }
+            },
+            ticks: {
+              font: { family: 'Inter', size: 11 },
+              color: '#64748B',
+              callback: function(v) {
+                return isMom ? `${v > 0 ? '+' : ''}${v}%` : v.toFixed(1);
+              }
+            }
+          }
         }
       }
     });

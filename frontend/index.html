@@ -2602,24 +2602,150 @@
              ================================================================ -->
         <section class="view-section" id="view-cpi-comparison">
           <div class="page-title-block">
-            <h2>Airfare Intelligence vs Official MoSPI CPI</h2>
-            <p>Benchmarking high-frequency real-time airfare index (APIx) against monthly Ministry of Statistics CPI Transport Index.</p>
+            <div class="title-with-actions" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+              <div>
+                <h2>Airfare Intelligence vs Official MoSPI CPI</h2>
+                <p>Benchmarking high-frequency real-time airfare index (APIx) against monthly Ministry of Statistics (MoSPI) CPI Transport Index (Base 2024 = 100.0).</p>
+              </div>
+              <div class="cpi-controls-header" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">Sector:</span>
+                  <select id="cpiSectorSelect" class="filter-select-clean" style="padding: 6px 12px; border-radius: 980px; border: 1px solid #CBD5E1; background: #FFF; font-size: 12px; font-weight: 600; color: #0F172A; cursor: pointer;" onchange="window.handleCpiSectorChange(this.value)">
+                    <option value="Combined" selected>Combined (All India)</option>
+                    <option value="Urban">Urban</option>
+                    <option value="Rural">Rural</option>
+                  </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 11.5px; font-weight: 700; color: #64748B; text-transform: uppercase;">State / UT:</span>
+                  <select id="cpiStateSelect" class="filter-select-clean" style="padding: 6px 12px; border-radius: 980px; border: 1px solid #CBD5E1; background: #FFF; font-size: 12px; font-weight: 600; color: #0F172A; cursor: pointer; max-width: 180px;" onchange="window.handleCpiStateChange(this.value)">
+                    <option value="All India" selected>All India</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="card u-s17" >
-            <div class="card-header">
-              <div class="card-title">Real-Time Airfare Index (APIx) vs Official CPI (Airfare Sub-Group)</div>
-              <span class="badge info">Base 2024 = 100.0</span>
+          <!-- 5-Card Top Telemetry Ribbon -->
+          <div class="radar-kpi-grid" id="cpiKpiGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div class="radar-kpi-card" id="cardCpiLatest" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Official MoSPI CPI</span>
+                <span class="badge info" id="cpiLatestMonthBadge" style="font-size: 10px; padding: 2px 7px;">Jul 2026</span>
+              </div>
+              <div class="kpi-value" id="cpiLatestVal" style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 6px 0;">125.46</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Base Year 2024 = 100.00</div>
             </div>
-            <div class="chart-container tall">
+
+            <div class="radar-kpi-card" id="cardCpiMom" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">MoSPI MoM Inflation</span>
+                <span class="badge success" id="cpiMomBadge" style="font-size: 10px; padding: 2px 7px; background: #DCFCE7; color: #166534;">-0.50%</span>
+              </div>
+              <div class="kpi-value" id="cpiMomVal" style="font-size: 24px; font-weight: 800; color: #10B981; margin: 6px 0;">-0.50%</div>
+              <div class="kpi-sub" id="cpiMomSub" style="font-size: 11.5px; color: #64748B;">Prior Month: -1.20% (Jun 2026)</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiNowcast" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">APIx T+0 Nowcast</span>
+                <span class="badge" style="font-size: 10px; padding: 2px 7px; background: #E0F2FE; color: #0284C7;" id="cpiNowcastBadge">Sep 2026 Flash</span>
+              </div>
+              <div class="kpi-value" id="cpiNowcastVal" style="font-size: 24px; font-weight: 800; color: #0284C7; margin: 6px 0;">128.40</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Real-time scraped dynamic yield</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiLead" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Reporting Lead</span>
+                <span class="badge warning" style="font-size: 10px; padding: 2px 7px; background: #FEF3C7; color: #D97706;">High Frequency</span>
+              </div>
+              <div class="kpi-value" style="font-size: 24px; font-weight: 800; color: #D97706; margin: 6px 0;">+12 to 45 Days</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Ahead of official monthly release</div>
+            </div>
+
+            <div class="radar-kpi-card" id="cardCpiWeight" style="background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+              <div class="card-title-wrap" style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748B;">Transport Sub-Weight</span>
+                <span class="badge" style="font-size: 10px; padding: 2px 7px; background: #F1F5F9; color: #475569;">MoSPI Standard</span>
+              </div>
+              <div class="kpi-value" style="font-size: 24px; font-weight: 800; color: #0F172A; margin: 6px 0;">7.57%</div>
+              <div class="kpi-sub" style="font-size: 11.5px; color: #64748B;">Share of Headline CPI Basket</div>
+            </div>
+          </div>
+
+          <!-- Main Overlapping Comparison Chart Card -->
+          <div class="card" style="margin-bottom: 22px; background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #F1F5F9;">
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div class="card-title" id="cpiChartHeading" style="font-size: 15px; font-weight: 700; color: #0F172A;">Airfare Intelligence (APIx) vs Official MoSPI CPI Benchmark</div>
+                <span class="badge info" id="cpiChartSubBadge" style="font-size: 10.5px; padding: 3px 8px;">Base 2024 = 100.0</span>
+              </div>
+              <div class="segmented-control" id="cpiModeSegmentedControl">
+                <button type="button" class="segment-btn active" id="btnCpiModeIndex" onclick="window.switchCpiMode('index')">
+                  Base 2024 = 100
+                </button>
+                <button type="button" class="segment-btn" id="btnCpiModeMom" onclick="window.switchCpiMode('mom')">
+                  MoM % Inflation
+                </button>
+              </div>
+            </div>
+            <div class="chart-container tall" style="position: relative; height: 380px; margin-top: 14px;">
               <canvas id="chartCPIComparison"></canvas>
             </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #F1F5F9; font-size: 11.5px; color: #64748B; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <strong style="color: #0284C7;">Cyan Line:</strong> Real-Time APIx Index (Daily Ingestion &amp; Live Nowcast) &nbsp;|&nbsp;
+                <strong style="color: #D97706;">Amber Line:</strong> Official MoSPI Monthly Airfare CPI (Item Code: 07.3.3)
+              </div>
+              <div>
+                <span>Source: Ministry of Statistics &amp; DGCA Route Basket Ledgers</span>
+              </div>
+            </div>
           </div>
 
-          <div class="card u-s72" >
-            <div class="card-title u-s73" >Statistical Briefing for Economists &amp; MoSPI Officers</div>
+          <!-- Audited Official MoSPI CPI & APIx Time Series Ledger Table -->
+          <div class="card" style="margin-bottom: 22px; background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+              <div>
+                <div class="card-title" style="font-size: 15px; font-weight: 700; color: #0F172A;">Audited MoSPI CPI &amp; APIx Empirical Ledger</div>
+                <span style="font-size: 11.5px; color: #64748B;">Official government survey returns (Base 2024 = 100) benchmarked against high-frequency APIx nowcasts.</span>
+              </div>
+              <div>
+                <button type="button" class="action-btn" onclick="window.exportCpiTableCSV()" style="padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 980px; background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; cursor: pointer; transition: all 0.2s ease;">
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            <div class="table-wrapper" style="max-height: 420px; overflow-y: auto;">
+              <table class="apple-table" id="tableCpiLedger">
+                <thead>
+                  <tr>
+                    <th scope="col">Period</th>
+                    <th scope="col">Sector / Geography</th>
+                    <th scope="col">MoSPI CPI Index</th>
+                    <th scope="col">MoSPI MoM (%)</th>
+                    <th scope="col">MoSPI YoY (%)</th>
+                    <th scope="col">APIx Benchmark</th>
+                    <th scope="col">APIx MoM (%)</th>
+                    <th scope="col">Reporting Status</th>
+                    <th scope="col">Data Verification</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyCpiLedger">
+                  <!-- Populated dynamically by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Statistical Briefing for Economists & MoSPI Officers -->
+          <div class="card u-s72">
+            <div class="card-title u-s73">Statistical Briefing for Economists &amp; MoSPI Officers</div>
             <p class="u-s214">
-              Official CPI is published on a monthly cycle with a 12-day reporting lag. <strong>Airfare Intelligence APIx</strong> provides high-frequency daily price observations across all major Indian airlines and travel aggregators, delivering an early lead indicator for transport basket inflation and cost-of-living tracking.
+              Official Consumer Price Index (CPI) for air transport is compiled under National Item Code <strong>07.3.3.1.2.01</strong> (Passenger transport by air, domestic) by the National Statistical Office (NSO / MoSPI), released monthly with a standard 12-day compilation lag. 
+              <strong>AeroX APIx (Airfare Price Index)</strong> provides an un-lagged, daily continuous elementary Jevons geometric index across 15 DGCA-weighted trunk routes. 
+              Because aviation forward bookings follow dynamic yield revenue management (Rule 135 of Aircraft Rules 1937), APIx captures fare surges and capacity shocks in real-time, functioning as a high-frequency <strong>T+0 Flash Nowcast</strong> for the MoSPI transport subgroup and RBI monetary policy surveillance.
             </p>
           </div>
         </section>
