@@ -217,3 +217,63 @@ class TestAPIEndpoints:
         assert "supported_platforms" in data
         assert "makemytrip" in data["supported_platforms"]
         assert "easemytrip" in data["supported_platforms"]
+
+    def test_scrape_redirect_endpoint(self):
+        """Test GET /api/v1/scrape/redirect returns 307 redirect with authentic target URL."""
+        res_booking = client.get(
+            "/api/v1/scrape/redirect?platform=makemytrip&origin=DEL&dest=BOM&date=2026-09-18&airline=IndiGo&flight=6E%20414&target_type=booking",
+            follow_redirects=False
+        )
+        assert res_booking.status_code == 307
+        loc = res_booking.headers.get("location")
+        assert loc is not None
+        assert "makemytrip.com" in loc
+        assert "DEL-BOM" in loc
+
+        res_airline = client.get(
+            "/api/v1/scrape/redirect?platform=google_flights&origin=DEL&dest=BOM&date=2026-09-18&airline=Air%20India&flight=AI%20804&target_type=airline",
+            follow_redirects=False
+        )
+        assert res_airline.status_code == 307
+        loc_al = res_airline.headers.get("location")
+        assert loc_al is not None
+        assert "airindia.com" in loc_al
+
+    def test_scrape_search_data_cleaning_and_unbundling(self):
+        """Test that all scraped flight records are properly cleaned and unbundled without unicode noise."""
+        response = client.post("/api/v1/scrape/search", json={
+            "origin": "DEL",
+            "dest": "BOM",
+            "platform": "ALL",
+            "travel_date": "2026-09-18"
+        })
+        assert response.status_code == 200
+        data = response.json()
+        flights = data.get("flights", [])
+        assert len(flights) > 0
+
+        for f in flights[:30]:
+            # No unicode whitespace
+            assert "\u202f" not in f["departure_time"]
+            assert "\xa0" not in f["departure_time"]
+            assert "\u202f" not in f["arrival_time"]
+            assert "\xa0" not in f["arrival_time"]
+            assert "\u202f" not in f["duration"]
+
+            # Clean carrier flight numbers
+            assert f["flight_number"] is not None
+            assert f["flight_number"].lower() != "nan"
+            assert not f["flight_number"].lower().startswith("nan")
+
+            # Clean fare components matching total
+            assert f["base_fare_inr"] > 0
+            assert f["taxes_fees_inr"] > 0
+            assert f["total_fare_inr"] >= 1800.0
+            recomputed = round(f["base_fare_inr"] + f["taxes_fees_inr"], 2)
+            assert abs(recomputed - f["total_fare_inr"]) < 1.0
+
+            # Working links
+            assert f["booking_url"].startswith("http")
+            assert f["airline_url"].startswith("http")
+            assert f["redirect_url"].startswith("/api/v1/scrape/redirect")
+

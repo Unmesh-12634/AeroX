@@ -291,16 +291,9 @@ class GoogleFlightsScraper:
                             if aria_match:
                                 price_val = parse_price(aria_match.group(1))
 
-                        # For connecting routes where Google Flights shows 'Price unavailable' on preview card,
-                        # derive realistic sector fare benchmark rather than dropping genuine flights
+                        # Only accept genuine scraped prices from the portal
                         if not price_val or price_val < 1800.0:
-                            if any(c.lower() in text_content.lower() for c in ["air india", "indigo", "akasa", "spicejet", "vistara", "express"]):
-                                from backend.routers.scraper import get_route_benchmark
-                                bench = get_route_benchmark(origin_iata, dest_iata)
-                                base_b = bench.get("base", 6850.0)
-                                price_val = round(base_b * (1.0 + ((idx % 5) * 0.035)), 2)
-                            else:
-                                continue
+                            continue
 
                         # Times — Google Flights uses en-dash: "06:00 – 08:15"
                         dep_time, arr_time = "08:30", "10:45"
@@ -320,11 +313,16 @@ class GoogleFlightsScraper:
                                 dh, dm = map(int, dep_time.split(':'))
                                 arr_time = f"{(dh + 2) % 24:02d}:{dm:02d}"
 
+                        # Clean unicode narrow spaces from times
+                        dep_time = dep_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
+                        arr_time = arr_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
+
                         # Duration
                         dur_str = "2h 15m"
                         dur_match = re.search(r'(\d+\s*(?:hr|h)\s*(?:\d+\s*(?:min|m))?)', text_content, re.IGNORECASE)
                         if dur_match:
                             dur_str = dur_match.group(1).strip()
+                        dur_str = dur_str.replace('\u202f', ' ').replace('\xa0', ' ').strip()
                         duration_mins = parse_duration_to_mins(dur_str) or 135
 
                         # Airline (Air India Express checked BEFORE Air India)
@@ -354,7 +352,7 @@ class GoogleFlightsScraper:
                         elif duration_mins and duration_mins > 240:
                             is_nonstop, stops_count, stop_info = False, 1, "1 Stop"
 
-                        # Flight number
+                        # Flight number extraction
                         fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)\s*(\d{3,4})\b', text_content)
                         if fn_match:
                             flight_no = f"{fn_match.group(1)} {fn_match.group(2)}"
@@ -372,7 +370,7 @@ class GoogleFlightsScraper:
                                 pfx = 'UK'
                             else:
                                 pfx = '6E'
-                            flight_no = f"{pfx} {310 + (idx * 27) % 680}"
+                            flight_no = f"{pfx} (Direct)" if is_nonstop else f"{pfx} (Connecting)"
 
                         raw_hash = hashlib.md5(
                             f"{route_str}_{travel_date_str}_{airline_std}_{dep_time}_{price_val}".encode()
