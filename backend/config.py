@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     
     # Storage
     BASE_DIR: Path = BASE_DIR
+    DATA_DIR: Path = DATA_DIR
     FRONTEND_DIR: Path = FRONTEND_DIR
     MASTER_CSV_PATH: Path = CLEANED_DIR / "sih_master_airfare_observations_v2.csv"
     DB_PATH: Path = DATA_DIR / "airfare_index.db"

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C59B27"/>
+      <stop offset="50%" stop-color="#E5C158"/>
+      <stop offset="100%" stop-color="#9A7B1C"/>
+    </linearGradient>
+    <linearGradient id="deepGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#8A6B13"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Sarnath Lion Capital Silhouette & Stems -->
+  <g fill="url(#gold)" stroke="#684F0A" stroke-width="0.8">
+    <!-- Center Lion Head & Mane -->
+    <path d="M 80,18 C 72,18 68,26 66,34 C 64,44 68,52 66,62 C 64,72 58,80 62,92 C 65,100 72,106 80,106 C 88,106 95,100 98,92 C 102,80 96,72 94,62 C 92,52 96,44 94,34 C 92,26 88,18 80,18 Z"/>
+    <!-- Left Lion Profile -->
+    <path d="M 64,30 C 56,30 46,36 42,46 C 38,56 42,66 38,76 C 34,84 28,90 32,100 C 36,108 48,110 58,104 C 64,98 64,88 64,78 Z"/>
+    <!-- Right Lion Profile -->
+    <path d="M 96,30 C 104,30 114,36 118,46 C 122,56 118,66 122,76 C 126,84 132,90 128,100 C 124,108 112,110 102,104 C 96,98 96,88 96,78 Z"/>
+    <!-- Mane details -->
+    <path d="M 72,40 C 76,46 84,46 88,40 M 70,55 C 75,62 85,62 90,55 M 68,70 C 74,78 86,78 92,70 M 72,85 C 76,92 84,92 88,85" fill="none" stroke="#523E07" stroke-width="1.8" stroke-linecap="round"/>
+    
+    <!-- Abacus Base / Platform -->
+    <rect x="25" y="112" width="110" height="14" rx="2" fill="url(#deepGold)"/>
+    <rect x="20" y="126" width="120" height="8" rx="1" fill="url(#gold)"/>
+    
+    <!-- Dharma Chakra in Center of Abacus -->
+    <circle cx="80" cy="119" r="6" fill="#0A2558" stroke="#FFFFFF" stroke-width="0.8"/>
+    <circle cx="80" cy="119" r="1.5" fill="#FFFFFF"/>
+    <!-- Galloping Horse (Left) & Bull (Right) reliefs -->
+    <path d="M 44,116 C 40,114 36,117 38,121 C 41,123 46,122 47,118 Z" fill="#684F0A"/>
+    <path d="M 116,116 C 120,114 124,117 122,121 C 119,123 114,122 113,118 Z" fill="#684F0A"/>
+    
+    <!-- Inverted Lotus Base -->
+    <path d="M 30,134 C 40,154 60,162 80,162 C 100,162 120,154 130,134 Z" fill="url(#deepGold)"/>
+    <path d="M 38,134 C 46,148 60,154 80,154 C 100,154 114,148 122,134" fill="none" stroke="#523E07" stroke-width="1.5"/>
+    <path d="M 50,134 C 56,144 68,148 80,148 C 92,148 104,144 110,134" fill="none" stroke="#523E07" stroke-width="1.2"/>
+  </g>
+  
+  <!-- Satyameva Jayate (सत्यमेव जयते) in Devanagari script -->
+  <text x="80" y="186" text-anchor="middle" font-family="'Noto Sans Devanagari', 'Mangal', 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="700" fill="#1E293B" letter-spacing="1.5">सत्यमेव जयते</text>
+  <text x="80" y="204" text-anchor="middle" font-family="'SF Pro Display', -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="800" fill="#0F172A" letter-spacing="2">GOVERNMENT OF INDIA</text>
+</svg>

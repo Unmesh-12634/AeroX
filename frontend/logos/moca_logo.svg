@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="100%" height="100%">
+  <defs>
+    <linearGradient id="mocaSky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Winged Aircraft Emblem -->
+  <g transform="translate(10, 6)">
+    <circle cx="34" cy="34" r="32" fill="url(#mocaSky)"/>
+    <circle cx="34" cy="34" r="30" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.4"/>
+    <!-- Sleek Aircraft Silhouette Soaring Upward -->
+    <path d="M 34,14 L 38,28 L 54,34 L 54,38 L 38,36 L 37,48 L 43,52 L 43,55 L 34,53 L 25,55 L 25,52 L 31,48 L 30,36 L 14,38 L 14,34 L 30,28 Z" fill="#FFFFFF"/>
+    <!-- Speed arcs / contrail -->
+    <path d="M 18,48 C 22,54 28,58 34,58 C 40,58 46,54 50,48" fill="none" stroke="#BAE6FD" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Typography: MoCA Hindi & English -->
+  <g transform="translate(85, 20)">
+    <text x="0" y="0" font-family="'Noto Sans Devanagari', 'Mangal', sans-serif" font-size="14" font-weight="700" fill="#0C4A6E">नागर विमानन मंत्रालय</text>
+    <text x="0" y="16" font-family="-apple-system, 'SF Pro Display', Inter, sans-serif" font-size="11.5" font-weight="700" fill="#0369A1" letter-spacing="0.4">MINISTRY OF CIVIL AVIATION</text>
+    <text x="0" y="30" font-family="-apple-system, 'SF Pro Display', Inter, sans-serif" font-size="8.5" font-weight="600" fill="#64748B" letter-spacing="0.5">Air Transport &amp; Fare Regulation &bull; Govt. of India</text>
+  </g>
+</svg>

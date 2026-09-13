@@ -22,7 +22,8 @@ from backend.routers import (
     analytics_router,
     scraper_router,
     replay_router,
-    backtest_router
+    backtest_router,
+    auth_router
 )
 
 app = FastAPI(
@@ -61,6 +62,7 @@ app.include_router(analytics_router, prefix=settings.API_V1_PREFIX)
 app.include_router(scraper_router, prefix=settings.API_V1_PREFIX)
 app.include_router(replay_router, prefix=settings.API_V1_PREFIX)
 app.include_router(backtest_router, prefix=settings.API_V1_PREFIX)
+app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
 
 # Static Frontend Mounts
 if settings.FRONTEND_DIR.exists():
@@ -87,6 +89,16 @@ def serve_index():
         "status": "OPERATIONAL",
         "docs": "/docs"
     })
+
+from backend.scheduler import scheduler
+
+@app.on_event("startup")
+def on_app_startup():
+    scheduler.start()
+
+@app.on_event("shutdown")
+def on_app_shutdown():
+    scheduler.stop()
 
 @app.get("/healthz")
 def health_check():

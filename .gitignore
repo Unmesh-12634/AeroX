@@ -59,3 +59,9 @@ Thumbs.db
 # Archives
 *.zip
 *.tar.gz
+
+# Local Scratch & Databases
+scratch/
+AreoX-main/
+*.db
+*.sqlite3

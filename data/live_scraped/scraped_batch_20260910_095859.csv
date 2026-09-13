@@ -1,3 +1,4 @@
+
 record_id,search_timestamp,travel_date,lead_time_days,source_platform,origin_iata,dest_iata,route,origin_raw,dest_raw,airline_standardized,airline_raw,flight_number,departure_time,arrival_time,duration_minutes,duration_raw,cabin_class,total_fare_inr,base_fare_inr,taxes_fees_inr,is_nonstop,raw_hash
 SCR_GF_1789014488_001,2026-09-10 09:57:50,2026-09-11,1,google_flights,DEL,BOM,DEL-BOM,DEL,BOM,Air India,Air India,,5:00 AM,7:20 AM,140.0,2 hr 20 min,Economy,6314.0,,,True,bd328b491ab0
 SCR_GF_1789014488_002,2026-09-10 09:57:50,2026-09-11,1,google_flights,DEL,BOM,DEL-BOM,DEL,BOM,IndiGo,IndiGo,,8:45 AM,11:00 AM,135.0,2 hr 15 min,Economy,6583.0,,,True,11d89f5006ab

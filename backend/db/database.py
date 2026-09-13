@@ -96,6 +96,7 @@ class DataRepository:
             self.airports_dict[a['iata']] = a
 
     def refresh(self):
+        self._enriched_df = None
         self._load_master_data()
 
     def get_airports(self) -> List[Dict[str, Any]]:
@@ -105,5 +106,59 @@ class DataRepository:
         if self.master_df is None or len(self.master_df) == 0:
             self._load_master_data()
         return self.master_df.copy()
+
+    def get_enriched_master_df(self) -> pd.DataFrame:
+        if getattr(self, '_enriched_df', None) is not None:
+            return self._enriched_df.copy()
+        df = self.get_master_df()
+        if len(df) == 0:
+            return df
+        enriched = df.copy()
+
+        # Clean departure time: normalize non-breaking spaces
+        dep_clean = (
+            enriched['departure_time']
+            .fillna('')
+            .astype(str)
+            .str.replace('\u202f', ' ', regex=False)
+            .str.strip()
+        )
+
+        # Normalize flight number: fallback to airline name if missing or short
+        airline = (
+            enriched['airline_standardized']
+            .fillna(enriched['airline_raw'])
+            .fillna('Carrier')
+            .astype(str)
+            .str.strip()
+        )
+        flight_no = enriched['flight_number'].fillna('').astype(str).str.strip()
+        flight_clean = flight_no.where(flight_no.str.len() > 1, airline)
+
+        route = enriched['route'].fillna('').astype(str).str.upper().str.strip()
+        travel_dt = enriched['travel_date'].fillna('').astype(str).str.strip()
+
+        enriched['flight_group_key'] = route + '::' + travel_dt + '::' + flight_clean + '::' + dep_clean
+
+        # Group stats
+        grp = enriched.groupby('flight_group_key')['total_fare_inr'].agg(
+            min_flight_fare='min',
+            max_flight_fare='max',
+            flight_quotes_count='count'
+        ).reset_index()
+
+        # Identify lowest platform per flight group
+        sorted_df = enriched.sort_values(by=['flight_group_key', 'total_fare_inr'], ascending=[True, True])
+        lowest_recs = sorted_df.drop_duplicates(subset=['flight_group_key'], keep='first')[['flight_group_key', 'source_platform']].rename(
+            columns={'source_platform': 'lowest_platform'}
+        )
+
+        enriched = enriched.merge(grp, on='flight_group_key', how='left')
+        enriched = enriched.merge(lowest_recs, on='flight_group_key', how='left')
+        enriched['is_lowest_quote'] = enriched['total_fare_inr'] <= (enriched['min_flight_fare'] + 0.5)
+        enriched['fare_start_label'] = 'Starting from ₹' + enriched['min_flight_fare'].astype(int).astype(str)
+
+        self._enriched_df = enriched
+        return self._enriched_df.copy()
 
 db = DataRepository()

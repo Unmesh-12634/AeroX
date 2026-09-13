@@ -66,6 +66,40 @@ def audit_data_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
     fare_validity = (valid_fares / total_records) * 100
     clean_usable_pct = ((total_records - outlier_count - defunct_count) / total_records) * 100
 
+    # Real Source Platform Distribution
+    source_counts = df['source_platform'].value_counts().to_dict() if 'source_platform' in df.columns else {}
+    source_labels_map = {
+        'google_flights': 'Google Flights',
+        'makemytrip': 'MakeMyTrip',
+        'ixigo': 'Ixigo',
+        'yatra': 'Yatra',
+        'easemytrip': 'EaseMyTrip',
+        'airline_direct': 'Airline Direct'
+    }
+    source_breakdown = [
+        {"name": source_labels_map.get(k, k.replace('_', ' ').title()), "count": int(v), "pct": round((v / total_records) * 100, 1)}
+        for k, v in source_counts.items()
+    ]
+
+    # Real Airline Distribution
+    airline_counts = df['airline_standardized'].value_counts().to_dict() if 'airline_standardized' in df.columns else {}
+    airline_breakdown = [
+        {"airline": k, "count": int(v), "pct": round((v / total_records) * 100, 1)}
+        for k, v in airline_counts.items()
+    ]
+
+    # Real Corridors & Date Coverage
+    corridors_count = int(df['route'].nunique()) if 'route' in df.columns else 0
+    date_min = str(df['travel_date'].min()) if 'travel_date' in df.columns and len(df['travel_date'].dropna()) > 0 else 'N/A'
+    date_max = str(df['travel_date'].max()) if 'travel_date' in df.columns and len(df['travel_date'].dropna()) > 0 else 'N/A'
+
+    # Real Fares distribution
+    fares = df['total_fare_inr'].dropna() if 'total_fare_inr' in df.columns else pd.Series([])
+    mean_fare = round(float(fares.mean()), 2) if len(fares) > 0 else 0.0
+    median_fare = round(float(fares.median()), 2) if len(fares) > 0 else 0.0
+    min_fare = round(float(fares.min()), 2) if len(fares) > 0 else 0.0
+    max_fare = round(float(fares.max()), 2) if len(fares) > 0 else 0.0
+
     return {
         "total_records": total_records,
         "valid_routes_pct": round(route_completeness, 2),
@@ -73,7 +107,15 @@ def audit_data_quality_metrics(df: pd.DataFrame) -> Dict[str, Any]:
         "outliers_detected": int(outlier_count),
         "defunct_quarantined": int(defunct_count),
         "clean_usable_pct": round(clean_usable_pct, 2),
-        "overall_quality_score": round((route_completeness * 0.4 + fare_validity * 0.4 + clean_usable_pct * 0.2), 1)
+        "overall_quality_score": round((route_completeness * 0.4 + fare_validity * 0.4 + clean_usable_pct * 0.2), 1),
+        "corridors_monitored": corridors_count,
+        "date_range": f"{date_min} to {date_max}",
+        "mean_fare_inr": mean_fare,
+        "median_fare_inr": median_fare,
+        "min_fare_inr": min_fare,
+        "max_fare_inr": max_fare,
+        "source_breakdown": source_breakdown,
+        "airline_breakdown": airline_breakdown
     }
 
 class QualityChecker:

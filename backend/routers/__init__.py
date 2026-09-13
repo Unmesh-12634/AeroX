@@ -10,6 +10,7 @@ from backend.routers.analytics import router as analytics_router
 from backend.routers.scraper import router as scraper_router
 from backend.routers.replay import router as replay_router
 from backend.routers.backtest import router as backtest_router
+from backend.routers.auth import router as auth_router
 
 __all__ = [
     "overview_router",
@@ -20,5 +21,6 @@ __all__ = [
     "analytics_router",
     "scraper_router",
     "replay_router",
-    "backtest_router"
+    "backtest_router",
+    "auth_router"
 ]

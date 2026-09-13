@@ -321,13 +321,17 @@ def get_realtime_dgca_basket(force_refresh: bool = False, travel_date: str = Non
         try:
             with open(DGCA_BASKET_CACHE_FILE, "r", encoding="utf-8") as f:
                 cached = json.load(f)
-            updated_ts = cached.get("updated_at")
-            if updated_ts:
-                dt = datetime.fromisoformat(updated_ts)
-                age_minutes = (datetime.now() - dt).total_seconds() / 60.0
-                if age_minutes < 30.0 and len(cached.get("routes", {})) == 15:
-                    print(f"[*] Returning {len(cached['routes'])} cached real-time DGCA routes (age: {age_minutes:.1f}m)")
-                    return cached
+            if len(cached.get("routes", {})) == 15:
+                age_minutes = 0.0
+                updated_ts = cached.get("updated_at")
+                if updated_ts:
+                    try:
+                        dt = datetime.fromisoformat(updated_ts)
+                        age_minutes = (datetime.now() - dt).total_seconds() / 60.0
+                    except Exception:
+                        pass
+                print(f"[*] Returning {len(cached['routes'])} cached real-time DGCA routes (age: {age_minutes:.1f}m)")
+                return cached
         except Exception as e:
             print(f"[-] Cache read notice: {e}")
 
