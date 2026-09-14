@@ -9,8 +9,7 @@ import sqlite3
 import numpy as np
 import pandas as pd
 from typing import Optional, List, Dict, Any
-from pathlib import Path
-from backend.config import settings
+from backend.config import settings, CLEANED_DIR
 
 class DataRepository:
     _instance = None
@@ -23,13 +22,51 @@ class DataRepository:
 
     def _init_repo(self):
         self.master_df: Optional[pd.DataFrame] = None
+        self._enriched_df: Optional[pd.DataFrame] = None
         self.airports_dict: Dict[str, Dict[str, Any]] = {}
         self._load_master_data()
         self._load_airports()
 
+    @property
+    def df(self) -> Optional[pd.DataFrame]:
+        """Convenience property for accessing current master dataframe."""
+        if self.master_df is None or len(self.master_df) == 0:
+            self._load_master_data()
+        return self.master_df
+
+    def reload_data(self):
+        """Forces an in-memory reload of master data from all partition files."""
+        self._enriched_df = None
+        self._load_master_data()
+
+    def reload(self):
+        """Alias for reload_data()."""
+        self.reload_data()
+
+    def reload_master_data(self):
+        """Forces an in-memory reload of master data from all partition files."""
+        self.reload_data()
+
+    def refresh(self):
+        """Refreshes in-memory datasets and resets cached enriched dataframes."""
+        self.reload_data()
+
     def _load_master_data(self):
+        from backend.db.scraping_ledger import scraping_ledger
         dfs = []
-        if settings.MASTER_CSV_PATH.exists():
+
+        # 1. Load Master Cleaned Dataset (v2 or v1)
+        master_v2 = CLEANED_DIR / "sih_master_airfare_observations_v2.csv"
+        if master_v2.exists():
+            try:
+                df = pd.read_csv(master_v2, low_memory=False)
+                df['total_fare_inr'] = pd.to_numeric(df['total_fare_inr'], errors='coerce')
+                df = df.dropna(subset=['total_fare_inr'])
+                df = df[df['total_fare_inr'] >= 1500.0]
+                dfs.append(df)
+            except Exception as e:
+                print(f"[-] Error loading master v2 CSV: {e}")
+        elif settings.MASTER_CSV_PATH.exists():
             try:
                 df = pd.read_csv(settings.MASTER_CSV_PATH, low_memory=False)
                 df['total_fare_inr'] = pd.to_numeric(df['total_fare_inr'], errors='coerce')
@@ -40,22 +77,41 @@ class DataRepository:
             except Exception as e:
                 print(f"[-] Error loading master CSV: {e}")
 
-        live_master = settings.LIVE_SCRAPED_DIR / "live_scraped_master.csv"
-        if live_master.exists():
+        # Check for partitioned master datasets (sih_master_airfare_observations_part*.csv)
+        master_parts = sorted(CLEANED_DIR.glob("sih_master_airfare_observations_part*.csv"))
+        for mp in master_parts:
             try:
-                ldf = pd.read_csv(live_master, low_memory=False)
-                ldf['total_fare_inr'] = pd.to_numeric(ldf['total_fare_inr'], errors='coerce')
-                ldf = ldf.dropna(subset=['total_fare_inr'])
-                dfs.append(ldf)
+                m_part_df = pd.read_csv(mp, low_memory=False)
+                m_part_df['total_fare_inr'] = pd.to_numeric(m_part_df['total_fare_inr'], errors='coerce')
+                m_part_df = m_part_df.dropna(subset=['total_fare_inr'])
+                m_part_df = m_part_df[m_part_df['total_fare_inr'] >= 1500.0]
+                dfs.append(m_part_df)
             except Exception as e:
-                print(f"[-] Error loading live scraped CSV: {e}")
+                print(f"[-] Error loading master partition {mp}: {e}")
+
+        # 2. Load all Live Scraped Partitions via ScrapingLedgerManager
+        try:
+            live_df = scraping_ledger.load_all_partitions()
+            if not live_df.empty:
+                live_df['total_fare_inr'] = pd.to_numeric(live_df['total_fare_inr'], errors='coerce')
+                live_df = live_df.dropna(subset=['total_fare_inr'])
+                live_df = live_df[live_df['total_fare_inr'] >= 1500.0]
+                dfs.append(live_df)
+        except Exception as e:
+            print(f"[-] Error loading live scraped partitions: {e}")
 
         if dfs:
             combined = pd.concat(dfs, ignore_index=True)
             subset_cols = [c for c in ['route', 'travel_date', 'airline_standardized', 'departure_time', 'total_fare_inr'] if c in combined.columns]
             if subset_cols:
-                combined = combined.drop_duplicates(subset=subset_cols)
-            self.master_df = combined
+                combined = combined.drop_duplicates(subset=subset_cols, keep='last')
+
+            # Sort chronologically
+            sort_cols = [c for c in ['search_timestamp', 'travel_date'] if c in combined.columns]
+            if sort_cols:
+                combined = combined.sort_values(by=sort_cols, ascending=True)
+
+            self.master_df = combined.reset_index(drop=True)
         else:
             self.master_df = pd.DataFrame()
 

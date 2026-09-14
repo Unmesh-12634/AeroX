@@ -5,6 +5,7 @@ Statistical Analytics, Anomalies & Explainability Router
 
 from fastapi import APIRouter, Response
 from typing import Dict, Any, List, Optional
+import json
 import pandas as pd
 import numpy as np
 from backend.config import settings
@@ -381,6 +382,21 @@ def get_notifications() -> Dict[str, Any]:
         "anomaly_id": None,
         "is_read": True
     })
+
+    # 5. Prepend dynamic offline catch-up and scheduled scrape notifications
+    sys_notifs_path = settings.DATA_DIR / "logs" / "system_notifications.json"
+    if sys_notifs_path.exists():
+        try:
+            with open(sys_notifs_path, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                if isinstance(saved, list):
+                    # Prepend newest events
+                    for item in saved[:6]:
+                        # Check duplicate ID
+                        if not any(n["id"] == item["id"] for n in notifications):
+                            notifications.insert(0, item)
+        except Exception:
+            pass
 
     unread = len([n for n in notifications if not n["is_read"]])
 

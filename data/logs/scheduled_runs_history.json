@@ -244,5 +244,74 @@
     "latest_apix_index": 150.19,
     "status": "SUCCESS",
     "error": null
+  },
+  {
+    "slot_id": "2026-09-13_14:00",
+    "slot_label": "02:00 PM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-13T20:49:16.995994+05:30",
+    "status": "FAILED",
+    "duration_seconds": 0.0,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip",
+      "indigo",
+      "airindia"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 0,
+    "error": "too many values to unpack (expected 2)"
+  },
+  {
+    "slot_id": "2026-09-13_14:00",
+    "slot_label": "02:00 PM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-13T20:49:19.686863+05:30",
+    "status": "FAILED",
+    "duration_seconds": 0.0,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip",
+      "indigo",
+      "airindia"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 0,
+    "error": "too many values to unpack (expected 2)"
+  },
+  {
+    "slot_id": "2026-09-13_14:00",
+    "slot_label": "02:00 PM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-14T00:01:40.300834+05:30",
+    "status": "COMPLETED",
+    "duration_seconds": 6187.51,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip",
+      "indigo",
+      "airindia"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 10388,
+    "error": null
   }
 ]

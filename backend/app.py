@@ -25,6 +25,8 @@ from backend.routers import (
     backtest_router,
     auth_router
 )
+from backend.routers.predictions import router as predictions_router
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -63,6 +65,7 @@ app.include_router(scraper_router, prefix=settings.API_V1_PREFIX)
 app.include_router(replay_router, prefix=settings.API_V1_PREFIX)
 app.include_router(backtest_router, prefix=settings.API_V1_PREFIX)
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+app.include_router(predictions_router, prefix=settings.API_V1_PREFIX)
 
 # Static Frontend Mounts
 if settings.FRONTEND_DIR.exists():
@@ -70,6 +73,41 @@ if settings.FRONTEND_DIR.exists():
     logos_dir = settings.FRONTEND_DIR / "logos"
     if logos_dir.exists():
         app.mount("/logos", StaticFiles(directory=str(logos_dir)), name="logos")
+    icons_dir = settings.FRONTEND_DIR / "icons"
+    if icons_dir.exists():
+        app.mount("/icons", StaticFiles(directory=str(icons_dir)), name="icons")
+
+@app.get("/manifest.json")
+def serve_manifest():
+    manifest_path = settings.FRONTEND_DIR / "manifest.json"
+    if manifest_path.exists():
+        return FileResponse(
+            manifest_path,
+            media_type="application/manifest+json",
+            headers={"Cache-Control": "public, max-age=3600"}
+        )
+    return JSONResponse({"error": "manifest not found"}, status_code=404)
+
+@app.get("/sw.js")
+def serve_service_worker():
+    sw_path = settings.FRONTEND_DIR / "sw.js"
+    if sw_path.exists():
+        return FileResponse(
+            sw_path,
+            media_type="application/javascript",
+            headers={
+                "Service-Worker-Allowed": "/",
+                "Cache-Control": "no-cache, no-store, must-revalidate"
+            }
+        )
+    return JSONResponse({"error": "service worker not found"}, status_code=404)
+
+@app.get("/offline.html")
+def serve_offline_html():
+    offline_path = settings.FRONTEND_DIR / "offline.html"
+    if offline_path.exists():
+        return FileResponse(offline_path, media_type="text/html")
+    return JSONResponse({"error": "offline page not found"}, status_code=404)
 
 @app.get("/")
 def serve_index():

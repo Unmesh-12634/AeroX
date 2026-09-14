@@ -430,3 +430,249 @@ def get_flight_rate_comparison(
         'platforms_count': len(platforms_list),
         'platforms': platforms_list
     }
+
+@router.get("/observations/raw")
+def get_raw_scraped_observations(
+    search: Optional[str] = None,
+    route: Optional[str] = None,
+    airline: Optional[str] = None,
+    carrier: Optional[str] = None,
+    platform: Optional[str] = None,
+    batch_date: Optional[str] = None,
+    sort_by: str = "search_timestamp",
+    sort_desc: bool = True,
+    limit: int = Query(50, ge=1, le=500),
+    offset: int = Query(0, ge=0)
+) -> Dict[str, Any]:
+    """
+    Dedicated Raw Scraped Data Endpoint for Institutional Data Explorer.
+    Serves unaltered, live-scraped observations directly from all partitions via ScrapingLedgerManager.
+    """
+    from backend.config import settings
+    from backend.db.scraping_ledger import scraping_ledger
+    
+    try:
+        df = scraping_ledger.load_all_partitions()
+        if df.empty:
+            raw_path = settings.DATA_DIR / "live_scraped" / "live_scraped_master.csv"
+            if raw_path.exists():
+                df = pd.read_csv(raw_path, dtype=str)
+            else:
+                return {
+                    "total": 0,
+                    "limit": limit,
+                    "offset": offset,
+                    "latest_scraped_at": None,
+                    "available_platforms": [],
+                    "available_dates": [],
+                    "observations": []
+                }
+    except Exception as e:
+        return {"total": 0, "limit": limit, "offset": offset, "error": str(e), "observations": []}
+
+    # Ensure total_fare_inr is numeric
+    if "total_fare_inr" in df.columns:
+        df["total_fare_inr"] = pd.to_numeric(df["total_fare_inr"], errors="coerce")
+
+    # Clean search_timestamp
+    if "search_timestamp" in df.columns:
+        df["search_timestamp"] = df["search_timestamp"].fillna("").astype(str).str.replace("T", " ")
+
+    # Available platform and date options for filter dropdowns (newest travel dates first)
+    available_platforms = sorted(df["source_platform"].dropna().unique().tolist()) if "source_platform" in df.columns else []
+    available_dates = sorted(df["travel_date"].dropna().unique().tolist(), reverse=True) if "travel_date" in df.columns else []
+
+    # Latest scrape timestamp
+    latest_scraped_at = None
+    if "search_timestamp" in df.columns:
+        valid_ts = df["search_timestamp"].replace("", np.nan).dropna()
+        if len(valid_ts) > 0:
+            latest_scraped_at = str(valid_ts.max())
+
+    # 1. Search filter
+    if search:
+        s = search.lower().strip()
+        cond = (
+            df["route"].astype(str).str.lower().str.contains(s, na=False) |
+            df["airline_standardized"].astype(str).str.lower().str.contains(s, na=False) |
+            df["record_id"].astype(str).str.lower().str.contains(s, na=False) |
+            df["flight_number"].astype(str).str.lower().str.contains(s, na=False) |
+            df["source_platform"].astype(str).str.lower().str.contains(s, na=False) |
+            df["origin_iata"].astype(str).str.lower().str.contains(s, na=False) |
+            df["dest_iata"].astype(str).str.lower().str.contains(s, na=False)
+        )
+        df = df[cond]
+
+    # 2. Route filter
+    if route and route != "ALL":
+        parts = route.upper().split("-")
+        if len(parts) == 2:
+            r1, r2 = f"{parts[0]}-{parts[1]}", f"{parts[1]}-{parts[0]}"
+            df = df[(df["route"].astype(str).str.upper() == r1) | (df["route"].astype(str).str.upper() == r2)]
+        else:
+            df = df[df["route"].astype(str).str.upper() == route.upper()]
+
+    # 3. Airline filter (accepts airline or carrier parameter)
+    target_airline = carrier or airline
+    if target_airline and target_airline != "ALL":
+        df = df[df["airline_standardized"].astype(str).str.lower() == target_airline.lower()]
+
+    # 4. Platform filter
+    if platform and platform != "ALL":
+        df = df[df["source_platform"].astype(str).str.lower() == platform.lower()]
+
+    # 5. Batch/Travel Date filter
+    if batch_date and batch_date != "ALL":
+        df = df[df["travel_date"].astype(str) == batch_date]
+
+    total = len(df)
+
+    # 6. Sorting (search_timestamp defaults to latest first when sort_desc=True)
+    if sort_by == "search_timestamp" or "timestamp" in sort_by:
+        df = df.sort_values(by="search_timestamp", ascending=not sort_desc, na_position="last" if sort_desc else "first")
+    elif sort_by in df.columns:
+        df = df.sort_values(by=sort_by, ascending=not sort_desc, na_position="last")
+    elif "search_timestamp" in df.columns:
+        df = df.sort_values(by="search_timestamp", ascending=not sort_desc, na_position="last" if sort_desc else "first")
+
+    sliced = df.iloc[offset : offset + limit].replace({np.nan: None})
+    return {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "latest_scraped_at": latest_scraped_at,
+        "available_platforms": available_platforms,
+        "available_dates": available_dates[:30],
+        "observations": sliced.to_dict(orient="records")
+    }
+
+@router.get("/observations/raw/export")
+def export_raw_scraped_observations(
+    search: Optional[str] = None,
+    route: Optional[str] = None,
+    airline: Optional[str] = None,
+    carrier: Optional[str] = None,
+    platform: Optional[str] = None,
+    batch_date: Optional[str] = None,
+    sort_by: str = "search_timestamp",
+    sort_desc: bool = True,
+    format: str = Query("csv", regex="^(csv|json)$")
+):
+    from backend.config import settings
+    from backend.db.scraping_ledger import scraping_ledger
+    from fastapi.responses import Response
+
+    try:
+        df = scraping_ledger.load_all_partitions()
+        if df.empty:
+            raw_path = settings.DATA_DIR / "live_scraped" / "live_scraped_master.csv"
+            if raw_path.exists():
+                df = pd.read_csv(raw_path, dtype=str)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    if "total_fare_inr" in df.columns:
+        df["total_fare_inr"] = pd.to_numeric(df["total_fare_inr"], errors="coerce")
+
+    if "search_timestamp" in df.columns:
+        df["search_timestamp"] = df["search_timestamp"].fillna("").astype(str).str.replace("T", " ")
+
+    if search:
+        s = search.lower().strip()
+        cond = (
+            df["route"].astype(str).str.lower().str.contains(s, na=False) |
+            df["airline_standardized"].astype(str).str.lower().str.contains(s, na=False) |
+            df["record_id"].astype(str).str.lower().str.contains(s, na=False) |
+            df["flight_number"].astype(str).str.lower().str.contains(s, na=False)
+        )
+        df = df[cond]
+
+    if route and route != "ALL":
+        parts = route.upper().split("-")
+        if len(parts) == 2:
+            r1, r2 = f"{parts[0]}-{parts[1]}", f"{parts[1]}-{parts[0]}"
+            df = df[(df["route"].astype(str).str.upper() == r1) | (df["route"].astype(str).str.upper() == r2)]
+        else:
+            df = df[df["route"].astype(str).str.upper() == route.upper()]
+
+    target_airline = carrier or airline
+    if target_airline and target_airline != "ALL":
+        df = df[df["airline_standardized"].astype(str).str.lower() == target_airline.lower()]
+
+    if platform and platform != "ALL":
+        df = df[df["source_platform"].astype(str).str.lower() == platform.lower()]
+
+    if batch_date and batch_date != "ALL":
+        df = df[df["travel_date"].astype(str) == batch_date]
+
+    if sort_by == "search_timestamp" or "timestamp" in sort_by:
+        df = df.sort_values(by="search_timestamp", ascending=not sort_desc, na_position="last" if sort_desc else "first")
+    elif sort_by in df.columns:
+        df = df.sort_values(by=sort_by, ascending=not sort_desc, na_position="last")
+
+    if format == "json":
+        json_str = df.to_json(orient="records", indent=2)
+        return Response(content=json_str, media_type="application/json", headers={"Content-Disposition": "attachment; filename=raw_scraped_observations.json"})
+
+    csv_str = df.to_csv(index=False)
+    return Response(content=csv_str, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=raw_scraped_observations.csv"})
+
+@router.get("/observations/raw/export")
+def export_raw_scraped_observations(
+    search: Optional[str] = None,
+    route: Optional[str] = None,
+    airline: Optional[str] = None,
+    platform: Optional[str] = None,
+    batch_date: Optional[str] = None,
+    format: str = Query("csv"),
+    limit: int = Query(10000, ge=1, le=50000)
+):
+    """Exports raw scraped flight observations in CSV with UTF-8 BOM."""
+    from backend.config import settings
+    from datetime import datetime
+    import io
+    raw_path = settings.DATA_DIR / "live_scraped" / "live_scraped_master.csv"
+    if not raw_path.exists():
+        return Response(content="No raw data available", media_type="text/plain", status_code=204)
+
+    df = pd.read_csv(raw_path, dtype=str)
+    if "total_fare_inr" in df.columns:
+        df["total_fare_inr"] = pd.to_numeric(df["total_fare_inr"], errors="coerce")
+
+    if search:
+        s = search.lower().strip()
+        cond = (
+            df["route"].str.lower().str.contains(s, na=False) |
+            df["airline_standardized"].str.lower().str.contains(s, na=False) |
+            df["flight_number"].astype(str).str.lower().str.contains(s, na=False) |
+            df["source_platform"].str.lower().str.contains(s, na=False)
+        )
+        df = df[cond]
+
+    if route and route != "ALL":
+        parts = route.upper().split("-")
+        if len(parts) == 2:
+            df = df[(df["route"].str.upper() == f"{parts[0]}-{parts[1]}") | (df["route"].str.upper() == f"{parts[1]}-{parts[0]}")]
+        else:
+            df = df[df["route"].str.upper() == route.upper()]
+
+    if airline and airline != "ALL":
+        df = df[df["airline_standardized"].str.lower() == airline.lower()]
+
+    if platform and platform != "ALL":
+        df = df[df["source_platform"].str.lower() == platform.lower()]
+
+    if batch_date and batch_date != "ALL":
+        df = df[df["travel_date"] == batch_date]
+
+    df = df.iloc[:limit]
+    buf = io.StringIO()
+    buf.write("\ufeff")  # UTF-8 BOM
+    df.to_csv(buf, index=False)
+    csv_bytes = buf.getvalue().encode("utf-8")
+
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=raw_scraped_observations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"}
+    )

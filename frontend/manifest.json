@@ -1,0 +1,64 @@
+{
+  "id": "/",
+  "name": "AREOX - DGCA Airfare Price Index & Regulatory Monitor",
+  "short_name": "AREOX",
+  "description": "Real-time national airfare price index, multi-OTA market ledger, carrier dispersion, and automated 3σ surge monitoring for civil aviation.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "dir": "ltr",
+  "lang": "en-IN",
+  "categories": ["business", "finance", "travel", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "DGCA Top-15 Basket",
+      "short_name": "Top-15 Basket",
+      "description": "View live regulatory airfare benchmarks across 15 national trunk corridors",
+      "url": "/#sectionBasket",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Raw Scraped Explorer",
+      "short_name": "Data Explorer",
+      "description": "Inspect multi-OTA scraped ledger and verified fare unbundling quotes",
+      "url": "/#sectionExplorer",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Surge Anomaly Radar",
+      "short_name": "Surge Radar",
+      "description": "Inspect statistical price surges, volatility flags, and carrier alerts",
+      "url": "/#sectionAnomalies",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

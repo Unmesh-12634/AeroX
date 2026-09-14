@@ -3,10 +3,22 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Airfare Intelligence | Real-time Price Index for India</title>
   <meta name="description"
     content="National statistical real-time airfare analytics platform for MoSPI, RBI, and DGCA. High-frequency price index, carrier dispersion, and anomaly detection.">
+
+  <!-- Progressive Web App (PWA) Manifest & Mobile OS Meta -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AREOX">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon.png">
 
   <!-- Apple System Font &amp; Inter Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +61,1880 @@
     });
   </script>
 
-  <link rel="stylesheet" href="/static/style.css?v=9.4">
+  <link rel="stylesheet" href="/static/style.css?v=10.7">
+  <style id="mobile-portal-critical-override">
+    @media (max-width: 768px) {
+      /* ======================================================================
+         1. TOP NAVIGATION BAR (CLEAN, ICON-ONLY RIGHT SIDE, ZERO DIRECT TEXT)
+         ====================================================================== */
+      .top-nav {
+        height: 54px !important;
+        padding: 0 12px !important;
+        background: #FFFFFF !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        box-sizing: border-box !important;
+      }
+      .top-left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        min-width: 0 !important;
+      }
+      .mobile-menu-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 9px !important;
+        border: 1px solid #E2E8F0 !important;
+        background: #F8FAFC !important;
+        color: #0F172A !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+      }
+      .mobile-brand-wrap {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+      .mobile-brand-emblem {
+        height: 22px !important;
+        width: auto !important;
+      }
+      .mobile-brand-text {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        color: #0F172A !important;
+        letter-spacing: -0.01em !important;
+      }
+      .top-left #topPageTitle,
+      .top-system-badge {
+        display: none !important;
+      }
+
+      /* Top Nav Right: Clean Icon Buttons Only, Zero Direct Text */
+      .top-right {
+        display: flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        flex-shrink: 0 !important;
+      }
+      #topNavScrapePill,
+      #topClockPill,
+      #pwaNetworkPill,
+      #btnExportData,
+      #btnInstallPwa {
+        display: none !important;
+      }
+
+      /* Quota Status: 36x36 Icon Button with Status Dot */
+      #scraperQuotaBadge {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        border-radius: 9px !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        position: relative !important;
+        cursor: pointer !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        flex-shrink: 0 !important;
+      }
+      #scraperQuotaBadge .quota-text,
+      #scraperQuotaBadge .quota-chevron {
+        display: none !important;
+      }
+      #scraperQuotaBadge .quota-meter-icon {
+        display: block !important;
+        color: #475569 !important;
+      }
+      #scraperQuotaBadge .quota-dot {
+        position: absolute !important;
+        top: 6px !important;
+        right: 6px !important;
+        width: 7px !important;
+        height: 7px !important;
+        margin: 0 !important;
+        border: 1.5px solid #FFFFFF !important;
+      }
+
+      /* Notification Bell: 36x36 Icon Button */
+      .top-notif-container {
+        display: inline-flex !important;
+        align-items: center !important;
+      }
+      #btnNotificationBell {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        border-radius: 9px !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        color: #475569 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* Scrape / Refresh: 36x36 Icon Button */
+      #btnTriggerLiveScrape {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        padding: 0 !important;
+        border-radius: 9px !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        color: #475569 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+      }
+      #btnTriggerLiveScrape span {
+        display: none !important;
+      }
+
+      /* ======================================================================
+         2. CONTINUOUS MARQUEE SLIDE FOR MINISTRY SEALS
+         ====================================================================== */
+      @keyframes govSealsSlide {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-50%, 0, 0); }
+      }
+      @-webkit-keyframes govSealsSlide {
+        0% { -webkit-transform: translate3d(0, 0, 0); }
+        100% { -webkit-transform: translate3d(-50%, 0, 0); }
+      }
+      .landing-gov-header {
+        width: 100% !important;
+        overflow: hidden !important;
+        padding: 8px 0 !important;
+        background: #FFFFFF !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        position: relative !important;
+        -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%) !important;
+        mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%) !important;
+      }
+      .landing-gov-seals-cluster {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 12px !important;
+        width: max-content !important;
+        max-width: none !important;
+        animation: govSealsSlide 22s linear infinite !important;
+        -webkit-animation: govSealsSlide 22s linear infinite !important;
+        padding: 0 6px !important;
+        will-change: transform !important;
+      }
+      .landing-gov-seals-cluster:hover,
+      .landing-gov-seals-cluster:active,
+      .landing-gov-seals-cluster:focus {
+        animation-play-state: paused !important;
+        -webkit-animation-play-state: paused !important;
+      }
+      .gov-seal-card {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        flex-shrink: 0 !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+        white-space: nowrap !important;
+      }
+      .gov-seal-card[aria-hidden="true"] {
+        display: inline-flex !important;
+      }
+      .gov-seal-card .gov-seal-img {
+        height: 24px !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+      }
+      .gov-seal-card .gov-seal-text {
+        display: flex !important;
+        flex-direction: column !important;
+        line-height: 1.15 !important;
+      }
+      .gov-seal-card:not(:first-child) .gov-seal-text {
+        display: flex !important;
+      }
+      .gov-seal-card .hindi-name {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        color: #0F172A !important;
+        white-space: nowrap !important;
+      }
+      .gov-seal-card .en-name {
+        font-size: 8.5px !important;
+        font-weight: 600 !important;
+        color: #64748B !important;
+        white-space: nowrap !important;
+      }
+      .seal-divider {
+        display: none !important;
+      }
+
+      /* ======================================================================
+         3. PROPER 2x2 STATUTORY METRIC BOXES
+         ====================================================================== */
+      .gov-statutory-ticker {
+        position: relative !important;
+        margin: 14px 12px 0 12px !important;
+        width: calc(100% - 24px) !important;
+        max-width: 100% !important;
+        background: #051329 !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        border-radius: 14px !important;
+        padding: 9px !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32) !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        box-sizing: border-box !important;
+      }
+      .gov-statutory-ticker .ticker-metric-cell {
+        background: linear-gradient(145deg, #0C2344 0%, #06162C 100%) !important;
+        border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        border-top: 1px solid rgba(56, 189, 248, 0.38) !important;
+        border-radius: 10px !important;
+        padding: 10px 9px !important;
+        border-right: 1px solid rgba(56, 189, 248, 0.2) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        gap: 4px !important;
+        min-height: 104px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        box-sizing: border-box !important;
+      }
+      .ticker-icon-square {
+        display: none !important;
+      }
+      .gov-statutory-ticker .ticker-content-col {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        height: 100% !important;
+        gap: 4px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+      }
+      .gov-statutory-ticker .ticker-metric-tag {
+        font-size: 8.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        color: #94A3B8 !important;
+        text-transform: uppercase !important;
+        white-space: normal !important;
+        word-break: normal !important;
+        line-height: 1.25 !important;
+        min-height: 24px !important;
+        display: block !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        width: 100% !important;
+        margin: 0 !important;
+      }
+      .gov-statutory-ticker .ticker-metric-val-row {
+        display: flex !important;
+        align-items: baseline !important;
+        justify-content: space-between !important;
+        gap: 4px !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        margin: 2px 0 !important;
+      }
+      .gov-statutory-ticker .ticker-metric-val {
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.02em !important;
+        color: #FFFFFF !important;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        font-variant-numeric: tabular-nums !important;
+      }
+      .gov-statutory-ticker .ticker-metric-cell:nth-child(4) .ticker-metric-val {
+        font-size: 15px !important;
+      }
+      .gov-statutory-ticker .ticker-trend.up {
+        color: #34D399 !important;
+        font-size: 9.5px !important;
+        font-weight: 700 !important;
+        background: rgba(16, 185, 129, 0.16) !important;
+        border: 1px solid rgba(52, 211, 153, 0.3) !important;
+        padding: 1.5px 5px !important;
+        border-radius: 4px !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+      }
+      .gov-statutory-ticker .ticker-review-badge {
+        color: #38BDF8 !important;
+        font-size: 9px !important;
+        font-weight: 700 !important;
+        background: rgba(56, 189, 248, 0.16) !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        padding: 1.5px 5px !important;
+        border-radius: 4px !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+      }
+      .gov-statutory-ticker .ticker-metric-sub {
+        font-size: 8.5px !important;
+        color: #64748B !important;
+        line-height: 1.25 !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        width: 100% !important;
+        margin: 0 !important;
+      }
+
+      /* ======================================================================
+         4. COMMAND CENTER & FLIGHT SEARCH ENGINE REFINEMENTS
+         ====================================================================== */
+      .page-title-block {
+        padding: 16px 14px 8px 14px !important;
+        margin-bottom: 0 !important;
+      }
+      .page-title-block h2 {
+        font-size: 19px !important;
+        font-weight: 800 !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+        color: #0F172A !important;
+        margin: 0 0 5px 0 !important;
+      }
+      .page-title-block p {
+        font-size: 12px !important;
+        line-height: 1.45 !important;
+        color: #64748B !important;
+        margin: 0 !important;
+      }
+
+      /* MakeMyTrip Search Container & Booking Card */
+      .mmt-official-search-container {
+        padding: 10px 12px !important;
+        margin: 0 !important;
+      }
+      .mmt-main-booking-card {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        position: relative !important;
+      }
+
+      /* Top Status Pills: Unified Single Line Banner */
+      .mmt-card-top-row {
+        padding: 10px 12px !important;
+        background: #F8FAFC !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+      }
+      .mmt-system-mode-tag {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+        width: 100% !important;
+      }
+      .mmt-mode-pill {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        padding: 4px 8px !important;
+        border-radius: 20px !important;
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+      }
+      .mmt-mode-pill.active {
+        background: #EFF6FF !important;
+        border: 1px solid #BFDBFE !important;
+        color: #1D4ED8 !important;
+      }
+      .mmt-mode-pill.live-indicator {
+        background: #F0FDF4 !important;
+        border: 1px solid #BBF7D0 !important;
+        color: #15803D !important;
+      }
+
+      /* Clean 2-Column Search Input Grid */
+      .mmt-search-input-box {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        box-sizing: border-box !important;
+      }
+
+      /* All Search Field Cells: Distinct 10px Rounded Tiles */
+      .mmt-field-cell {
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 10px !important;
+        padding: 10px 9px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        min-height: 72px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        cursor: pointer !important;
+        transition: background 0.15s ease, border-color 0.15s ease !important;
+      }
+      .mmt-field-cell:active {
+        background: #F1F5F9 !important;
+        border-color: #CBD5E1 !important;
+      }
+      .mmt-field-label {
+        font-size: 9px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #64748B !important;
+        margin-bottom: 2px !important;
+        display: block !important;
+      }
+      .mmt-field-city {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        color: #0F172A !important;
+        line-height: 1.2 !important;
+        letter-spacing: -0.01em !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+      .mmt-field-sub {
+        font-size: 9px !important;
+        color: #94A3B8 !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-top: 2px !important;
+      }
+      .mmt-swap-divider {
+        display: none !important;
+      }
+
+      /* Date & Filter Field Details */
+      .mmt-field-label-wrap {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+      }
+      .mmt-date-display {
+        display: flex !important;
+        align-items: baseline !important;
+        gap: 3px !important;
+      }
+      .mmt-big-date {
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        color: #0F172A !important;
+        line-height: 1 !important;
+      }
+      .mmt-month-year {
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+      }
+      .mmt-filter-display {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 4px !important;
+        width: 100% !important;
+      }
+      .mmt-field-main-text {
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        color: #0F172A !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        letter-spacing: -0.01em !important;
+      }
+      .mmt-cell-badge {
+        font-size: 8.5px !important;
+        font-weight: 800 !important;
+        padding: 1px 4px !important;
+        border-radius: 4px !important;
+        flex-shrink: 0 !important;
+        background: #64748B !important;
+        color: #FFFFFF !important;
+      }
+
+      /* Docked Full-Width Search Flights Button */
+      .mmt-floating-search-btn {
+        position: static !important;
+        transform: none !important;
+        width: calc(100% - 20px) !important;
+        margin: 4px 10px 12px 10px !important;
+        height: 46px !important;
+        border-radius: 10px !important;
+        font-size: 14.5px !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
+        background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%) !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        cursor: pointer !important;
+      }
+      .mmt-floating-search-btn:active {
+        transform: scale(0.98) !important;
+      }
+
+      /* Quick Corridors Capsule Bar */
+      .quick-corridor-bar {
+        margin: 10px 12px 0 12px !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+      .quick-corridor-label {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #475569 !important;
+      }
+      .quick-corridor-pills-wrap {
+        display: flex !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 6px !important;
+        padding-bottom: 2px !important;
+      }
+      .quick-corridor-pills-wrap::-webkit-scrollbar {
+        display: none !important;
+      }
+      .route-pill-btn {
+        flex-shrink: 0 !important;
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        border-radius: 8px !important;
+      }
+
+      /* Centered Native Modal Popovers on Mobile */
+      .city-picker-popover {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: calc(100vw - 32px) !important;
+        max-width: 360px !important;
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        z-index: 10005 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+        box-sizing: border-box !important;
+      }
+
+      /* ====================================================================
+         ROUTE ANALYTICS (#view-route-analytics) MOBILE-ONLY OPTIMIZATIONS
+         ==================================================================== */
+      #view-route-analytics .route-studio-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-route-analytics .route-studio-header h2 {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-route-analytics .route-studio-header p {
+        font-size: 11.5px !important;
+        line-height: 1.4 !important;
+        margin-top: 4px !important;
+      }
+
+      #view-route-analytics .route-studio-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      #view-route-analytics .route-studio-actions button {
+        width: 100% !important;
+        padding: 9px 8px !important;
+        font-size: 11.5px !important;
+        justify-content: center !important;
+        height: 40px !important;
+        white-space: nowrap !important;
+        border-radius: 9px !important;
+      }
+
+      #view-route-analytics .corridor-picker-card {
+        padding: 12px 14px !important;
+        margin-bottom: 14px !important;
+        border-radius: 12px !important;
+      }
+
+      #view-route-analytics .corridor-picker-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+      }
+
+      #view-route-analytics .corridor-pills-wrap {
+        width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+      }
+
+      #view-route-analytics .corridor-picker-label {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #64748B !important;
+      }
+
+      #view-route-analytics .corridor-pills-group {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 6px !important;
+        padding: 2px 0 6px 0 !important;
+        width: 100% !important;
+      }
+
+      #view-route-analytics .corridor-pills-group::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      #view-route-analytics .corridor-pill-btn {
+        flex-shrink: 0 !important;
+        padding: 6px 12px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        border-radius: 20px !important;
+      }
+
+      #view-route-analytics .corridor-dropdown-box {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+      }
+
+      #view-route-analytics .corridor-select-input {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+        border-radius: 9px !important;
+        background-color: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+      }
+
+      /* Route KPI Ribbon: 2x2 Grid + 1 Full Width */
+      #view-route-analytics .route-kpi-ribbon {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-route-analytics .route-kpi-item {
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+      }
+
+      #view-route-analytics .route-kpi-item:nth-child(5) {
+        grid-column: 1 / -1 !important;
+      }
+
+      #view-route-analytics .route-kpi-header {
+        margin-bottom: 6px !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+      }
+
+      #view-route-analytics .route-kpi-title {
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.03em !important;
+      }
+
+      #view-route-analytics .route-kpi-header .badge {
+        font-size: 8.5px !important;
+        padding: 2px 6px !important;
+      }
+
+      #view-route-analytics .route-kpi-big-num {
+        font-size: 19px !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-route-analytics .route-kpi-footer-text {
+        font-size: 10px !important;
+        padding-top: 6px !important;
+        margin-top: 4px !important;
+        line-height: 1.3 !important;
+      }
+
+      /* Route Analytical Dual Charts */
+      #view-route-analytics .grid-2 {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-route-analytics .grid-2 .card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-route-analytics .grid-2 .card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-route-analytics .grid-2 .card-title {
+        font-size: 13.5px !important;
+        line-height: 1.3 !important;
+      }
+
+      #view-route-analytics .grid-2 .card-subtitle {
+        font-size: 11px !important;
+        margin-top: 2px !important;
+      }
+
+      #view-route-analytics .segmented-control {
+        width: 100% !important;
+        display: flex !important;
+        background: #F1F5F9 !important;
+        padding: 3px !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+      }
+
+      #view-route-analytics .segment-btn {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 6px 4px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        border-radius: 6px !important;
+      }
+
+      #view-route-analytics .chart-container.tall {
+        height: 250px !important;
+        min-height: 250px !important;
+        max-height: 250px !important;
+      }
+
+      /* Percentile Ladder Section */
+      #view-route-analytics .ladder-section-card {
+        padding: 14px 16px !important;
+        margin-bottom: 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-route-analytics .ladder-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-route-analytics .ladder-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+
+      #view-route-analytics .ladder-tier-box {
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
+      }
+
+      #view-route-analytics .ladder-tier-tag {
+        font-size: 9.5px !important;
+        margin-bottom: 4px !important;
+      }
+
+      #view-route-analytics .ladder-tier-fare {
+        font-size: 17px !important;
+        margin-bottom: 2px !important;
+      }
+
+      #view-route-analytics .ladder-tier-desc {
+        font-size: 9.5px !important;
+      }
+
+      /* Advance Purchase Calculator */
+      #view-route-analytics .route-calc-card {
+        padding: 14px 16px !important;
+        margin-bottom: 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-route-analytics .route-calc-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      #view-route-analytics .route-calc-slider-box {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+        margin-bottom: 10px !important;
+      }
+
+      #view-route-analytics .route-calc-slider-header label {
+        font-size: 11.5px !important;
+      }
+
+      #view-route-analytics .route-calc-pill-badge {
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+      }
+
+      #view-route-analytics .route-calc-advice-box {
+        padding: 12px 14px !important;
+        border-radius: 10px !important;
+      }
+
+      #view-route-analytics .route-calc-advice-header strong {
+        font-size: 12px !important;
+      }
+
+      #view-route-analytics .route-calc-advice-text {
+        font-size: 11.5px !important;
+      }
+
+      #view-route-analytics .route-calc-fare-summary {
+        padding: 14px !important;
+        border-radius: 10px !important;
+      }
+
+      #view-route-analytics .route-calc-est-num {
+        font-size: 22px !important;
+      }
+
+      #view-route-analytics .route-calc-breakdown-item {
+        font-size: 11.5px !important;
+      }
+
+      /* Real Observations Flight Ledger */
+      #view-route-analytics .route-ledger-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-route-analytics .route-ledger-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-route-analytics .route-ledger-controls {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 8px !important;
+      }
+
+      #view-route-analytics .route-ledger-search-input {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 12.5px !important;
+        padding: 8px 12px !important;
+      }
+
+      #view-route-analytics .route-ledger-controls .table-action-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 8px !important;
+        font-size: 12px !important;
+      }
+
+      /* ====================================================================
+         AIRLINE ANALYTICS (#view-airline-analytics) MOBILE-ONLY OPTIMIZATIONS
+         ==================================================================== */
+      #view-airline-analytics .airline-analytics-header-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-airline-analytics .airline-analytics-header-bar h2 {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-airline-analytics .airline-analytics-header-bar p {
+        font-size: 11.5px !important;
+        line-height: 1.4 !important;
+        margin-top: 4px !important;
+      }
+
+      #view-airline-analytics .airline-header-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        gap: 8px !important;
+      }
+
+      #view-airline-analytics .airline-route-select-wrapper {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        background: #F8FAFC !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 9px !important;
+        padding: 8px 12px !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+      }
+
+      #view-airline-analytics .airline-route-select {
+        width: 100% !important;
+        font-size: 12.5px !important;
+        font-weight: 700 !important;
+        background: transparent !important;
+      }
+
+      #view-airline-analytics .emp-data-badge {
+        width: fit-content !important;
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+      }
+
+      /* Carrier Selector Strip: Native Swipeable Horizontal Carousel */
+      #view-airline-analytics .carrier-selector-strip {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 10px !important;
+        padding: 2px 0 8px 0 !important;
+        margin-bottom: 16px !important;
+        width: 100% !important;
+      }
+
+      #view-airline-analytics .carrier-selector-strip::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      #view-airline-analytics .carrier-tab-card {
+        flex: 0 0 175px !important;
+        width: 175px !important;
+        min-width: 175px !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        gap: 8px !important;
+        box-sizing: border-box !important;
+      }
+
+      #view-airline-analytics .carrier-tab-logo,
+      #view-airline-analytics .carrier-tab-fallback-logo {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 9.5px !important;
+      }
+
+      #view-airline-analytics .carrier-tab-name {
+        font-size: 12px !important;
+        font-weight: 700 !important;
+      }
+
+      #view-airline-analytics .carrier-tab-code {
+        font-size: 9.5px !important;
+      }
+
+      #view-airline-analytics .carrier-tab-share-pill {
+        font-size: 9px !important;
+        padding: 2px 5px !important;
+      }
+
+      #view-airline-analytics .carrier-tab-avg-val {
+        font-size: 13.5px !important;
+      }
+
+      /* Active Carrier Spotlight Banner */
+      #view-airline-analytics .carrier-spotlight-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-airline-analytics .carrier-spotlight-top {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+        padding-bottom: 12px !important;
+      }
+
+      #view-airline-analytics .carrier-spotlight-info {
+        gap: 10px !important;
+      }
+
+      #view-airline-analytics .carrier-spotlight-logo,
+      #view-airline-analytics #spotlightFallbackLogo {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 13px !important;
+      }
+
+      #view-airline-analytics .carrier-spotlight-title h3 {
+        font-size: 15px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+      }
+
+      #view-airline-analytics .carrier-spotlight-title p {
+        font-size: 11px !important;
+      }
+
+      /* 2x2 Carrier KPI Grid */
+      #view-airline-analytics .carrier-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+      }
+
+      #view-airline-analytics .carrier-kpi-box {
+        padding: 10px 12px !important;
+        gap: 3px !important;
+        border-radius: 9px !important;
+      }
+
+      #view-airline-analytics .carrier-kpi-label {
+        font-size: 9.5px !important;
+      }
+
+      #view-airline-analytics .carrier-kpi-val {
+        font-size: 17px !important;
+      }
+
+      #view-airline-analytics .carrier-kpi-sub {
+        font-size: 9.5px !important;
+        line-height: 1.25 !important;
+      }
+
+      /* Flight Splits: Optimal Window & 2x2 TOD Cards */
+      #view-airline-analytics .flight-splits-container {
+        margin-bottom: 16px !important;
+      }
+
+      #view-airline-analytics .section-headline-block {
+        margin-bottom: 10px !important;
+      }
+
+      #view-airline-analytics .section-headline-block h3 {
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+      }
+
+      #view-airline-analytics .section-headline-block p {
+        font-size: 11px !important;
+      }
+
+      #view-airline-analytics .optimal-window-banner {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-airline-analytics .optimal-window-content {
+        gap: 10px !important;
+      }
+
+      #view-airline-analytics .optimal-icon-circle {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 15px !important;
+      }
+
+      #view-airline-analytics .optimal-text h4 {
+        font-size: 12.5px !important;
+      }
+
+      #view-airline-analytics .optimal-text p {
+        font-size: 11px !important;
+      }
+
+      #view-airline-analytics .optimal-savings-pill {
+        font-size: 11.5px !important;
+        padding: 5px 10px !important;
+      }
+
+      #view-airline-analytics .tod-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+      }
+
+      #view-airline-analytics .tod-card {
+        padding: 10px 11px !important;
+        gap: 8px !important;
+        border-radius: 10px !important;
+      }
+
+      #view-airline-analytics .tod-card-name {
+        font-size: 12px !important;
+      }
+
+      #view-airline-analytics .tod-card-hours {
+        font-size: 10px !important;
+      }
+
+      #view-airline-analytics .tod-status-pill {
+        font-size: 8.5px !important;
+        padding: 2px 5px !important;
+      }
+
+      #view-airline-analytics .tod-avg-fare {
+        font-size: 16.5px !important;
+      }
+
+      #view-airline-analytics .tod-min-fare {
+        font-size: 10px !important;
+      }
+
+      #view-airline-analytics .tod-meta-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 2px !important;
+        font-size: 9.5px !important;
+        padding-top: 6px !important;
+      }
+
+      /* Two-Column Chart Suite Stacked on Mobile */
+      #view-airline-analytics .analytics-two-col-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-airline-analytics .analytics-col-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-airline-analytics .analytics-col-card .card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        margin-bottom: 10px !important;
+      }
+
+      #view-airline-analytics .analytics-col-card .card-title {
+        font-size: 13.5px !important;
+        line-height: 1.3 !important;
+      }
+
+      #view-airline-analytics .analytics-col-card .chart-container {
+        height: 240px !important;
+        min-height: 240px !important;
+        max-height: 240px !important;
+      }
+
+      /* Nonstop vs Connecting & Fare Brackets */
+      #view-airline-analytics .nonstop-split-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+      }
+
+      #view-airline-analytics .flight-type-box {
+        padding: 10px 12px !important;
+      }
+
+      #view-airline-analytics .flight-type-box h5 {
+        font-size: 11px !important;
+      }
+
+      #view-airline-analytics .flight-type-box .type-fare {
+        font-size: 16px !important;
+      }
+
+      #view-airline-analytics .corridors-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+
+      #view-airline-analytics .corridor-item {
+        padding: 7px 10px !important;
+      }
+
+      #view-airline-analytics .corridor-route,
+      #view-airline-analytics .corridor-fare {
+        font-size: 12px !important;
+      }
+
+      /* Carrier Performance Matrix Table Card */
+      #view-airline-analytics .card.ax-style-58 {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-airline-analytics .ax-style-59 {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+
+      /* ====================================================================
+         MARKET SURVEILLANCE & ANOMALIES (#view-market-surveillance) MOBILE OPTIMIZATIONS
+         ==================================================================== */
+      #view-market-surveillance .page-title-block {
+        margin-bottom: 16px !important;
+      }
+
+      #view-market-surveillance .page-title-block .header-split-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      #view-market-surveillance .page-title-block h2 {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-market-surveillance .page-title-block p {
+        font-size: 11.5px !important;
+        line-height: 1.4 !important;
+        margin-top: 4px !important;
+      }
+
+      #view-market-surveillance .surveillance-tab-bar {
+        width: 100% !important;
+        display: flex !important;
+        box-sizing: border-box !important;
+        padding: 4px !important;
+        gap: 4px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-market-surveillance .surveillance-tab-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+        padding: 8px 6px !important;
+        font-size: 11px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        border-radius: 8px !important;
+        gap: 5px !important;
+      }
+
+      #view-market-surveillance .surveillance-tab-btn svg {
+        width: 13px !important;
+        height: 13px !important;
+      }
+
+      #view-market-surveillance .early-warning-alert-banner {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 12px 14px !important;
+        border-radius: 12px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-left {
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-icon {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-icon svg {
+        width: 16px !important;
+        height: 16px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-headline {
+        font-size: 12.5px !important;
+        gap: 6px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-desc {
+        font-size: 11px !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-right {
+        width: 100% !important;
+      }
+
+      #view-market-surveillance .early-warning-banner-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        height: 38px !important;
+        font-size: 11.5px !important;
+        border-radius: 8px !important;
+      }
+
+      #view-market-surveillance .surveillance-pulse-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-market-surveillance .pulse-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+      }
+
+      #view-market-surveillance .pulse-header-title {
+        font-size: 14px !important;
+      }
+
+      #view-market-surveillance .pulse-stress-gauge {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+      }
+
+      #view-market-surveillance .pulse-headline {
+        font-size: 13px !important;
+      }
+
+      #view-market-surveillance .pulse-drivers {
+        font-size: 11.5px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-market-surveillance .pulse-chips-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding-top: 10px !important;
+      }
+
+      #view-market-surveillance .pulse-chip {
+        padding: 8px 10px !important;
+        border-radius: 8px !important;
+      }
+
+      #view-market-surveillance .pulse-chip-label {
+        font-size: 9.5px !important;
+      }
+
+      #view-market-surveillance .pulse-chip-val {
+        font-size: 12.5px !important;
+      }
+
+      #view-market-surveillance #shockDetectorGrid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-market-surveillance .route-stress-table-wrapper {
+        margin-top: 16px !important;
+      }
+
+      #view-market-surveillance .route-stress-table-wrapper .card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+
+      #view-market-surveillance #pane-anomalies-explain .card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      #view-market-surveillance #anomalyFilterSwitcher {
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 4px !important;
+        padding: 2px 0 !important;
+      }
+
+      #view-market-surveillance #anomalyFilterSwitcher::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      #view-market-surveillance #anomalyFilterSwitcher .segment-btn {
+        flex-shrink: 0 !important;
+        font-size: 10.5px !important;
+        padding: 6px 10px !important;
+        white-space: nowrap !important;
+      }
+
+      #view-market-surveillance .explainability-section-container {
+        margin-top: 16px !important;
+      }
+
+      #view-market-surveillance .explainability-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-market-surveillance .explainability-title {
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+      }
+
+      #view-market-surveillance .explainability-sub {
+        font-size: 11px !important;
+      }
+
+      #view-market-surveillance .explainability-section-container .grid-2 {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      #view-market-surveillance .factor-row {
+        padding: 10px 12px !important;
+      }
+
+      #view-market-surveillance .factor-name {
+        font-size: 12px !important;
+      }
+
+      #view-market-surveillance .factor-meta {
+        font-size: 10px !important;
+      }
+
+      #view-market-surveillance .factor-impact {
+        font-size: 13.5px !important;
+      }
+
+      #view-market-surveillance .audit-trail-item {
+        padding: 10px 12px !important;
+      }
+
+      #view-market-surveillance .audit-item-desc {
+        font-size: 11.5px !important;
+      }
+
+      /* ====================================================================
+         AI AIRFARE PREDICTOR & SCENARIO SIMULATOR (#view-ml-predictions) MOBILE OPTIMIZATIONS
+         ==================================================================== */
+      #view-ml-predictions .apple-ml-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-ml-predictions .apple-ml-title {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-ml-predictions .apple-ml-subtitle {
+        font-size: 11.5px !important;
+        line-height: 1.4 !important;
+        margin-top: 4px !important;
+      }
+
+      #view-ml-predictions .apple-ml-header > div:last-child {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      #view-ml-predictions .apple-ml-header button {
+        width: 100% !important;
+        height: 38px !important;
+        font-size: 11px !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        border-radius: 8px !important;
+      }
+
+      /* 2x2 Hero Pro KPI Grid */
+      #view-ml-predictions .apple-kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-ml-predictions .apple-kpi-tile {
+        padding: 11px 12px !important;
+        border-radius: 12px !important;
+      }
+
+      #view-ml-predictions .apple-kpi-label {
+        font-size: 9px !important;
+        letter-spacing: 0.04em !important;
+      }
+
+      #view-ml-predictions .apple-kpi-num {
+        font-size: 17px !important;
+        margin-bottom: 2px !important;
+      }
+
+      #view-ml-predictions .apple-kpi-desc {
+        font-size: 9px !important;
+      }
+
+      /* Studio Layout Stacked */
+      #view-ml-predictions .ml-studio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        width: 100% !important;
+      }
+
+      #view-ml-predictions .apple-trajectory-stage {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-ml-predictions .apple-stage-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-ml-predictions .apple-stage-header > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      #view-ml-predictions .apple-stage-header select {
+        width: 100% !important;
+        font-size: 12px !important;
+        height: 36px !important;
+      }
+
+      #view-ml-predictions .apple-legend-pill-row {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        padding: 6px 10px !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-ml-predictions .apple-legend-pill-row::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      #view-ml-predictions .apple-legend-item {
+        flex-shrink: 0 !important;
+        font-size: 10px !important;
+      }
+
+      #view-ml-predictions .apple-trajectory-stage div[style*="height:360px"] {
+        height: 250px !important;
+      }
+
+      #view-ml-predictions #mlForecastTelemetryBar {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 6px !important;
+        padding-top: 10px !important;
+      }
+
+      #view-ml-predictions .apple-telemetry-item {
+        font-size: 10px !important;
+      }
+
+      /* Festive Matrix & Calendar */
+      #view-ml-predictions .apple-festive-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-ml-predictions .apple-fare-display {
+        font-size: 2rem !important;
+      }
+
+      #view-ml-predictions .apple-fare-breakdown-labels {
+        font-size: 10px !important;
+      }
+
+      #view-ml-predictions .apple-chips-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+      }
+
+      #view-ml-predictions .apple-chip-btn {
+        padding: 8px 4px !important;
+      }
+
+      #view-ml-predictions .apple-chip-title {
+        font-size: 11px !important;
+      }
+
+      #view-ml-predictions .apple-chip-sub {
+        font-size: 9px !important;
+      }
+
+      #view-ml-predictions .apple-festive-calendar-card {
+        padding: 14px 16px !important;
+        border-radius: 14px !important;
+      }
+
+      #view-ml-predictions .apple-cal-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+      }
+
+      #view-ml-predictions .apple-cal-month-nav {
+        align-self: flex-start !important;
+      }
+
+      #view-ml-predictions .apple-cal-quick-pills {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        gap: 6px !important;
+        padding-bottom: 4px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-ml-predictions .apple-cal-quick-pills::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      #view-ml-predictions .apple-cal-pill {
+        flex-shrink: 0 !important;
+        font-size: 10.5px !important;
+        padding: 5px 8px !important;
+      }
+
+      #view-ml-predictions .apple-cal-grid-wrap {
+        padding: 8px !important;
+        border-radius: 10px !important;
+      }
+
+      #view-ml-predictions .apple-cal-weekdays span {
+        font-size: 10px !important;
+      }
+
+      #view-ml-predictions .apple-cal-legend {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        font-size: 10px !important;
+      }
+
+      #view-ml-predictions .apple-cal-event-item {
+        padding: 8px 10px !important;
+      }
+
+      #view-ml-predictions .apple-event-title {
+        font-size: 11.5px !important;
+      }
+
+      #view-ml-predictions .apple-event-dates {
+        font-size: 9.5px !important;
+      }
+
+      #view-ml-predictions .apple-event-badge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+      }
+
+      /* ====================================================================
+         CPI COMPARISON (#view-cpi-comparison) MOBILE OPTIMIZATIONS
+         ==================================================================== */
+      #view-cpi-comparison .page-title-block {
+        margin-bottom: 16px !important;
+      }
+
+      #view-cpi-comparison .title-with-actions {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+      }
+
+      #view-cpi-comparison .page-title-block h2 {
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      #view-cpi-comparison .page-title-block p {
+        font-size: 11.5px !important;
+        line-height: 1.4 !important;
+        margin-top: 4px !important;
+      }
+
+      #view-cpi-comparison .cpi-controls-header {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      #view-cpi-comparison .cpi-controls-header select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+        border-radius: 8px !important;
+      }
+
+      /* 2x2 CPI Telemetry Grid + 1 Full Width */
+      #view-cpi-comparison #cpiKpiGrid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 16px !important;
+      }
+
+      #view-cpi-comparison #cpiKpiGrid .radar-kpi-card {
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+      }
+
+      #view-cpi-comparison #cardCpiWeight {
+        grid-column: 1 / -1 !important;
+      }
+
+      #view-cpi-comparison .card-title-wrap {
+        margin-bottom: 6px !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+      }
+
+      #view-cpi-comparison .card-title-wrap span:first-child {
+        font-size: 9.5px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.03em !important;
+      }
+
+      #view-cpi-comparison .card-title-wrap .badge {
+        font-size: 8px !important;
+        padding: 2px 5px !important;
+      }
+
+      #view-cpi-comparison .kpi-value {
+        font-size: 18px !important;
+        letter-spacing: -0.02em !important;
+        line-height: 1.15 !important;
+      }
+
+      #view-cpi-comparison .kpi-sub {
+        font-size: 9.5px !important;
+        padding-top: 4px !important;
+        margin-top: 2px !important;
+        line-height: 1.3 !important;
+      }
+
+      /* Comparison Chart Card */
+      #view-cpi-comparison .card-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+      }
+
+      #view-cpi-comparison #cpiModeSegmentedControl {
+        width: 100% !important;
+        display: flex !important;
+        background: #F1F5F9 !important;
+        padding: 3px !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+      }
+
+      #view-cpi-comparison #cpiModeSegmentedControl .segment-btn {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 6px 3px !important;
+        font-size: 10.5px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        border-radius: 6px !important;
+      }
+
+      #view-cpi-comparison .chart-container.tall {
+        height: 250px !important;
+        min-height: 250px !important;
+        max-height: 250px !important;
+      }
+
+      #view-cpi-comparison .chart-container + div {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        font-size: 10px !important;
+        margin-top: 8px !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -67,6 +1952,7 @@
           <h1 class="ax-style-5">AeroX Intelligence</h1>
           <p class="ax-style-6">National Price Index (APIx)</p>
         </div>
+        <button type="button" class="mobile-sidebar-close-btn" id="btnSidebarCloseMobile" aria-label="Close Navigation Menu">&times;</button>
       </div>
 
       <div class="sidebar-section-title">Overview</div>
@@ -126,6 +2012,15 @@
           <span>Market Surveillance &amp; Anomalies</span>
           <span class="nav-badge">Radar</span>
         </a>
+        <a class="nav-item" data-view="view-ml-predictions" id="navPredictions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          <span>AI Airfare Predictor &amp; Simulator</span>
+          <span class="nav-badge" style="background:rgba(14,165,233,0.2);color:#38bdf8;border:1px solid rgba(14,165,233,0.4);">ML</span>
+        </a>
+
         <a class="nav-item" data-view="view-cpi-comparison" id="navCPI">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <line x1="18" y1="20" x2="18" y2="10" />
@@ -189,6 +2084,9 @@
       </div>
     </aside>
 
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- ====================================================================
          2. Main Application Area
          ==================================================================== -->
@@ -200,123 +2098,237 @@
         <div class="top-nav-tricolor-bar"></div>
 
         <div class="top-left">
-          <div class="ax-style-8" id="topPageTitle"></div>
-          <div class="top-system-badge" title="National Statistical Monitoring System Active">
+          <!-- Mobile Hamburger Drawer Toggle -->
+          <button type="button" class="mobile-menu-btn" id="btnMobileMenuToggle" aria-label="Open Navigation Menu" title="Open Navigation Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <div class="mobile-brand-wrap">
+            <img src="/logos/emblem_india.png" alt="Emblem of India" class="mobile-brand-emblem" height="22" width="auto">
+            <span class="mobile-brand-text">AeroX</span>
+          </div>
+
+          <!-- Executive Portal Breadcrumb & Page Title -->
+          <div class="top-breadcrumb-wrap">
+            <span class="top-breadcrumb-hub">AeroX</span>
+            <span class="top-breadcrumb-slash">/</span>
+            <div class="top-breadcrumb-active" id="topPageTitle"><span>National Airspace Radar &amp; Live Fare Heatmap</span></div>
+          </div>
+
+          <!-- Official MoSPI & DGCA Surveillance Status Badge -->
+          <div class="top-system-badge" title="MoSPI &amp; DGCA Surveillance • Government of India">
             <span class="pulse-dot"></span>
-            <span class="system-badge-main">MoSPI &amp; DGCA Surveillance</span>
-            <span class="system-badge-sub">&bull; Government of India</span>
+            <span class="system-badge-main">DGCA Surveillance</span>
+          </div>
+        </div>
+
+        <!-- Center Universal Command & Quick Search Bar -->
+        <div class="top-nav-center">
+          <div class="top-search-capsule" id="topNavSearchCapsule">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="top-search-icon">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="topNavCorridorInput" placeholder="Search routes, flights, or views..." autocomplete="off" spellcheck="false">
+            <kbd class="top-search-kbd">⌘K</kbd>
+
+            <!-- Quick Command Dropdown Menu -->
+            <div class="top-search-dropdown" id="topSearchDropdown">
+              <div class="top-search-section-label">Quick Jump to Views</div>
+              <div class="top-search-item" onclick="window.switchView('view-overview'); window.closeTopSearch();">
+                <span class="top-search-item-icon">🏛️</span>
+                <span class="top-search-item-name">National Command Center</span>
+                <span class="top-search-item-hint">Overview</span>
+              </div>
+              <div class="top-search-item" onclick="window.switchView('view-airspace-heatmap'); window.closeTopSearch();">
+                <span class="top-search-item-icon">📡</span>
+                <span class="top-search-item-name">National Airspace Radar &amp; Live Heatmap</span>
+                <span class="top-search-item-hint">Radar</span>
+              </div>
+              <div class="top-search-item" onclick="window.switchView('view-market-surveillance'); window.closeTopSearch();">
+                <span class="top-search-item-icon">🚨</span>
+                <span class="top-search-item-name">Market Surveillance &amp; Anomalies</span>
+                <span class="top-search-item-hint">Alerts</span>
+              </div>
+              <div class="top-search-item" onclick="window.switchView('view-ml-predictions'); window.closeTopSearch();">
+                <span class="top-search-item-icon">🤖</span>
+                <span class="top-search-item-name">AI Airfare Predictor &amp; Simulator</span>
+                <span class="top-search-item-hint">Predictor</span>
+              </div>
+              <div class="top-search-item" onclick="window.switchView('view-cpi-comparison'); window.closeTopSearch();">
+                <span class="top-search-item-icon">📊</span>
+                <span class="top-search-item-name">Airfare Intelligence vs MoSPI CPI</span>
+                <span class="top-search-item-hint">MoSPI</span>
+              </div>
+              <div class="top-search-item" onclick="window.switchView('view-route-basket'); window.closeTopSearch();">
+                <span class="top-search-item-icon">🧺</span>
+                <span class="top-search-item-name">DGCA Top-15 Route Basket</span>
+                <span class="top-search-item-hint">Basket</span>
+              </div>
+              <div class="top-search-section-label">Key Corridors</div>
+              <div class="top-search-item" onclick="window.quickSelectCorridor('DEL-BOM'); window.closeTopSearch();">
+                <span class="top-search-item-icon">✈️</span>
+                <span class="top-search-item-name">Delhi (DEL) ➔ Mumbai (BOM)</span>
+                <span class="top-search-item-hint">Trunk</span>
+              </div>
+              <div class="top-search-item" onclick="window.quickSelectCorridor('DEL-BLR'); window.closeTopSearch();">
+                <span class="top-search-item-icon">✈️</span>
+                <span class="top-search-item-name">Delhi (DEL) ➔ Bengaluru (BLR)</span>
+                <span class="top-search-item-hint">Metro</span>
+              </div>
+              <div class="top-search-item" onclick="window.quickSelectCorridor('BOM-BLR'); window.closeTopSearch();">
+                <span class="top-search-item-icon">✈️</span>
+                <span class="top-search-item-name">Mumbai (BOM) ➔ Bengaluru (BLR)</span>
+                <span class="top-search-item-hint">Metro</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="top-right">
-          <!-- Real-Time Live Clock (IST) -->
-          <div class="top-clock-pill" id="topClockPill" title="Official Real-Time Indian Standard Time">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            <span class="top-clock-label">LIVE:</span>
-            <span class="top-clock-val" id="topLiveClock">--:--:-- IST</span>
+          <!-- PWA Network State Indicator -->
+          <div class="pwa-network-pill" id="pwaNetworkPill" style="display:none;" title="Network Connectivity Status">
+            <span class="pwa-network-dot" id="pwaNetworkDot"></span>
+            <span class="pwa-network-text" id="pwaNetworkText">Online</span>
           </div>
 
-          <!-- Recent Scraped Time Telemetry Badge -->
-          <div class="top-scrape-pill" id="topNavScrapePill"
-            title="Most recent data scraped from live multi-OTA web scrapers">
-            <span class="scrape-telemetry-dot"></span>
-            <span class="top-scrape-pill-label">SCRAPED:</span>
-            <strong class="top-scrape-pill-time" id="topNavScrapeTime">12 Sep 2026, 15:27 IST</strong>
-          </div>
-
-          <!-- Top Notification Bell & Slide-Down Translucent Panel -->
-          <div class="top-notif-container" id="topNotificationContainer">
-            <button type="button" class="top-notif-btn" id="btnNotificationBell"
-              title="Early Warning & Anomaly Notifications" aria-label="Notifications" aria-expanded="false">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          <!-- Cluster 1: Operational Telemetry & Health -->
+          <div class="top-nav-cluster top-telemetry-cluster">
+            <!-- Real-Time Live Clock (IST) -->
+            <div class="top-clock-pill" id="topClockPill" title="Official Real-Time Indian Standard Time (IST)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
               </svg>
-              <span class="notif-pulse-dot" id="notifPulseDot"></span>
-              <span class="notif-badge" id="notifBadgeCount">4</span>
+              <span class="top-clock-val" id="topLiveClock">--:--:--</span>
+            </div>
+
+            <!-- Recent Scraped Time Telemetry Badge -->
+            <div class="top-scrape-pill" id="topNavScrapePill"
+              title="Most recent data scraped from live multi-OTA web scrapers">
+              <span class="scrape-telemetry-dot"></span>
+              <span class="top-scrape-pill-label">Scraped:</span>
+              <strong class="top-scrape-pill-time" id="topNavScrapeTime">13 Sep, 21:46</strong>
+            </div>
+
+            <!-- Scraper Quota Chip -->
+            <div class="quota-status-chip clickable" id="scraperQuotaBadge"
+              role="button" tabindex="0"
+              title="Scraping Quota: 1/1 Available (Click to view schedule &amp; cycle details)">
+              <span class="quota-dot"></span>
+              <svg class="quota-meter-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/>
+                <path d="M12 14l3-3"/>
+                <circle cx="12" cy="14" r="1.5"/>
+              </svg>
+              <span class="quota-text">Quota: 1/1</span>
+              <svg class="quota-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="top-nav-divider" aria-hidden="true"></div>
+
+          <!-- Cluster 2: Utilities (PWA Install & Notifications) -->
+          <div class="top-nav-cluster top-utility-cluster">
+            <!-- PWA Install Button (Mobile & Desktop) -->
+            <button type="button" class="btn-pwa-install" id="btnInstallPwa" title="Install AREOX App on Phone / Desktop" style="display:none;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Install</span>
             </button>
 
-            <!-- Dropdown Notification Panel -->
-            <div class="notif-dropdown-panel" id="notificationDropdownPanel" role="dialog"
-              aria-label="Early Warning Alerts">
-              <div class="notif-dropdown-header">
-                <div class="notif-header-title-box">
-                  <div class="notif-header-title">
-                    <span>Early Warnings &amp; Surveillance</span>
-                    <span class="notif-unread-pill" id="notifUnreadPill">4 New</span>
+            <!-- Top Notification Bell & Slide-Down Translucent Panel -->
+            <div class="top-notif-container" id="topNotificationContainer">
+              <button type="button" class="top-notif-btn" id="btnNotificationBell"
+                title="Early Warning & Anomaly Notifications" aria-label="Notifications" aria-expanded="false">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notif-pulse-dot" id="notifPulseDot"></span>
+                <span class="notif-badge" id="notifBadgeCount">4</span>
+              </button>
+
+              <!-- Dropdown Notification Panel -->
+              <div class="notif-dropdown-panel" id="notificationDropdownPanel" role="dialog"
+                aria-label="Early Warning Alerts">
+                <div class="notif-dropdown-header">
+                  <div class="notif-header-title-box">
+                    <div class="notif-header-title">
+                      <span>Early Warnings &amp; Surveillance</span>
+                      <span class="notif-unread-pill" id="notifUnreadPill">4 New</span>
+                    </div>
+                    <p class="notif-header-sub">High-frequency algorithmic anomaly &amp; surge alerts</p>
                   </div>
-                  <p class="notif-header-sub">High-frequency algorithmic anomaly &amp; surge alerts</p>
+                  <button type="button" class="notif-mark-all-btn" id="btnMarkAllNotifsRead"
+                    title="Mark all alerts as read">Mark all read</button>
                 </div>
-                <button type="button" class="notif-mark-all-btn" id="btnMarkAllNotifsRead"
-                  title="Mark all alerts as read">Mark all read</button>
-              </div>
 
-              <!-- Filter Chips -->
-              <div class="notif-filter-bar" id="notifFilterBar">
-                <button type="button" class="notif-filter-chip active" data-filter="all">All Alerts</button>
-                <button type="button" class="notif-filter-chip" data-filter="critical">🚨 Critical</button>
-                <button type="button" class="notif-filter-chip" data-filter="warning">⚠️ Warnings</button>
-                <button type="button" class="notif-filter-chip" data-filter="promo">📉 Drops</button>
-                <button type="button" class="notif-filter-chip" data-filter="system">🟢 System</button>
-              </div>
-
-              <!-- Scrollable Notification List -->
-              <div class="notif-list-body" id="notifListContainer">
-                <div class="notif-empty-state" id="notifEmptyState">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.8">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
-                  <p>All clear. No unresolved statistical anomalies.</p>
+                <!-- Filter Chips -->
+                <div class="notif-filter-bar" id="notifFilterBar">
+                  <button type="button" class="notif-filter-chip active" data-filter="all">All Alerts</button>
+                  <button type="button" class="notif-filter-chip" data-filter="critical">🚨 Critical</button>
+                  <button type="button" class="notif-filter-chip" data-filter="warning">⚠️ Warnings</button>
+                  <button type="button" class="notif-filter-chip" data-filter="promo">📉 Drops</button>
+                  <button type="button" class="notif-filter-chip" data-filter="system">🟢 System</button>
                 </div>
-              </div>
 
-              <!-- Footer with Quick Link -->
-              <div class="notif-dropdown-footer">
-                <button type="button" class="notif-footer-link-btn" id="btnNotifGoSurveillance">
-                  <span>Open Surveillance &amp; Anomaly Radar</span>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
-                </button>
+                <!-- Scrollable Notification List -->
+                <div class="notif-list-body" id="notifListContainer">
+                  <div class="notif-empty-state" id="notifEmptyState">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.8">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    <p>All clear. No unresolved statistical anomalies.</p>
+                  </div>
+                </div>
+
+                <!-- Footer with Quick Link -->
+                <div class="notif-dropdown-footer">
+                  <button type="button" class="notif-footer-link-btn" id="btnNotifGoSurveillance">
+                    <span>Open Surveillance &amp; Anomaly Radar</span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="quota-status-chip clickable" id="scraperQuotaBadge"
-            role="button" tabindex="0"
-            title="Scraping Quota: 1/1 Available (Click to view schedule &amp; cycle details)">
-            <span class="quota-dot"></span>
-            <span class="quota-text">Quota: 1/1</span>
-            <svg class="quota-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="6 9 12 15 18 9"/>
-            </svg>
+          <div class="top-nav-divider" aria-hidden="true"></div>
+
+          <!-- Cluster 3: Primary Operations -->
+          <div class="top-nav-cluster top-actions-cluster">
+            <button type="button" class="action-btn secondary" id="btnTriggerLiveScrape"
+              title="Trigger scraper on background queue">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+              <span>Scrape</span>
+            </button>
+
+            <button type="button" class="action-btn primary" id="btnExportData"
+              title="Export institutional PDF/CSV report">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Export</span>
+            </button>
           </div>
-
-          <button type="button" class="action-btn" id="btnTriggerLiveScrape"
-            title="Trigger scraper on background queue">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            <span>Trigger Scrape</span>
-          </button>
-
-          <button type="button" class="action-btn primary" id="btnExportData"
-            title="Export institutional PDF/CSV report">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span>Export Report</span>
-          </button>
-
-
         </div>
       </header>
 
@@ -439,6 +2451,57 @@
                     <span class="en-name">NIC Cloud</span>
                   </div>
                 </div>
+
+                <!-- Duplicated items for continuous infinite sliding animation on mobile -->
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-emblem" src="/logos/emblem_india.png" alt="State Emblem of India" height="38" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">भारत सरकार</span>
+                    <span class="en-name">Govt of India</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-mospi" src="/logos/mospi.png" alt="MoSPI" height="34" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">सांख्यिकी मंत्रालय</span>
+                    <span class="en-name">MoSPI</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-moca" src="/logos/moca.png" alt="MoCA" height="32" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">नागर विमानन</span>
+                    <span class="en-name">Civil Aviation</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-dgca" src="/logos/dgca.png" alt="DGCA" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">डीजीसीए</span>
+                    <span class="en-name">DGCA</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-udaan" src="/logos/udaan_logo.png" alt="UDAAN" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">उड़ान</span>
+                    <span class="en-name">UDAAN</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-digital-india" src="/logos/digital_india.png" alt="Digital India" height="28" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">डिजिटल भारत</span>
+                    <span class="en-name">Digital India</span>
+                  </div>
+                </div>
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-nic" src="/logos/nic_logo.png" alt="NIC Cloud Grid" height="28" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">एनआईसी ग्रिड</span>
+                    <span class="en-name">NIC Cloud</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -472,6 +2535,13 @@
                   </p>
 
                   <div class="hero-panorama-cta-row">
+                    <button type="button" class="btn-hero-launch-console" onclick="window.switchView('view-overview')">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                      <span>Enter National Console</span>
+                      <span class="btn-arrow">&rarr;</span>
+                    </button>
                     <button type="button" class="btn-hero-officer-login" onclick="window.openAuthModal('login')">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
@@ -3847,9 +5917,9 @@
           </div>
 
           <!-- Regional Sectors & Live In-Flight Tracking Grid -->
-          <div class="grid-2">
+          <div class="grid-2 radar-bottom-grid">
             <!-- Sector Airspace Performance -->
-            <div class="card">
+            <div class="card sector-performance-card">
               <div class="card-header">
                 <div>
                   <div class="card-title">
@@ -3859,68 +5929,127 @@
                     </svg>
                     <span>Regional Airspace Sectors</span>
                   </div>
-                  <div class="card-subtitle">Geographic pricing disparity &amp; sector yield indices (Click to zoom
-                    sector)</div>
+                  <div class="card-subtitle">Geographic pricing disparity &amp; sector yield indices (Click to zoom sector)</div>
                 </div>
               </div>
 
               <div class="sector-cards-list">
                 <div class="sector-card sector-north"
                   onclick="window.filterRadarSector('NORTH', document.querySelector('#radarSectorFilter button:nth-child(2)'))">
-                  <div class="sector-header">
-                    <strong>North Sector (DEL, SXR, ATQ, IXC, JAI)</strong>
-                    <span class="badge critical">Elevated Surge</span>
+                  <div class="sector-top-row">
+                    <div class="sector-identity">
+                      <div class="sector-title-row">
+                        <span class="sector-status-pip critical"></span>
+                        <strong class="sector-name">North Sector</strong>
+                      </div>
+                      <div class="sector-hubs">DEL • SXR • ATQ • IXC • JAI</div>
+                    </div>
+                    <span class="badge critical sector-badge">Elevated Surge</span>
                   </div>
-                  <div class="sector-metrics-row">
-                    <span>Average Fare: <strong>₹7,420</strong></span>
-                    <span>APIx Index: <strong>164.2</strong></span>
-                    <span>Active Flights: <strong>48</strong></span>
+                  <div class="sector-stats-grid">
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Avg Fare</span>
+                      <strong class="sector-stat-val">₹7,420</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">APIx Index</span>
+                      <strong class="sector-stat-val">164.2</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Active</span>
+                      <strong class="sector-stat-val">48 Flights</strong>
+                    </div>
                   </div>
                 </div>
 
                 <div class="sector-card sector-west"
                   onclick="window.filterRadarSector('WEST', document.querySelector('#radarSectorFilter button:nth-child(3)'))">
-                  <div class="sector-header">
-                    <strong>West Sector (BOM, PNQ, AMD, GOI)</strong>
-                    <span class="badge elevated">Moderate</span>
+                  <div class="sector-top-row">
+                    <div class="sector-identity">
+                      <div class="sector-title-row">
+                        <span class="sector-status-pip elevated"></span>
+                        <strong class="sector-name">West Sector</strong>
+                      </div>
+                      <div class="sector-hubs">BOM • PNQ • AMD • GOI</div>
+                    </div>
+                    <span class="badge elevated sector-badge">Moderate</span>
                   </div>
-                  <div class="sector-metrics-row">
-                    <span>Average Fare: <strong>₹6,150</strong></span>
-                    <span>APIx Index: <strong>148.7</strong></span>
-                    <span>Active Flights: <strong>38</strong></span>
+                  <div class="sector-stats-grid">
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Avg Fare</span>
+                      <strong class="sector-stat-val">₹6,150</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">APIx Index</span>
+                      <strong class="sector-stat-val">148.7</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Active</span>
+                      <strong class="sector-stat-val">38 Flights</strong>
+                    </div>
                   </div>
                 </div>
 
                 <div class="sector-card sector-south"
                   onclick="window.filterRadarSector('SOUTH', document.querySelector('#radarSectorFilter button:nth-child(4)'))">
-                  <div class="sector-header">
-                    <strong>South Sector (BLR, HYD, MAA, COK)</strong>
-                    <span class="badge normal">Saver Yield</span>
+                  <div class="sector-top-row">
+                    <div class="sector-identity">
+                      <div class="sector-title-row">
+                        <span class="sector-status-pip normal"></span>
+                        <strong class="sector-name">South Sector</strong>
+                      </div>
+                      <div class="sector-hubs">BLR • HYD • MAA • COK</div>
+                    </div>
+                    <span class="badge normal sector-badge">Saver Yield</span>
                   </div>
-                  <div class="sector-metrics-row">
-                    <span>Average Fare: <strong>₹5,280</strong></span>
-                    <span>APIx Index: <strong>132.5</strong></span>
-                    <span>Active Flights: <strong>42</strong></span>
+                  <div class="sector-stats-grid">
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Avg Fare</span>
+                      <strong class="sector-stat-val">₹5,280</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">APIx Index</span>
+                      <strong class="sector-stat-val">132.5</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Active</span>
+                      <strong class="sector-stat-val">42 Flights</strong>
+                    </div>
                   </div>
                 </div>
 
                 <div class="sector-card sector-east"
                   onclick="window.filterRadarSector('EAST', document.querySelector('#radarSectorFilter button:nth-child(5)'))">
-                  <div class="sector-header">
-                    <strong>East &amp; Northeast Sector (CCU, GAU, PAT, BBI)</strong>
-                    <span class="badge elevated">High Demand</span>
+                  <div class="sector-top-row">
+                    <div class="sector-identity">
+                      <div class="sector-title-row">
+                        <span class="sector-status-pip elevated"></span>
+                        <strong class="sector-name">East &amp; NE Sector</strong>
+                      </div>
+                      <div class="sector-hubs">CCU • GAU • PAT • BBI</div>
+                    </div>
+                    <span class="badge elevated sector-badge">High Demand</span>
                   </div>
-                  <div class="sector-metrics-row">
-                    <span>Average Fare: <strong>₹6,890</strong></span>
-                    <span>APIx Index: <strong>158.1</strong></span>
-                    <span>Active Flights: <strong>20</strong></span>
+                  <div class="sector-stats-grid">
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Avg Fare</span>
+                      <strong class="sector-stat-val">₹6,890</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">APIx Index</span>
+                      <strong class="sector-stat-val">158.1</strong>
+                    </div>
+                    <div class="sector-stat-item">
+                      <span class="sector-stat-lbl">Active</span>
+                      <strong class="sector-stat-val">20 Flights</strong>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Live In-Flight Telemetry Table -->
-            <div class="card">
+            <div class="card radar-feed-card">
               <div class="card-header">
                 <div>
                   <div class="card-title">
@@ -3930,8 +6059,7 @@
                     </svg>
                     <span>Live Airspace Flights Feed</span>
                   </div>
-                  <div class="card-subtitle">Active animated aircraft telemetry &amp; pricing snapshot (Click row to
-                    focus)</div>
+                  <div class="card-subtitle">Active animated aircraft telemetry &amp; pricing snapshot (Click row to focus)</div>
                 </div>
               </div>
 
@@ -3943,7 +6071,7 @@
                       <th scope="col">Corridor</th>
                       <th scope="col">Transit</th>
                       <th scope="col">Instant Fare</th>
-                      <th scope="col">Status</th>
+                      <th scope="col" style="text-align: right; padding-right: 14px;">Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -4250,8 +6378,573 @@
         </section>
 
         <!-- ================================================================
+             PAGE 8B: AI AIRFARE PREDICTOR & SCENARIO ENGINE (ML CORE)
+             ================================================================ -->
+        <section class="view-section" id="view-ml-predictions">
+          <div class="apple-ml-header">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+                <span class="badge" style="background:rgba(14,165,233,0.12); color:#38bdf8; border:1px solid rgba(14,165,233,0.28); font-weight:600; font-size:0.75rem;">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" style="vertical-align:-2px; margin-right:4px;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  HistGradientBoostingRegressor • LightGBM
+                </span>
+                <span class="badge" style="background:rgba(16,185,129,0.12); color:#34d399; border:1px solid rgba(16,185,129,0.28); font-weight:600; font-size:0.75rem;">
+                  ✓ 20,816 Real Domestic Flights
+                </span>
+                <span class="badge" style="background:rgba(245,158,11,0.12); color:#fbbf24; border:1px solid rgba(245,158,11,0.28); font-weight:600; font-size:0.75rem;">
+                  IMD Meteorological &amp; Festive Calibrated
+                </span>
+              </div>
+              <h2 class="apple-ml-title">AI Airfare Predictive Trajectory &amp; Scenario Simulator</h2>
+              <p class="apple-ml-subtitle">
+                Institutional machine learning engine trained on 20,816 real DGCA historical flights and multi-OTA live observations. Computes 30-day continuous predictive lead curves, authentic Indian festival surge multipliers, and IMD adverse weather shock volatility without synthetic data.
+              </p>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button type="button" class="btn btn-secondary active-spring" id="btnExportMLPredictions" onclick="window.exportMLForecastCSV()" style="height:34px; font-size:0.82rem; border-radius:8px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" style="vertical-align:-2px; margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export 30-Day CSV
+              </button>
+              <button type="button" class="btn btn-primary active-spring" id="btnRefreshMLModel" onclick="window.refreshMLForecast()" style="height:34px; font-size:0.82rem; background:#0284c7; border-color:#0ea5e9; border-radius:8px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" style="vertical-align:-2px; margin-right:4px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Recalculate Models
+              </button>
+            </div>
+          </div>
+
+          <!-- Apple Pro Glass KPI Grid -->
+          <div class="apple-kpi-grid">
+            <div class="apple-glass-card apple-kpi-tile" style="color:#38bdf8;">
+              <div class="apple-kpi-top">
+                <span class="apple-kpi-label">30-Day Mean Projected Fare</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#38bdf8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <div class="apple-kpi-num" id="kpiMLMeanFare" style="color:#38bdf8;">₹6,842</div>
+              <div class="apple-kpi-desc" id="kpiMLFareSpread">Spread: ₹4,890 (T+1) to ₹8,450 (T+30)</div>
+            </div>
+
+            <div class="apple-glass-card apple-kpi-tile" style="color:#f59e0b;">
+              <div class="apple-kpi-top">
+                <span class="apple-kpi-label">Upcoming Festive Surge</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fbbf24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              </div>
+              <div class="apple-kpi-num" id="kpiMLFestiveRisk" style="color:#fbbf24;">+68% Exposure</div>
+              <div class="apple-kpi-desc" id="kpiMLFestiveName">Durga Puja / Dussehra / Diwali High-Demand</div>
+            </div>
+
+            <div class="apple-glass-card apple-kpi-tile" style="color:#10b981;">
+              <div class="apple-kpi-top">
+                <span class="apple-kpi-label">Meteorological Volatility</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#34d399"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+              </div>
+              <div class="apple-kpi-num" id="kpiMLWeatherRisk" style="color:#34d399;">Nominal VMC</div>
+              <div class="apple-kpi-desc" id="kpiMLWeatherIndex">Composite Risk: 0.18 / 1.00 (No CAT-III Fog)</div>
+            </div>
+
+            <div class="apple-glass-card apple-kpi-tile" style="color:#38bdf8;">
+              <div class="apple-kpi-top">
+                <span class="apple-kpi-label">Model Fidelity (R²)</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#38bdf8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div class="apple-kpi-num" id="kpiMLModelR2" style="color:#38bdf8;">0.590 (R²)</div>
+              <div class="apple-kpi-desc" id="kpiMLMAE">MAE: ₹1,726 | RMSE: ₹3,390 (Real Test Set)</div>
+            </div>
+          </div>
+
+          <!-- macOS Studio 2-Column Grid -->
+          <div class="ml-studio-grid">
+            <!-- Left Column: Primary Trajectory Analytics, Festive Matrix & Governance -->
+            <div class="ml-studio-left-col">
+
+              <!-- Stage 1: 30-Day Lead-Time Predictive Trajectory -->
+              <div class="apple-glass-card apple-trajectory-stage">
+                <div class="apple-stage-header">
+                  <div>
+                    <h3 class="apple-stage-title">30-Day Lead-Time Predictive Airfare Trajectory</h3>
+                    <p class="apple-stage-sub">Continuous daily forecasting overlaying baseline lead decay, Indian festive demand surges, and meteorological shocks.</p>
+                  </div>
+                  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <label for="mlRouteSelect" style="font-size:0.76rem; color:#64748b; font-weight:600; text-transform:uppercase;">Corridor:</label>
+                      <select id="mlRouteSelect" class="form-select" onchange="window.onMLCorridorChange(this.value)" style="background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:5px 10px; font-size:0.82rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="DEL-BOM" selected>DEL-BOM (Delhi ⇌ Mumbai)</option>
+                        <option value="DEL-BLR">DEL-BLR (Delhi ⇌ Bengaluru)</option>
+                        <option value="BOM-BLR">BOM-BLR (Mumbai ⇌ Bengaluru)</option>
+                        <option value="DEL-CCU">DEL-CCU (Delhi ⇌ Kolkata)</option>
+                        <option value="DEL-HYD">DEL-HYD (Delhi ⇌ Hyderabad)</option>
+                        <option value="DEL-MAA">DEL-MAA (Delhi ⇌ Chennai)</option>
+                        <option value="BLR-HYD">BLR-HYD (Bengaluru ⇌ Hyderabad)</option>
+                        <option value="BOM-GOI">BOM-GOI (Mumbai ⇌ Goa)</option>
+                        <option value="DEL-PNQ">DEL-PNQ (Delhi ⇌ Pune)</option>
+                        <option value="DEL-LKO">DEL-LKO (Delhi ⇌ Lucknow)</option>
+                        <option value="BOM-LKO">BOM-LKO (Mumbai ⇌ Lucknow)</option>
+                        <option value="DEL-UDR">DEL-UDR (Delhi ⇌ Udaipur)</option>
+                        <option value="BOM-UDR">BOM-UDR (Mumbai ⇌ Udaipur)</option>
+                        <option value="DEL-SXR">DEL-SXR (Delhi ⇌ Srinagar)</option>
+                        <option value="DEL-GAU">DEL-GAU (Delhi ⇌ Guwahati)</option>
+                      </select>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <label for="mlCarrierSelect" style="font-size:0.76rem; color:#64748b; font-weight:600; text-transform:uppercase;">Carrier:</label>
+                      <select id="mlCarrierSelect" class="form-select" onchange="window.onMLCarrierChange(this.value)" style="background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:5px 10px; font-size:0.82rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="IndiGo" selected>IndiGo (6E)</option>
+                        <option value="Air India">Air India (AI)</option>
+                        <option value="SpiceJet">SpiceJet (SG)</option>
+                        <option value="Akasa Air">Akasa Air (QP)</option>
+                        <option value="Vistara">Vistara (UK)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Apple Legend Pill Row -->
+                <div class="apple-legend-pill-row">
+                  <div class="apple-legend-item">
+                    <span class="apple-legend-dot" style="background:#0284c7;"></span>
+                    <span><strong>Composite Expected Fare</strong> (ML Rate ₹)</span>
+                  </div>
+                  <div class="apple-legend-item">
+                    <span style="display:inline-block; width:14px; height:2px; background:#94a3b8; border-top:2px dashed #94a3b8;"></span>
+                    <span><strong>Baseline Lead Curve</strong> (Neutral Season)</span>
+                  </div>
+                  <div class="apple-legend-item">
+                    <span style="display:inline-block; width:8px; height:8px; background:#d97706; transform:rotate(45deg);"></span>
+                    <span><strong>Festive Surge Impact</strong></span>
+                  </div>
+                  <div class="apple-legend-item">
+                    <span style="display:inline-block; width:10px; height:10px; background:rgba(2,132,199,0.12); border:1px solid rgba(2,132,199,0.35); border-radius:2px;"></span>
+                    <span><strong>95% Confidence Band</strong></span>
+                  </div>
+                </div>
+
+                <!-- Trajectory Chart Container -->
+                <div style="position:relative; height:360px; width:100%;">
+                  <canvas id="mlForecastChart"></canvas>
+                </div>
+
+                <!-- Trajectory Sub-Telemetry Bar -->
+                <div id="mlForecastTelemetryBar" class="apple-telemetry-row">
+                  <div class="apple-telemetry-item">Route Distance: <strong id="mlDistKm" style="color:#0f172a;">1,137 km</strong></div>
+                  <div class="apple-telemetry-item">Lowest Lead Fare: <strong id="mlLowestFare" style="color:#059669;">₹4,890 (T+28)</strong></div>
+                  <div class="apple-telemetry-item">Peak Surge Fare: <strong id="mlPeakFare" style="color:#d97706;">₹9,450 (T+1)</strong></div>
+                  <div class="apple-telemetry-item">Active Festive Days: <strong id="mlFestiveDaysCount" style="color:#0284c7;">6 of 30 Days</strong></div>
+                </div>
+              </div>
+
+              <!-- Stage 2: Authentic Indian Festive Travel Impact Matrix -->
+              <div class="apple-glass-card apple-festive-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                  <div>
+                    <h3 class="apple-stage-title" style="font-size:1.05rem;">Authentic Indian Festive Airfare Impact Matrix (2026)</h3>
+                    <p class="apple-stage-sub">High-density holiday travel calendar, affected critical trunk corridors, and empirical DGCA surge elasticity.</p>
+                  </div>
+                  <span class="badge" style="background:#fffbeb; color:#d97706; border:1px solid #fde68a; font-size:0.74rem; font-weight:600;">
+                    MoCA / DGCA Empirical
+                  </span>
+                </div>
+
+                <div class="table-responsive apple-festive-table-wrap" style="overflow-x:auto;">
+                  <table class="apple-festive-table" id="mlFestiveTable">
+                    <thead>
+                      <tr>
+                        <th>Festival</th>
+                        <th>Window (2026)</th>
+                        <th>Critical Corridors</th>
+                        <th style="text-align:center;">Hist. Surge</th>
+                        <th>Market Dynamics</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mlFestiveTableBody">
+                      <!-- Populated dynamically via JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Stage 3: Model Architecture & Feature Weights -->
+              <div class="apple-glass-card" style="padding:20px; margin-bottom:20px; background:#ffffff !important;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                  <div>
+                    <h3 class="apple-stage-title" style="font-size:1.05rem;">Model Governance, Verification &amp; Feature Weights</h3>
+                    <p class="apple-stage-sub">Evaluated on 4,164 independent test observations (80/20 split) with zero synthetic samples.</p>
+                  </div>
+                  <span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; font-size:0.74rem; font-weight:600;">
+                    100% Real Empirical Data
+                  </span>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px;">
+                  <div>
+                    <h4 style="margin:0 0 10px 0; font-size:0.82rem; color:#475569; text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">Feature Permutation Weights</h4>
+                    <div id="mlFeatureImportanceBars" style="display:flex; flex-direction:column; gap:8px;">
+                      <!-- Populated dynamically via JS -->
+                    </div>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; justify-content:space-between; background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0;">
+                    <div>
+                      <h4 style="margin:0 0 8px 0; font-size:0.82rem; color:#475569; text-transform:uppercase; letter-spacing:0.05em; font-weight:700;">Training Pipeline Specs</h4>
+                      <ul style="margin:0; padding-left:16px; font-size:0.8rem; color:#64748b; line-height:1.65;">
+                        <li><strong>Architecture:</strong> Histogram-based Gradient Boosting Regressor (LightGBM)</li>
+                        <li><strong>Dataset Size:</strong> 20,816 genuine flights (10,679 2019 + 2,906 2022 + 7,231 live)</li>
+                        <li><strong>Split:</strong> 16,652 train (80%) / 4,164 test (20%)</li>
+                        <li><strong>Target:</strong> Actual Total Economy One-Way Fare (INR ₹)</li>
+                        <li><strong>Calibration:</strong> IMD Weather Risk Index &amp; 2026 Festive Surge Calendar</li>
+                      </ul>
+                    </div>
+                    <div style="margin-top:10px; padding:7px 10px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:6px; font-size:0.75rem; color:#0284c7; font-weight:500;">
+                      ✓ Compliant with DGCA Fare Directive &amp; MoSPI Statistical Guidelines.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: macOS Control Center Inspector (Live Reactive Scenario Simulator & Festive Calendar) -->
+            <div class="ml-studio-right-col">
+              <!-- Flight Scenario Inspector Card -->
+              <div class="apple-glass-card apple-inspector-card" id="appleStudioSimCard">
+                <div class="apple-inspector-header">
+                  <div>
+                    <h3 class="apple-inspector-title">Flight Scenario Inspector</h3>
+                    <span style="font-size:0.74rem; color:#64748b;">Real-Time Machine Learning Inference</span>
+                  </div>
+                  <span class="badge" style="background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; font-size:0.72rem; font-weight:600;">
+                    Instant Reactive
+                  </span>
+                </div>
+
+                <!-- Hero Inferred Fare Display -->
+                <div class="apple-inferred-fare-hero" id="mlSimResultCard">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <span style="font-size:0.72rem; text-transform:uppercase; color:#64748b; letter-spacing:0.06em; font-weight:700;">Model Inferred Fair Market Fare</span>
+                      <div id="simPredictedFare" class="apple-fare-display">₹6,769</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <span class="apple-confidence-pill">95% Conf. Interval</span>
+                      <div id="simConfidenceBand" style="font-size:0.84rem; font-weight:700; color:#334155; margin-top:4px; font-variant-numeric:tabular-nums;">₹4,259 – ₹9,837</div>
+                    </div>
+                  </div>
+
+                  <!-- Proportional Unbundled Fare Meter Bar -->
+                  <div class="apple-fare-meter-wrap">
+                    <div class="apple-fare-meter-bar">
+                      <div id="simMeterBase" class="apple-meter-seg apple-meter-base" title="Base Fare"></div>
+                      <div id="simMeterFuel" class="apple-meter-seg apple-meter-fuel" title="Fuel Surcharge / ATF"></div>
+                      <div id="simMeterTax" class="apple-meter-seg apple-meter-tax" title="Airport Development Fee / GST"></div>
+                    </div>
+                    <div class="apple-fare-breakdown-labels">
+                      <div class="apple-breakdown-col">
+                        <span>Base Fare (76%):</span>
+                        <strong id="simBaseFare">₹5,144</strong>
+                      </div>
+                      <div class="apple-breakdown-col">
+                        <span>Fuel ATF (12%):</span>
+                        <strong id="simFuelSurcharge">₹812</strong>
+                      </div>
+                      <div class="apple-breakdown-col">
+                        <span>Taxes/GST (12%):</span>
+                        <strong id="simTaxes">₹812</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Factor Breakdown Tags -->
+                  <div id="simFactorChips" style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; font-size:0.72rem;">
+                    <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0;" id="simChipDist">Distance: 1,137 km</span>
+                    <span class="badge" style="background:#fffbeb; color:#d97706; border:1px solid #fde68a;" id="simChipFestive">Durga Puja Surge: +31%</span>
+                    <span class="badge" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;" id="simChipWeather">Weather: Nominal (0.18)</span>
+                    <span class="badge" style="background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd;" id="simChipDay">Weekday Flight</span>
+                  </div>
+                </div>
+
+                <!-- Simulation Form Controls -->
+                <form id="mlSimForm" onsubmit="window.onMLSimulateSubmit(event)">
+                  <!-- Corridor & Carrier Row -->
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <div>
+                      <label for="simRoute" class="apple-control-label" style="display:block; margin-bottom:4px;">Flight Corridor</label>
+                      <select id="simRoute" class="form-select" style="width:100%; background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:6px 8px; font-size:0.8rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="DEL-BOM" selected>DEL-BOM (Delhi ⇌ Mumbai)</option>
+                        <option value="DEL-BLR">DEL-BLR (Delhi ⇌ Bengaluru)</option>
+                        <option value="BOM-BLR">BOM-BLR (Mumbai ⇌ Bengaluru)</option>
+                        <option value="DEL-CCU">DEL-CCU (Delhi ⇌ Kolkata)</option>
+                        <option value="DEL-HYD">DEL-HYD (Delhi ⇌ Hyderabad)</option>
+                        <option value="DEL-MAA">DEL-MAA (Delhi ⇌ Chennai)</option>
+                        <option value="BLR-HYD">BLR-HYD (Bengaluru ⇌ Hyderabad)</option>
+                        <option value="BOM-GOI">BOM-GOI (Mumbai ⇌ Goa)</option>
+                        <option value="DEL-SXR">DEL-SXR (Delhi ⇌ Srinagar)</option>
+                        <option value="DEL-GAU">DEL-GAU (Delhi ⇌ Guwahati)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="simCarrier" class="apple-control-label" style="display:block; margin-bottom:4px;">Airline Carrier</label>
+                      <select id="simCarrier" class="form-select" style="width:100%; background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:6px 8px; font-size:0.8rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="IndiGo" selected>IndiGo (6E)</option>
+                        <option value="Air India">Air India (AI)</option>
+                        <option value="SpiceJet">SpiceJet (SG)</option>
+                        <option value="Akasa Air">Akasa Air (QP)</option>
+                        <option value="Vistara">Vistara (UK)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Lead Time Scrubber Slider -->
+                  <div class="apple-control-row">
+                    <div class="apple-control-label-bar">
+                      <label for="simLeadDays" class="apple-control-label">Advance Lead Time</label>
+                      <span id="simLeadDaysVal" class="apple-control-badge">14 Days (T+14)</span>
+                    </div>
+                    <div class="apple-slider-wrap">
+                      <input type="range" id="simLeadDays" class="apple-slider" min="1" max="45" value="14" oninput="window.onSimLeadDaysInput(this.value)">
+                    </div>
+                    <div class="apple-slider-scale">
+                      <span>T+1 (Same-Day)</span>
+                      <span>T+14 (Standard)</span>
+                      <span>T+45 (Early Bird)</span>
+                    </div>
+                  </div>
+
+                  <!-- Travel Month & Departure Row -->
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <div>
+                      <label for="simMonth" class="apple-control-label" style="display:block; margin-bottom:4px;">Travel Month</label>
+                      <select id="simMonth" class="form-select" style="width:100%; background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:6px 8px; font-size:0.8rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="1">Jan (Winter Fog)</option>
+                        <option value="2">February</option>
+                        <option value="3">March (Holi)</option>
+                        <option value="4">April</option>
+                        <option value="5">May (Summer Peak)</option>
+                        <option value="6">June (Monsoon)</option>
+                        <option value="7">July (Peak Monsoon)</option>
+                        <option value="8">August (Rakhi)</option>
+                        <option value="9">Sep (Ganesh Utsav)</option>
+                        <option value="10" selected>Oct (Navratri / Dussehra)</option>
+                        <option value="11">Nov (Diwali / Chhath)</option>
+                        <option value="12">Dec (New Year Peak)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="simDepHour" class="apple-control-label" style="display:block; margin-bottom:4px;">Departure Window</label>
+                      <select id="simDepHour" class="form-select" style="width:100%; background:#ffffff; color:#0f172a; border:1px solid #cbd5e1; border-radius:8px; padding:6px 8px; font-size:0.8rem; height:32px; box-shadow:0 1px 2px rgba(15,23,42,0.04);">
+                        <option value="6">06:00 (Early Morning)</option>
+                        <option value="9" selected>09:00 (Morning Peak)</option>
+                        <option value="14">14:00 (Afternoon)</option>
+                        <option value="19">19:00 (Evening Peak)</option>
+                        <option value="23">23:00 (Red-Eye)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Weather Disruption Chips -->
+                  <div class="apple-control-row">
+                    <div class="apple-control-label-bar">
+                      <span class="apple-control-label">Weather Meteorological Disruption</span>
+                    </div>
+                    <!-- Hidden select preserved for form submission/state -->
+                    <select id="simWeatherScenario" style="display:none;">
+                      <option value="clear" selected>Nominal / Clear Skies (VMC)</option>
+                      <option value="monsoon_disruption">Monsoon Cloudburst / High Winds</option>
+                      <option value="severe_fog">Dense CAT-III Winter Fog</option>
+                    </select>
+                    <div class="apple-chips-grid">
+                      <button type="button" class="apple-chip-btn active active-spring" data-weather="clear" onclick="window.selectWeatherChip(this, 'clear')">
+                        <span class="apple-chip-title">☀️ Clear VMC</span>
+                        <span class="apple-chip-sub">Nominal Skies</span>
+                      </button>
+                      <button type="button" class="apple-chip-btn active-spring" data-weather="monsoon_disruption" onclick="window.selectWeatherChip(this, 'monsoon_disruption')">
+                        <span class="apple-chip-title">🌧️ Monsoon</span>
+                        <span class="apple-chip-sub">Cloudburst Shock</span>
+                      </button>
+                      <button type="button" class="apple-chip-btn active-spring" data-weather="severe_fog" onclick="window.selectWeatherChip(this, 'severe_fog')">
+                        <span class="apple-chip-title">🌫️ CAT-III</span>
+                        <span class="apple-chip-sub">Winter Fog &lt;50m</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- iOS Spring Switches -->
+                  <div class="apple-toggle-row">
+                    <span class="apple-toggle-text">Weekend Travel Surge (Fri/Sat/Sun)</span>
+                    <label class="apple-switch">
+                      <input type="checkbox" id="simIsWeekend" onchange="window.triggerLiveMLSimulation()">
+                      <span class="apple-switch-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="apple-toggle-row">
+                    <span class="apple-toggle-text">Apply Festive Elasticity Surge</span>
+                    <label class="apple-switch">
+                      <input type="checkbox" id="simApplyFestive" checked onchange="window.triggerLiveMLSimulation()">
+                      <span class="apple-switch-slider"></span>
+                    </label>
+                  </div>
+
+                  <!-- Explicit Action Button preserved for manual tap with haptic spring feel -->
+                  <div style="margin-top:14px;">
+                    <button type="submit" class="btn btn-primary active-spring" id="btnRunSimulation" style="width:100%; height:36px; font-size:0.86rem; background:#0284c7; border-color:#0ea5e9; font-weight:600; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                      Recalculate Scenario Inference
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Upcoming Festive Surge Calendar Card (Always visible, natural flow) -->
+              <div class="apple-glass-card apple-festive-calendar-card" id="appleStudioCalCard" style="margin-top:18px;">
+                <div class="apple-cal-header">
+                  <div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+                      <h3 class="apple-cal-title">Upcoming Festive Peak Airfare Calendar</h3>
+                      <span class="badge" style="background:#fffbeb; color:#d97706; border:1px solid #fde68a; font-size:0.7rem; font-weight:700;">
+                        Peak Price Windows
+                      </span>
+                    </div>
+                    <p class="apple-cal-sub">Empirical price surge calendar showing exact dates when Indian domestic airfares spike 1.4x to 2.2x.</p>
+                  </div>
+                  <!-- Month navigation control -->
+                  <div class="apple-cal-month-nav">
+                    <button type="button" class="apple-cal-nav-btn active-spring" id="appleCalPrevMonthBtn" onclick="window.prevFestiveMonth()" title="Previous Month">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <span id="festiveCalMonthLabel" class="apple-cal-cur-month">September 2026</span>
+                    <button type="button" class="apple-cal-nav-btn active-spring" id="appleCalNextMonthBtn" onclick="window.nextFestiveMonth()" title="Next Month">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Month Quick Jump Selector Pills -->
+                <div class="apple-cal-quick-pills">
+                  <button type="button" class="apple-cal-pill active" id="pill-2026-09" onclick="window.jumpFestiveMonth(2026, 8)">
+                    🪔 Sep 2026 <span class="apple-cal-pill-tag">Ganesh Utsav</span>
+                  </button>
+                  <button type="button" class="apple-cal-pill" id="pill-2026-10" onclick="window.jumpFestiveMonth(2026, 9)">
+                    ✨ Oct 2026 <span class="apple-cal-pill-tag">Navratri / Dussehra</span>
+                  </button>
+                  <button type="button" class="apple-cal-pill" id="pill-2026-11" onclick="window.jumpFestiveMonth(2026, 10)">
+                    🎆 Nov 2026 <span class="apple-cal-pill-tag">Diwali / Chhath (+135%)</span>
+                  </button>
+                  <button type="button" class="apple-cal-pill" id="pill-2026-12" onclick="window.jumpFestiveMonth(2026, 11)">
+                    🏖️ Dec 2026 <span class="apple-cal-pill-tag">Goa Year-End</span>
+                  </button>
+                  <button type="button" class="apple-cal-pill" id="pill-2027-01" onclick="window.jumpFestiveMonth(2027, 0)">
+                    ❄️ Jan 2027 <span class="apple-cal-pill-tag">Winter Fog Window</span>
+                  </button>
+                </div>
+
+                <!-- Interactive 7-Day Week Calendar Grid -->
+                <div class="apple-cal-grid-wrap">
+                  <div class="apple-cal-weekdays">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                  </div>
+                  <div id="appleFestiveCalendarGrid" class="apple-cal-days-grid">
+                    <!-- Populated dynamically via JS -->
+                  </div>
+                  <!-- Visual Color / Status Legend -->
+                  <div class="apple-cal-legend">
+                    <div class="apple-cal-legend-item">
+                      <span class="apple-cal-legend-dot" style="background:#f1f5f9; border:1px solid #cbd5e1; opacity:0.6;"></span>
+                      <span style="text-decoration:line-through; color:#94a3b8;">Past Date</span>
+                    </div>
+                    <div class="apple-cal-legend-item">
+                      <span class="apple-cal-legend-dot" style="background:#f0f9ff; border:2px solid #0284c7;"></span>
+                      <span style="font-weight:700; color:#0284c7;">Today</span>
+                    </div>
+                    <div class="apple-cal-legend-item">
+                      <span class="apple-cal-legend-dot" style="background:#fffbeb; border:1px solid #fde68a;"></span>
+                      <span style="color:#b45309;">Festive Window</span>
+                    </div>
+                    <div class="apple-cal-legend-item">
+                      <span class="apple-cal-legend-dot" style="background:#ea580c;"></span>
+                      <span style="color:#c2410c; font-weight:700;">⚡ Peak Surge</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Interactive Selected Day Detail Callout -->
+                <div id="appleCalSelectedDetail" class="apple-cal-detail-card" style="display:none;">
+                  <!-- Dynamic detail filled by JS -->
+                </div>
+
+                <!-- Upcoming High-Surge Events Quick Feed -->
+                <div class="apple-cal-upcoming-feed">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:0.75rem; text-transform:uppercase; color:#64748b; font-weight:700; letter-spacing:0.05em;">Key 2026 Peak Fare Corridors</span>
+                    <span style="font-size:0.72rem; color:#0284c7; font-weight:600;">Tap to Simulate</span>
+                  </div>
+                  <div class="apple-cal-events-list">
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-09-14', 'ganesh_utsav_2026', 9, 'BOM-GOI', 'Ganesh Chaturthi')">
+                      <div class="apple-event-dot dot-festive"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Ganesh Chaturthi &amp; Utsav Peak</div>
+                        <div class="apple-event-dates">Sep 14 – Sep 25, 2026 &bull; Maharashtra &amp; Western Corridors</div>
+                      </div>
+                      <div class="apple-event-badge">+40% to +70%</div>
+                    </div>
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-10-16', 'durga_puja_2026', 10, 'DEL-CCU', 'Durga Puja')">
+                      <div class="apple-event-dot dot-festive"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Shardiya Navratri &amp; Durga Puja Peak</div>
+                        <div class="apple-event-dates">Oct 11 – Oct 21, 2026 &bull; Kolkata &amp; Guwahati Corridors</div>
+                      </div>
+                      <div class="apple-event-badge">+50% to +85%</div>
+                    </div>
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-10-20', 'dussehra_2026', 10, 'DEL-BOM', 'Dussehra Vijayadashami')">
+                      <div class="apple-event-dot dot-festive"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Dussehra (Vijayadashami) Holiday</div>
+                        <div class="apple-event-dates">Oct 19 – Oct 21, 2026 &bull; Nationwide Leisure Routes</div>
+                      </div>
+                      <div class="apple-event-badge">+35% to +55%</div>
+                    </div>
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-11-07', 'diwali_2026', 11, 'DEL-BOM', 'Diwali & Bhai Dooj')">
+                      <div class="apple-event-dot dot-super-peak"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Diwali &amp; Bhai Dooj National Peak</div>
+                        <div class="apple-event-dates">Nov 06 – Nov 11, 2026 &bull; Nationwide Trunk Routes</div>
+                      </div>
+                      <div class="apple-event-badge badge-super">+75% to +135%</div>
+                    </div>
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-11-14', 'chhath_puja_2026', 11, 'DEL-PAT', 'Chhath Puja Mahaparv')">
+                      <div class="apple-event-dot dot-extreme-peak"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Chhath Puja Mahaparv Surge</div>
+                        <div class="apple-event-dates">Nov 13 – Nov 16, 2026 &bull; Bihar &amp; Eastern UP Routes</div>
+                      </div>
+                      <div class="apple-event-badge badge-extreme">+90% to +180%</div>
+                    </div>
+                    <div class="apple-cal-event-item" onclick="window.loadFestiveIntoSim('2026-12-24', 'winter_holidays_2026', 12, 'BOM-GOI', 'Christmas & New Year')">
+                      <div class="apple-event-dot dot-festive"></div>
+                      <div class="apple-event-info">
+                        <div class="apple-event-title">Christmas &amp; New Year Season</div>
+                        <div class="apple-event-dates">Dec 22 – Jan 03, 2027 &bull; Goa, Srinagar &amp; Port Blair</div>
+                      </div>
+                      <div class="apple-event-badge">+60% to +110%</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategic Advisory Footer -->
+                <div class="apple-cal-advisory">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0284c7" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <div style="font-size:0.75rem; color:#475569; line-height:1.45;">
+                    <strong style="color:#0f172a;">Smart Lead Strategy:</strong> Dynamic pricing algorithms escalate fares exponentially ≤14 days before Indian festivals. Booking at least 28–35 days prior captures 35% to 52% baseline savings.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
              PAGE 9: CPI COMPARISON
              ================================================================ -->
+
         <section class="view-section" id="view-cpi-comparison">
           <div class="page-title-block">
             <div class="title-with-actions u-s350">
@@ -4442,8 +7135,8 @@
                 <span class="explorer-kpi-label">Audited Observations</span>
                 <span class="explorer-kpi-badge" id="kpiExplorerObsBadge">Live 100%</span>
               </div>
-              <div class="explorer-kpi-val" id="kpiExplorerTotalObs">7,209</div>
-              <div class="explorer-kpi-sub">Continuous Multi-OTA Ingestion</div>
+              <div class="explorer-kpi-val" id="kpiExplorerTotalObs">7,245</div>
+              <div class="explorer-kpi-sub" id="kpiExplorerObsSub">Continuous Multi-OTA Ingestion</div>
             </div>
 
             <div class="explorer-kpi-card">
@@ -4474,76 +7167,75 @@
             </div>
           </div>
 
-          <!-- 2. Full Institutional Filter Toolbar -->
+          <!-- 2. Unified Institutional Explorer Command & Filter Toolbar (High-Density UI) -->
           <div class="explorer-filter-card" id="explorerFilterToolbar">
+            <!-- Top Command Row: Segmented Switch + Search Bar + View Mode + Sort + Actions -->
             <div class="explorer-filter-main-row">
+              <!-- Segmented Dataset Switcher -->
+              <div class="explorer-segmented-pill" role="tablist" id="explorerDatasetToggleBar">
+                <button type="button" class="explorer-seg-btn active" id="btnExplorerModeCleaned" onclick="window.switchExplorerDataset('cleaned')" title="Cleaned &amp; Enriched Observations">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  <span>Cleaned Observations</span>
+                </button>
+                <button type="button" class="explorer-seg-btn" id="btnExplorerModeRaw" onclick="window.switchExplorerDataset('raw')" title="Raw Scraped Flight Ledger">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <span>Raw Scraped Ledger</span>
+                  <span class="badge-raw-pill" id="badgeRawRecordsCount">7,245</span>
+                </button>
+              </div>
+
+              <!-- Compact Search Box -->
               <div class="explorer-search-box">
-                <svg class="explorer-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.2">
+                <svg class="explorer-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 <input type="text" class="explorer-search-input" id="explorerSearchInput"
-                  placeholder="Search Flight No (e.g. 6E 317, AI 980), Route (DEL-BOM), Airline, or Record ID...">
+                  placeholder="Search flight no (6E 317), route (DEL-BOM), airline, or ID...">
               </div>
 
-              <!-- Price Aggregation Mode (Lowest vs All Quotes) -->
-              <div class="explorer-top-control">
-                <select class="explorer-select explorer-select-top" id="filterExplorerViewMode"
-                  title="Aggregation View Mode">
-                  <option value="lowest_only">Lowest Fare / Flight (All OTAs)</option>
-                  <option value="all">All Scraped Quotes (Multi-OTA Ledger)</option>
+              <!-- Price Aggregation Mode (Lowest vs All Quotes in Cleaned Mode) -->
+              <div class="explorer-top-control" id="containerExplorerViewMode">
+                <select class="explorer-select explorer-select-top" id="filterExplorerViewMode" title="Aggregation View Mode">
+                  <option value="lowest_only">Lowest Fare / Flight</option>
+                  <option value="all">All Scraped Quotes</option>
                 </select>
               </div>
 
               <!-- Sort Order -->
               <div class="explorer-top-control">
                 <select class="explorer-select explorer-select-top" id="sortExplorerOrder" title="Sort observations">
-                  <option value="fare_asc">Sort: Lowest Fare (Asc)</option>
-                  <option value="search_timestamp">Sort: Most Recent Scraped</option>
-                  <option value="fare_desc">Sort: Highest Fare (Desc)</option>
+                  <option value="fare_asc">Sort: Lowest Fare</option>
+                  <option value="search_timestamp">Sort: Most Recent</option>
+                  <option value="fare_desc">Sort: Highest Fare</option>
                   <option value="travel_date">Sort: Travel Date</option>
-                  <option value="lead_time_days">Sort: Lead Time (T-x)</option>
+                  <option value="lead_time_days">Sort: Lead Time</option>
                 </select>
               </div>
 
+              <!-- Filter Actions -->
               <div class="explorer-filter-actions">
-                <button type="button" class="explorer-btn-action" id="btnResetExplorerFilters"
-                  title="Reset all filters">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                  </svg>
+                <button type="button" class="explorer-btn-action" id="btnResetExplorerFilters" title="Reset all filters">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
                   <span>Reset</span>
                 </button>
-                <button type="button" class="explorer-btn-action" id="btnExplorerExportCSV"
-                  title="Export filtered observations as CSV">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  <span>Export CSV</span>
+                <button type="button" class="explorer-btn-action" id="btnExplorerExportCSV" title="Export CSV">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                  <span>CSV</span>
                 </button>
-                <button type="button" class="explorer-btn-action" id="btnExplorerExportJSON"
-                  title="Export filtered observations as JSON">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  <span>Export JSON</span>
+                <button type="button" class="explorer-btn-action" id="btnExplorerExportJSON" title="Export JSON">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                  <span>JSON</span>
                 </button>
               </div>
             </div>
 
-            <!-- Compact 5-Filter Row (Single Line on Desktop) -->
+            <!-- Bottom Row: Compact Filter Strip (Integrated Selects, No Wasted Label Row) -->
             <div class="explorer-filter-controls-row">
               <!-- 1. Corridor Filter -->
               <div class="explorer-control-group">
-                <label class="explorer-control-label" for="filterExplorerRoute">Corridor</label>
-                <select class="explorer-select" id="filterExplorerRoute">
-                  <option value="ALL">🛫 All Corridors (National)</option>
+                <select class="explorer-select" id="filterExplorerRoute" title="Corridor Filter">
+                  <option value="ALL">🛫 Corridor: All National</option>
                   <option value="DEL-BOM">DEL ⇄ BOM (Delhi - Mumbai)</option>
                   <option value="DEL-BLR">DEL ⇄ BLR (Delhi - Bengaluru)</option>
                   <option value="BOM-BLR">BOM ⇄ BLR (Mumbai - Bengaluru)</option>
@@ -4559,13 +7251,12 @@
 
               <!-- 2. Carrier Filter (with Logo) -->
               <div class="explorer-control-group">
-                <label class="explorer-control-label" for="filterExplorerAirline">Carrier</label>
                 <div class="filter-select-with-logo">
                   <span class="filter-logo-badge ax-style-8" id="badgeCarrierLogo">
                     <img src="/static/logos/indigo.png" id="imgCarrierFilterLogo" alt="Carrier">
                   </span>
-                  <select class="explorer-select" id="filterExplorerAirline">
-                    <option value="ALL">✈️ All Carriers</option>
+                  <select class="explorer-select" id="filterExplorerAirline" title="Operating Airline">
+                    <option value="ALL">✈️ Carrier: All Airlines</option>
                     <option value="IndiGo">IndiGo</option>
                     <option value="Air India">Air India</option>
                     <option value="Akasa Air">Akasa Air</option>
@@ -4577,18 +7268,21 @@
 
               <!-- 3. Platform Filter (with Logo) -->
               <div class="explorer-control-group">
-                <label class="explorer-control-label" for="filterExplorerPlatform">Data Source / OTA</label>
                 <div class="filter-select-with-logo">
                   <span class="filter-logo-badge ax-style-8" id="badgePortalLogo">
                     <img src="/static/logos/googleflights.png" id="imgPortalFilterLogo" alt="Portal">
                   </span>
-                  <select class="explorer-select" id="filterExplorerPlatform">
-                    <option value="ALL">🌐 All Sources</option>
+                  <select class="explorer-select" id="filterExplorerPlatform" title="Data Source / OTA">
+                    <option value="ALL">🌐 Source: All Platforms</option>
                     <option value="google_flights">Google Flights</option>
                     <option value="makemytrip">MakeMyTrip</option>
                     <option value="easemytrip">EaseMyTrip</option>
                     <option value="ixigo">Ixigo</option>
                     <option value="yatra">Yatra</option>
+                    <option value="indigo">IndiGo Direct</option>
+                    <option value="airindia">Air India Direct</option>
+                    <option value="spicejet">SpiceJet Direct</option>
+                    <option value="akasa">Akasa Direct</option>
                     <option value="airline_direct">Airline Direct</option>
                   </select>
                 </div>
@@ -4596,9 +7290,8 @@
 
               <!-- 4. Lead Window Dropdown -->
               <div class="explorer-control-group">
-                <label class="explorer-control-label" for="filterExplorerLead">Lead Window</label>
-                <select class="explorer-select" id="filterExplorerLead">
-                  <option value="ALL">⏱️ All Windows</option>
+                <select class="explorer-select" id="filterExplorerLead" title="Lead Window">
+                  <option value="ALL">⏱️ Lead: All Windows</option>
                   <option value="1">T-1 (Next Day / Urgent)</option>
                   <option value="2">T-2 (48h Lead)</option>
                   <option value="7">T-7 (1 Week Lead)</option>
@@ -4607,26 +7300,39 @@
                 </select>
               </div>
 
-              <!-- 5. Anomaly / Outlier Status -->
-              <div class="explorer-control-group">
-                <label class="explorer-control-label" for="filterExplorerOutlier">Regulatory Status</label>
-                <select class="explorer-select" id="filterExplorerOutlier">
-                  <option value="ALL">⚖️ All Records</option>
+              <!-- 5. Anomaly / Outlier Status (Cleaned mode) -->
+              <div class="explorer-control-group" id="filterExplorerOutlierGroup">
+                <select class="explorer-select" id="filterExplorerOutlier" title="Regulatory Status">
+                  <option value="ALL">⚖️ Status: All Records</option>
                   <option value="surge">🚨 3-Sigma Surges</option>
                   <option value="normal">Standard (≤2σ)</option>
                 </select>
               </div>
+
+              <!-- 6. Batch Travel Date Filter (Raw mode) -->
+              <div class="explorer-control-group" id="filterExplorerDateGroup" style="display:none;">
+                <select class="explorer-select" id="filterExplorerBatchDate" title="Batch Travel Date">
+                  <option value="ALL">📅 Date: All Travel Dates</option>
+                </select>
+              </div>
+
+              <!-- Subtle Live Status Indicator (Replaces bulky redundant banner) -->
+              <div class="explorer-meta-inline" id="datasetMetaStatusPill" style="display:flex; align-items:center; gap:6px; font-size:11px; color:#94a3b8; padding:0 6px; white-space:nowrap; margin-left:auto;">
+                <span class="pulse-dot" style="width:6px; height:6px; background:#10b981; border-radius:50%; display:inline-block;"></span>
+                <span id="datasetActiveMetaText" style="font-size:11px; color:#94a3b8; font-weight:500;">Cleaned DGCA Ledger</span>
+              </div>
             </div>
           </div>
+
 
           <!-- 3. Observations Table Card -->
           <div class="card">
             <div class="table-wrapper">
               <table class="apple-table dataset-ledger-table" id="tableDataExplorer">
-                <thead>
-                  <tr>
+                <thead id="tableDataExplorerHead">
+                  <tr id="thRowExplorerCleaned">
                     <th scope="col">Record ID &amp; Hash</th>
-                    <th scope="col">Scraped (IST)</th>
+                    <th scope="col" id="thScrapedIstCleaned" class="sortable-th" onclick="window.toggleScrapedSort()" title="Click to toggle Scraped Timestamp (Latest First / Oldest First)" style="cursor: pointer; user-select: none; transition: color 0.15s ease;">Scraped (IST) <span class="sort-indicator" id="sortIconScrapedCleaned" style="display:inline-block; font-size:11px; margin-left:3px;">↕</span></th>
                     <th scope="col">Travel Date &amp; Window</th>
                     <th scope="col">Sector (Route)</th>
                     <th scope="col">Carrier &amp; Flight Schedule</th>
@@ -4637,6 +7343,20 @@
                     <th scope="col">Market Lowest Rate</th>
                     <th scope="col">Regulatory Status</th>
                     <th scope="col">Compare &amp; Audit</th>
+                  </tr>
+                  <tr id="thRowExplorerRaw" style="display: none;">
+                    <th scope="col">Raw Record ID</th>
+                    <th scope="col" id="thScrapedIstRaw" class="sortable-th" onclick="window.toggleScrapedSort()" title="Click to toggle Scraped Timestamp (Latest First / Oldest First)" style="cursor: pointer; user-select: none; transition: color 0.15s ease;">Scraped (IST) <span class="sort-indicator" id="sortIconScrapedRaw" style="display:inline-block; font-size:11px; margin-left:3px; color:#10b981;">▾</span></th>
+                    <th scope="col">Travel Date &amp; Lead</th>
+                    <th scope="col">Sector (Route)</th>
+                    <th scope="col">Carrier &amp; Flight No</th>
+                    <th scope="col">Departure &amp; Arrival</th>
+                    <th scope="col">OTA / Source Portal</th>
+                    <th scope="col">Duration &amp; Stops</th>
+                    <th scope="col">Total Fare (₹)</th>
+                    <th scope="col">Cabin Class</th>
+                    <th scope="col">Ingestion Status</th>
+                    <th scope="col">Audit &amp; Link</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -6536,10 +9256,116 @@ fetchAirfareObservations();</pre>
       <div class="ax-style-33">Returning to National Airfare Portal...</div>
       <div class="ax-style-185"></div>
     </div>
+  <!-- ====================================================================
+       PWA Mobile Install Banner (Android, Chrome, Edge)
+       ==================================================================== -->
+  <div class="pwa-install-banner" id="pwaMobileInstallBanner" style="display:none;" role="dialog" aria-label="Install App">
+    <div class="pwa-banner-content">
+      <div class="pwa-app-icon-wrap">
+        <img src="/icons/icon-192x192.png" alt="AREOX" width="44" height="44" class="pwa-banner-icon">
+      </div>
+      <div class="pwa-banner-text">
+        <div class="pwa-banner-title">Install AREOX App</div>
+        <div class="pwa-banner-desc">Fast offline access &amp; instant surge telemetry on your phone</div>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button type="button" class="btn-pwa-dismiss" id="btnDismissPwaBanner" aria-label="Dismiss">Later</button>
+      <button type="button" class="btn-pwa-confirm" id="btnConfirmPwaInstall">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+        <span>Install</span>
+      </button>
+    </div>
   </div>
 
+  <!-- ====================================================================
+       PWA iOS Safari Add-to-Home-Screen Instruction Modal
+       ==================================================================== -->
+  <div class="pwa-ios-modal-backdrop" id="pwaIosModalBackdrop" style="display:none;">
+    <div class="pwa-ios-modal-card">
+      <button type="button" class="pwa-ios-close-btn" id="btnCloseIosPwaModal" aria-label="Close">&times;</button>
+      <div class="pwa-ios-header">
+        <img src="/icons/apple-touch-icon.png" alt="AREOX" width="56" height="56" class="pwa-ios-icon">
+        <h3>Install AREOX on iPhone</h3>
+        <p>Add to your home screen for full-screen native inspection &amp; zero browser address bar.</p>
+      </div>
+      <div class="pwa-ios-steps">
+        <div class="pwa-ios-step">
+          <div class="pwa-step-num">1</div>
+          <div class="pwa-step-info">
+            Tap the <strong>Share</strong> button
+            <span class="pwa-ios-share-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </span>
+            in your Safari navigation bar below.
+          </div>
+        </div>
+        <div class="pwa-ios-step">
+          <div class="pwa-step-num">2</div>
+          <div class="pwa-step-info">
+            Scroll down and select <strong>"Add to Home Screen"</strong> (with the ⊞ icon).
+          </div>
+        </div>
+        <div class="pwa-ios-step">
+          <div class="pwa-step-num">3</div>
+          <div class="pwa-step-info">
+            Tap <strong>"Add"</strong> in the top-right corner to launch AREOX as a standalone app!
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn-pwa-ios-gotit" id="btnIosGotIt">Got It</button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       Mobile Bottom Navigation Dock (iOS / Android Bottom Bar)
+       ==================================================================== -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+    <button type="button" class="mobile-nav-item active" data-view="view-overview" id="mobNavOverview">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <rect width="7" height="9" x="3" y="3" rx="1" />
+        <rect width="7" height="5" x="14" y="3" rx="1" />
+        <rect width="7" height="9" x="14" y="12" rx="1" />
+        <rect width="7" height="5" x="3" y="16" rx="1" />
+      </svg>
+      <span>Overview</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="view-route-basket" id="mobNavBasket">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+      <span>Basket</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="view-data-explorer" id="mobNavExplorer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+        <path d="M3 12A9 3 0 0 0 21 12" />
+      </svg>
+      <span>Explorer</span>
+    </button>
+    <button type="button" class="mobile-nav-item" data-view="view-market-surveillance" id="mobNavSurveillance">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <circle cx="12" cy="12" r="10" />
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+      </svg>
+      <span>Surge</span>
+    </button>
+    <button type="button" class="mobile-nav-item" id="mobNavMenuTrigger">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <line x1="4" y1="18" x2="20" y2="18" />
+      </svg>
+      <span>More</span>
+    </button>
+  </nav>
+
   <!-- Main JavaScript Controller -->
-  <script src="/static/app.js?v=9.2"></script>
+  <script src="/static/app.js?v=9.6"></script>
 
   <!-- AeroX Global Information Tooltip System -->
   <script src="/static/term_definitions.js"></script>

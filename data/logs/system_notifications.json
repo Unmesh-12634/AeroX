@@ -1,0 +1,38 @@
+[
+  {
+    "id": "notif-sys-1789315531",
+    "slot_id": null,
+    "category": "system",
+    "category_label": "On-Demand Ingestion",
+    "title": "\ud83d\udfe2 On-Demand Live Scrape Completed",
+    "message": "Manual live scrape for DEL-BOM across 5 platforms completed and merged into master ledger.",
+    "timestamp": "21:35 IST",
+    "time_ago": "Just now",
+    "route": "National Basket",
+    "airline": "Multi-OTA (MMT/GF/Direct)",
+    "current_fare": 0.0,
+    "expected_fare": 0.0,
+    "delta_pct": 0.0,
+    "anomaly_id": null,
+    "is_read": false,
+    "created_at": "2026-09-13T21:35:31.593395+05:30"
+  },
+  {
+    "id": "notif-sys-1789312759",
+    "slot_id": "2026-09-13_14:00",
+    "category": "system",
+    "category_label": "Automated Catch-up Ingestion",
+    "title": "\ud83d\udfe2 Missed 02:00 PM IST Catch-Up Ingestion Done",
+    "message": "Automated offline catch-up executed successfully on officer login. Ingested live multi-OTA quotes across 15 corridors into master ledger.",
+    "timestamp": "20:49 IST",
+    "time_ago": "Just now",
+    "route": "National Basket",
+    "airline": "Multi-OTA (MMT/GF/Direct)",
+    "current_fare": 0.0,
+    "expected_fare": 0.0,
+    "delta_pct": 0.0,
+    "anomaly_id": null,
+    "is_read": false,
+    "created_at": "2026-09-13T20:49:19.705486+05:30"
+  }
+]

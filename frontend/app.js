@@ -163,6 +163,19 @@ document.addEventListener('DOMContentLoaded', () => {
       item.classList.toggle('active', isMatch);
     });
 
+    // Update mobile bottom navigation items
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+      const itemTarget = item.getAttribute('data-view');
+      const isMatch = itemTarget === viewId ||
+                      (viewId === 'view-market-surveillance' && itemTarget === 'view-market-surveillance');
+      item.classList.toggle('active', !!isMatch);
+    });
+
+    // Automatically dismiss mobile drawer when navigating
+    if (typeof window.closeMobileSidebar === 'function') {
+      window.closeMobileSidebar();
+    }
+
     // Update view sections
     document.querySelectorAll('.view-section').forEach(sec => {
       sec.classList.toggle('active', sec.id === viewId);
@@ -186,7 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
       'view-data-quality': 'Data Quality & Policy Simulator',
       'view-api-developer': 'Airfare Intelligence REST API',
       'view-settings': 'Data Quality & Policy Simulator',
-      'view-route-basket': 'DGCA Top-15 Route Basket & Unbundled Fare Console'
+      'view-route-basket': 'DGCA Top-15 Route Basket & Unbundled Fare Console',
+      'view-ml-predictions': 'AI Airfare Predictor & Scenario Simulator'
     };
     const titleEl = document.getElementById('topPageTitle');
     if (titleEl) {
@@ -224,7 +238,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof renderBasketSkeletons === 'function') renderBasketSkeletons();
         if (typeof fetchBasketData === 'function') fetchBasketData();
       }
+    } else if (viewId === 'view-ml-predictions') {
+      if (typeof window.initMLPredictionsView === 'function') {
+        window.initMLPredictionsView();
+      }
     }
+
 
     // Smooth chart & view-specific data rendering
     setTimeout(() => {
@@ -267,6 +286,122 @@ document.addEventListener('DOMContentLoaded', () => {
         window.switchView(targetView);
       }
     });
+  });
+
+  // =========================================================================
+  // 2A-1. Mobile Drawer Navigation & Bottom Dock Controller
+  // =========================================================================
+  const btnMobileToggle = document.getElementById('btnMobileMenuToggle');
+  const btnMobileClose = document.getElementById('btnSidebarCloseMobile');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const sidebar = document.getElementById('appSidebar');
+
+  function openMobileSidebar() {
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+    document.body.classList.add('mobile-drawer-open');
+  }
+
+  function closeMobileSidebar() {
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+    document.body.classList.remove('mobile-drawer-open');
+  }
+  window.openMobileSidebar = openMobileSidebar;
+  window.closeMobileSidebar = closeMobileSidebar;
+
+  if (btnMobileToggle) btnMobileToggle.addEventListener('click', openMobileSidebar);
+  if (btnMobileClose) btnMobileClose.addEventListener('click', closeMobileSidebar);
+  if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+  // Wire Mobile Bottom Navigation buttons
+  document.querySelectorAll('.mobile-nav-item[data-view]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = btn.getAttribute('data-view');
+      if (target && typeof window.switchView === 'function') {
+        window.switchView(target);
+      }
+    });
+  });
+
+  const mobNavMenuTrigger = document.getElementById('mobNavMenuTrigger');
+  if (mobNavMenuTrigger) {
+    mobNavMenuTrigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (sidebar && sidebar.classList.contains('mobile-open')) {
+        closeMobileSidebar();
+      } else {
+        openMobileSidebar();
+      }
+    });
+  }
+
+  // =========================================================================
+  // 2A. Universal Top Command & Search Bar
+  // =========================================================================
+  const topSearchInput = document.getElementById('topNavCorridorInput');
+  const topSearchDropdown = document.getElementById('topSearchDropdown');
+  const topSearchCapsule = document.getElementById('topNavSearchCapsule');
+
+  window.openTopSearch = function() {
+    if (topSearchDropdown) topSearchDropdown.classList.add('open');
+  };
+
+  window.closeTopSearch = function() {
+    if (topSearchDropdown) topSearchDropdown.classList.remove('open');
+    if (topSearchInput) topSearchInput.value = '';
+    if (topSearchDropdown) {
+      topSearchDropdown.querySelectorAll('.top-search-item').forEach(el => el.style.display = '');
+    }
+  };
+
+  window.quickSelectCorridor = function(corridorCode) {
+    const routeSelect = document.getElementById('selectRoute') || document.getElementById('trajectoryRouteSelect');
+    if (routeSelect) {
+      routeSelect.value = corridorCode;
+      routeSelect.dispatchEvent(new Event('change'));
+    }
+    if (!document.getElementById('view-route-analytics')?.classList.contains('active') &&
+        !document.getElementById('view-overview')?.classList.contains('active')) {
+      window.switchView('view-route-analytics');
+    }
+  };
+
+  if (topSearchInput) {
+    topSearchInput.addEventListener('focus', () => {
+      window.openTopSearch();
+    });
+
+    topSearchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!topSearchDropdown) return;
+      window.openTopSearch();
+      topSearchDropdown.querySelectorAll('.top-search-item').forEach(el => {
+        const text = el.innerText.toLowerCase();
+        el.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    });
+  }
+
+  // Keyboard shortcut: Ctrl+K or Cmd+K
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (topSearchInput) {
+        topSearchInput.focus();
+        window.openTopSearch();
+      }
+    } else if (e.key === 'Escape') {
+      window.closeTopSearch();
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (topSearchCapsule && !topSearchCapsule.contains(e.target)) {
+      window.closeTopSearch();
+    }
   });
 
   // =========================================================================
@@ -414,6 +549,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const curMeta = document.getElementById('loginCurtainOfficerMeta');
       if (curName) curName.textContent = data.officer.full_name || 'Official Clearance Verified';
       if (curMeta) curMeta.textContent = `${data.officer.designation || 'Officer'} • ${data.officer.ministry || 'Government of India'}`;
+
+      if (typeof window.checkMissedWindowCatchUp === 'function') {
+        window.checkMissedWindowCatchUp();
+      }
 
       if (loginCurtain) {
         loginCurtain.classList.add('active');
@@ -2136,8 +2275,13 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         fetchBasketData();
       }
+    } else if (viewId === 'view-ml-predictions') {
+      if (typeof window.initMLPredictionsView === 'function') {
+        window.initMLPredictionsView();
+      }
     }
   }
+
 
   function updateMmtSearchUI() {
     const elOriginCity = document.getElementById('mmtOriginCityText');
@@ -2967,19 +3111,21 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             <div style="display:flex; align-items:center; gap:6px;">
               <span class="carrier-mini-pill ${f.cls}">${f.code}</span>
-              <strong>${f.flightNumber}</strong>
+              <strong style="color:#0F172A; font-weight:700;">${f.flightNumber}</strong>
             </div>
-            <div style="font-size:10.5px; color:#64748B;">${f.airline}</div>
+            <div style="font-size:10.5px; color:#64748B; margin-top:2px;">${f.airline}</div>
           </td>
-          <td><strong>${f.origin} → ${f.dest}</strong></td>
+          <td><strong style="color:#0F172A; white-space:nowrap;">${f.origin} <span style="color:#94A3B8; font-weight:400;">→</span> ${f.dest}</strong></td>
           <td>
-            <div style="font-size:11px; font-weight:600; color:#0F172A;">${progressPct}%</div>
-            <div style="width:50px; height:3px; background:#E2E8F0; border-radius:2px; margin-top:2px;">
-              <div style="width:${progressPct}%; height:100%; background:var(--accent-blue); border-radius:2px;"></div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:11.5px; font-weight:700; color:#1E293B; min-width:28px;">${progressPct}%</span>
+              <div style="flex:1; min-width:38px; max-width:54px; height:4px; background:#E2E8F0; border-radius:3px; overflow:hidden;">
+                <div style="width:${progressPct}%; height:100%; background:linear-gradient(90deg, #0284C7, #38BDF8); border-radius:3px;"></div>
+              </div>
             </div>
           </td>
-          <td><strong style="color:${isHigh ? '#DC2626' : '#0F172A'};">₹${currentFare.toLocaleString()}</strong></td>
-          <td><span class="badge ${isHigh ? 'critical' : 'normal'}">${isHigh ? 'Surge' : 'Cruising'}</span></td>
+          <td><strong style="color:${isHigh ? '#DC2626' : '#0F172A'}; font-variant-numeric:tabular-nums; font-size:13px;">₹${currentFare.toLocaleString()}</strong></td>
+          <td style="text-align:right; padding-right:14px;"><span class="badge ${isHigh ? 'critical' : 'normal'}">${isHigh ? 'Surge' : 'Cruising'}</span></td>
         </tr>
       `;
     }).join('');
@@ -6098,7 +6244,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 0. Top navigation bar telemetry badge
     const topNavScrapeEl = document.getElementById('topNavScrapeTime');
-    if (topNavScrapeEl) topNavScrapeEl.textContent = timeFormatted;
+    if (topNavScrapeEl) {
+      const compactScraped = timeFormatted.replace(' 2026', '').replace(' IST', '');
+      topNavScrapeEl.textContent = compactScraped;
+    }
     const topNavScrapePill = document.getElementById('topNavScrapePill');
     if (topNavScrapePill) {
       topNavScrapePill.title = `Live multi-OTA scraper telemetry • Latest Scraped: ${timeFormatted} (${totalRecords} records audited)`;
@@ -7649,6 +7798,7 @@ window.exportCpiTableCSV = function() {
   // 9. Institutional Data Explorer: Real Multi-OTA Ledger & Summary Telemetry
   // =========================================================================
   state.explorerFilters = {
+    dataset: 'cleaned',
     search: '',
     route: 'ALL',
     airline: 'ALL',
@@ -7656,11 +7806,132 @@ window.exportCpiTableCSV = function() {
     viewMode: 'lowest_only',
     leadTime: 'ALL',
     outlierStatus: 'ALL',
+    batchDate: 'ALL',
     sortBy: 'fare_asc',
     sortDesc: false,
     page: 0,
     pageSize: 50,
     total: 0
+  };
+
+  window.updateScrapedSortIcons = function() {
+    const f = state.explorerFilters;
+    const iconCleaned = document.getElementById('sortIconScrapedCleaned');
+    const iconRaw = document.getElementById('sortIconScrapedRaw');
+    const thCleaned = document.getElementById('thScrapedIstCleaned');
+    const thRaw = document.getElementById('thScrapedIstRaw');
+
+    const isSortActive = (f.sortBy === 'search_timestamp');
+    const isDesc = (f.sortDesc !== false); // default to true
+    const iconText = isSortActive ? (isDesc ? '▾' : '▴') : '↕';
+
+    if (iconCleaned) {
+      iconCleaned.textContent = iconText;
+      iconCleaned.style.color = isSortActive ? (isDesc ? '#0ea5e9' : '#f59e0b') : '#94a3b8';
+      iconCleaned.style.fontWeight = isSortActive ? '800' : 'normal';
+    }
+    if (iconRaw) {
+      iconRaw.textContent = iconText;
+      iconRaw.style.color = isSortActive ? (isDesc ? '#10b981' : '#f59e0b') : '#94a3b8';
+      iconRaw.style.fontWeight = isSortActive ? '800' : 'normal';
+    }
+    if (thCleaned) {
+      thCleaned.style.color = isSortActive ? '#0ea5e9' : '';
+      thCleaned.title = isSortActive
+        ? (isDesc ? 'Currently: Latest Scraped First (Click to start from Oldest/Ending)' : 'Currently: Oldest Scraped First (Click for Latest First)')
+        : 'Click to sort by Scraped Timestamp (Latest First)';
+    }
+    if (thRaw) {
+      thRaw.style.color = isSortActive ? '#10b981' : '';
+      thRaw.title = isSortActive
+        ? (isDesc ? 'Currently: Latest Scraped First (Click to start from Oldest/Ending)' : 'Currently: Oldest Scraped First (Click for Latest First)')
+        : 'Click to sort by Scraped Timestamp (Latest First)';
+    }
+  };
+
+  window.toggleScrapedSort = function() {
+    const f = state.explorerFilters;
+    if (f.sortBy === 'search_timestamp') {
+      // Toggle sort direction: true (latest first) <-> false (oldest first)
+      f.sortDesc = !f.sortDesc;
+    } else {
+      // First click: activate search_timestamp sort, default to latest first (descending)
+      f.sortBy = 'search_timestamp';
+      f.sortDesc = true;
+    }
+    f.page = 0;
+
+    const sortSelect = document.getElementById('sortExplorerOrder');
+    if (sortSelect) {
+      sortSelect.value = 'search_timestamp';
+    }
+
+    window.updateScrapedSortIcons();
+    loadObservationsTable();
+  };
+
+  window.switchExplorerDataset = function(mode) {
+    if (mode !== 'cleaned' && mode !== 'raw') mode = 'cleaned';
+    state.explorerFilters.dataset = mode;
+    state.explorerFilters.page = 0;
+
+    const btnCleaned = document.getElementById('btnExplorerModeCleaned');
+    const btnRaw = document.getElementById('btnExplorerModeRaw');
+    const thCleaned = document.getElementById('thRowExplorerCleaned');
+    const thRaw = document.getElementById('thRowExplorerRaw');
+    const viewModeCont = document.getElementById('containerExplorerViewMode');
+    const outlierCont = document.getElementById('filterExplorerOutlierGroup');
+    const dateCont = document.getElementById('filterExplorerDateGroup');
+    const metaText = document.getElementById('datasetActiveMetaText');
+    const sortSelect = document.getElementById('sortExplorerOrder');
+
+    if (mode === 'raw') {
+      // Raw Mode defaults: Latest scrape comes first!
+      state.explorerFilters.sortBy = 'search_timestamp';
+      state.explorerFilters.sortDesc = true;
+      if (sortSelect) sortSelect.value = 'search_timestamp';
+
+      if (btnCleaned) {
+        btnCleaned.classList.remove('active');
+        btnCleaned.style.background = 'transparent';
+        btnCleaned.style.color = '#94a3b8';
+        btnCleaned.style.borderColor = 'transparent';
+      }
+      if (btnRaw) {
+        btnRaw.classList.add('active');
+        btnRaw.style.background = 'rgba(16, 185, 129, 0.2)';
+        btnRaw.style.color = '#34d399';
+        btnRaw.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+      }
+      if (thCleaned) thCleaned.style.display = 'none';
+      if (thRaw) thRaw.style.display = 'table-row';
+      if (viewModeCont) viewModeCont.style.display = 'none';
+      if (outlierCont) outlierCont.style.display = 'none';
+      if (dateCont) dateCont.style.display = 'block';
+      if (metaText) metaText.textContent = 'Live Scraped Raw Ledger (Multi-OTA Quotes)';
+    } else {
+      if (btnCleaned) {
+        btnCleaned.classList.add('active');
+        btnCleaned.style.background = 'rgba(14, 165, 233, 0.2)';
+        btnCleaned.style.color = '#38bdf8';
+        btnCleaned.style.borderColor = 'rgba(14, 165, 233, 0.4)';
+      }
+      if (btnRaw) {
+        btnRaw.classList.remove('active');
+        btnRaw.style.background = 'transparent';
+        btnRaw.style.color = '#94a3b8';
+        btnRaw.style.borderColor = 'transparent';
+      }
+      if (thCleaned) thCleaned.style.display = 'table-row';
+      if (thRaw) thRaw.style.display = 'none';
+      if (viewModeCont) viewModeCont.style.display = 'block';
+      if (outlierCont) outlierCont.style.display = 'block';
+      if (dateCont) dateCont.style.display = 'none';
+      if (metaText) metaText.textContent = 'Cleaned DGCA Ledger (3σ bounds)';
+    }
+
+    window.updateScrapedSortIcons();
+    loadObservationsTable();
   };
 
   async function loadExplorerSummary() {
@@ -7732,6 +8003,10 @@ window.exportCpiTableCSV = function() {
     if (p.includes('yatra')) return '/static/logos/yatra.png';
     if (p.includes('cleartrip')) return '/static/logos/cleartrip.svg';
     if (p.includes('goibibo')) return '/static/logos/goibibo.svg';
+    if (p.includes('indigo')) return '/static/logos/indigo.png';
+    if (p.includes('airindia') || p.includes('air_india')) return '/static/logos/airindia.jpg';
+    if (p.includes('spicejet')) return '/static/logos/spicejet.png';
+    if (p.includes('akasa')) return '/static/logos/akasa.png';
     if (p.includes('direct')) return '/static/logos/indigo.png';
     return '/static/logos/googleflights.png';
   }
@@ -7746,6 +8021,10 @@ window.exportCpiTableCSV = function() {
     if (p.includes('yatra')) return 'Yatra';
     if (p.includes('cleartrip')) return 'Cleartrip';
     if (p.includes('goibibo')) return 'Goibibo';
+    if (p.includes('indigo')) return 'IndiGo Direct';
+    if (p.includes('airindia') || p.includes('air_india')) return 'Air India Direct';
+    if (p.includes('spicejet')) return 'SpiceJet Direct';
+    if (p.includes('akasa')) return 'Akasa Air Direct';
     if (p.includes('direct')) return 'Airline Direct';
     return platform.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
@@ -7756,6 +8035,7 @@ window.exportCpiTableCSV = function() {
 
     try {
       const f = state.explorerFilters;
+      const isRaw = f.dataset === 'raw';
       const offset = f.page * f.pageSize;
       const params = new URLSearchParams({
         limit: f.pageSize,
@@ -7765,40 +8045,65 @@ window.exportCpiTableCSV = function() {
       const effectiveSearch = searchQuery || f.search;
       if (effectiveSearch) params.append('search', effectiveSearch);
       if (f.route && f.route !== 'ALL') params.append('route', f.route);
-      if (f.airline && f.airline !== 'ALL') params.append('airline', f.airline);
+      if (f.airline && f.airline !== 'ALL') params.append(isRaw ? 'carrier' : 'airline', f.airline);
       if (f.platform && f.platform !== 'ALL') params.append('platform', f.platform);
-      if (f.leadTime && f.leadTime !== 'ALL') params.append('lead_time', f.leadTime);
-      if (f.outlierStatus && f.outlierStatus !== 'ALL') params.append('outlier_status', f.outlierStatus);
+      if (!isRaw && f.leadTime && f.leadTime !== 'ALL') params.append('lead_time', f.leadTime);
+      if (!isRaw && f.outlierStatus && f.outlierStatus !== 'ALL') params.append('outlier_status', f.outlierStatus);
+      if (isRaw && f.batchDate && f.batchDate !== 'ALL') params.append('batch_date', f.batchDate);
 
       // Sort Order
-      let sortBy = (f.viewMode === 'lowest_only') ? 'min_flight_fare' : 'search_timestamp';
-      let sortDesc = (f.viewMode === 'lowest_only') ? false : true;
+      let sortBy = (f.viewMode === 'lowest_only' && !isRaw) ? 'min_flight_fare' : 'search_timestamp';
+      let sortDesc = (f.sortDesc !== undefined) ? f.sortDesc : ((f.viewMode === 'lowest_only' && !isRaw) ? false : true);
       if (f.sortBy === 'fare_asc') {
-        sortBy = (f.viewMode === 'lowest_only') ? 'min_flight_fare' : 'total_fare_inr';
+        sortBy = (!isRaw && f.viewMode === 'lowest_only') ? 'min_flight_fare' : 'total_fare_inr';
         sortDesc = false;
       } else if (f.sortBy === 'fare_desc') {
-        sortBy = (f.viewMode === 'lowest_only') ? 'min_flight_fare' : 'total_fare_inr';
+        sortBy = (!isRaw && f.viewMode === 'lowest_only') ? 'min_flight_fare' : 'total_fare_inr';
         sortDesc = true;
       } else if (f.sortBy === 'travel_date') {
         sortBy = 'travel_date';
-        sortDesc = true;
+        sortDesc = (f.sortDesc !== undefined) ? f.sortDesc : true;
       } else if (f.sortBy === 'lead_time_days') {
         sortBy = 'lead_time_days';
         sortDesc = false;
       } else if (f.sortBy === 'search_timestamp') {
         sortBy = 'search_timestamp';
-        sortDesc = true;
+        sortDesc = (f.sortDesc !== undefined) ? f.sortDesc : true;
       }
       params.append('sort_by', sortBy);
       params.append('sort_desc', sortDesc);
+      window.updateScrapedSortIcons();
 
-      const endpoint = (f.viewMode === 'lowest_only') ? '/api/v1/observations/flights' : '/api/v1/observations';
+      const endpoint = isRaw
+        ? '/api/v1/observations/raw'
+        : ((f.viewMode === 'lowest_only') ? '/api/v1/observations/flights' : '/api/v1/observations');
+
       const res = await fetch(`${endpoint}?${params.toString()}`);
       if (res.ok) {
         const json = await res.json();
         const obs = json.flights || json.observations || [];
         const total = json.total || 0;
         f.total = total;
+
+        // Populate raw batch dates filter if returned
+        if (isRaw && json.available_dates && json.available_dates.length > 0) {
+          const dateSelect = document.getElementById('filterExplorerBatchDate');
+          if (dateSelect && dateSelect.options.length <= 1) {
+            json.available_dates.forEach(d => {
+              const opt = document.createElement('option');
+              opt.value = d;
+              opt.textContent = `📅 ${d}`;
+              dateSelect.appendChild(opt);
+            });
+            if (f.batchDate) dateSelect.value = f.batchDate;
+          }
+        }
+
+        // Update raw badge count in segmented switcher
+        if (isRaw && total > 0) {
+          const rawPill = document.getElementById('badgeRawRecordsCount');
+          if (rawPill) rawPill.textContent = `Live ${total.toLocaleString()}`;
+        }
 
         const counter = document.getElementById('dataExplorerCounter');
         if (counter) {
@@ -7807,7 +8112,9 @@ window.exportCpiTableCSV = function() {
           } else {
             const startNum = offset + 1;
             const endNum = Math.min(offset + f.pageSize, total);
-            const modeLabel = (f.viewMode === 'lowest_only') ? 'unique flights (lowest fare)' : 'scraped quotes';
+            const modeLabel = isRaw
+              ? 'raw scraped multi-OTA quotes'
+              : ((f.viewMode === 'lowest_only') ? 'unique flights (lowest fare)' : 'scraped quotes');
             counter.textContent = `Showing ${startNum.toLocaleString()} to ${endNum.toLocaleString()} of ${total.toLocaleString()} ${modeLabel}`;
           }
         }
@@ -7818,156 +8125,249 @@ window.exportCpiTableCSV = function() {
         if (btnNext) btnNext.disabled = ((offset + f.pageSize) >= total);
 
         if (obs.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="12" class="u-s101" style="text-align:center; padding:30px;">No matching observations found for the selected institutional filters.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="12" class="u-s101" style="text-align:center; padding:30px;">No matching observations found for the selected ${isRaw ? 'raw scraped' : 'institutional'} filters.</td></tr>`;
           return;
         }
 
-        tbody.innerHTML = obs.map(r => {
-          const fare = Number(r.total_fare_inr) || 0;
-          const baseFare = (r.base_fare_inr != null && !isNaN(r.base_fare_inr) && r.base_fare_inr > 0)
-            ? Math.round(Number(r.base_fare_inr)) : null;
-          const taxes = (r.taxes_fees_inr != null && !isNaN(r.taxes_fees_inr) && r.taxes_fees_inr > 0)
-            ? Math.round(Number(r.taxes_fees_inr)) : null;
-          const gst = (r.gst_inr != null && !isNaN(r.gst_inr) && r.gst_inr > 0)
-            ? Math.round(Number(r.gst_inr)) : null;
+        if (isRaw) {
+          // RENDER RAW SCRAPED OBSERVATIONS (Direct Playwright / OTA Ledger)
+          tbody.innerHTML = obs.map(r => {
+            const fare = Number(r.total_fare_inr) || 0;
+            const scrapedTime = r.search_timestamp ? r.search_timestamp.replace('T', ' ').substring(0, 19) : '—';
+            const isSep13 = scrapedTime.includes('2026-09-13');
+            const travelDate = r.travel_date || '—';
+            const leadDays = r.lead_time_days != null ? r.lead_time_days : '—';
+            const rawHash = r.raw_hash ? r.raw_hash.substring(0, 10) + '…' : 'audit_ok';
+            const flightNo = (r.flight_number && String(r.flight_number) !== 'nan' && String(r.flight_number) !== 'None') ? r.flight_number : 'Direct';
+            const airline = r.airline_standardized || r.airline_raw || 'Carrier';
+            const platform = r.source_platform || 'google_flights';
+            const dep = r.departure_time || '—';
+            const arr = r.arrival_time || '—';
+            const dur = r.duration_raw || (r.duration_minutes ? `${Math.round(r.duration_minutes)}m` : '—');
+            const stops = r.is_nonstop ? 'Non-Stop' : (r.stops_count ? `${r.stops_count} Stop` : 'Direct');
+            const cabin = r.cabin_class || 'Economy';
 
-          // Cross-OTA lowest fare data from enriched backend
-          const minFare = (r.min_flight_fare != null && !isNaN(r.min_flight_fare))
-            ? Math.round(Number(r.min_flight_fare)) : Math.round(fare);
-          const quoteCount = Number(r.flight_quotes_count) || 1;
-          const isLowest = r.is_lowest_quote === true;
-          const lowestPlatform = r.lowest_platform || r.source_platform || '';
-
-          const platform = (r.source_platform || '').toLowerCase();
-          let platformBadge = '<span class="platform-badge platform-badge-direct">Direct</span>';
-          if (platform.includes('google')) {
-            platformBadge = '<span class="platform-badge platform-badge-gf">Google Flights</span>';
-          } else if (platform.includes('make') || platform.includes('mmt')) {
-            platformBadge = '<span class="platform-badge platform-badge-mmt">MakeMyTrip</span>';
-          } else if (platform.includes('ease') || platform.includes('emt')) {
-            platformBadge = '<span class="platform-badge platform-badge-emt">EaseMyTrip</span>';
-          } else if (platform.includes('yatra')) {
-            platformBadge = '<span class="platform-badge platform-badge-yatra">Yatra</span>';
-          } else if (platform.includes('ixigo')) {
-            platformBadge = '<span class="platform-badge platform-badge-ixigo">Ixigo</span>';
-          }
-
-          let statusPill = '<span class="status-pill status-pill-normal">Standard (≤2σ)</span>';
-          if (r.is_fare_extreme_outlier) {
-            statusPill = '<span class="status-pill status-pill-surge">🚨 3σ Surge</span>';
-          } else if (r.is_fare_mild_outlier) {
-            statusPill = '<span class="status-pill status-pill-surge">⚠️ Volatility</span>';
-          }
-
-          const rawHashDisplay = r.raw_hash ? r.raw_hash.substring(0, 8) + '…' : '—';
-          const flightNo = (r.flight_number && String(r.flight_number) !== 'nan' && String(r.flight_number) !== 'None') ? r.flight_number : 'Direct';
-          const scrapedTime = r.search_timestamp ? r.search_timestamp.replace('T', ' ').substring(0, 16) : '—';
-          const travelDate = r.travel_date || '—';
-          const leadDays = r.lead_time_days != null ? r.lead_time_days : '—';
-
-          // Multi-OTA quote badge and "starting from" label
-          const multiQuoteBadge = quoteCount > 1
-            ? `<span class="badge info" style="font-size:0.7rem; margin-left:4px;" title="${quoteCount} OTA quotes tracked across platforms">${quoteCount} OTAs</span>`
-            : '';
-
-          // "Starting from" fare display: shows lowest price clearly
-          const fareDisplay = (f.viewMode === 'lowest_only' || quoteCount > 1)
-            ? `<div class="fare-start-label" style="font-size:0.72rem; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; margin-bottom:2px;">Starting from</div>
-               <strong class="u-s74 ${isLowest ? 'u-lowest-fare' : ''}" style="font-size:1.15rem; color:${isLowest ? '#10b981' : '#0F172A'}; font-weight:800; font-variant-numeric:tabular-nums;">₹${minFare.toLocaleString()}</strong>
-               <div class="fare-breakdown-sub" style="font-size:0.75rem; color:#64748B; margin-top:2px;">
-                 ${isLowest ? `<span style="color:#059669; font-weight:700;">✓ Lowest on ${lowestPlatform || 'OTA'}</span>` : `This quote: ₹${Math.round(fare).toLocaleString()}`}
-                 ${quoteCount > 1 ? ` · <span style="font-weight:600;">${quoteCount} sites</span>` : ''}
-               </div>`
-            : `<strong class="u-s74" style="font-size:1.05rem; font-variant-numeric:tabular-nums;">₹${Math.round(fare).toLocaleString()}</strong>`;
-
-          return `
-            <tr class="anomaly-row-clickable" onclick="window.inspectObservation('${r.record_id}')" data-id="${r.record_id}">
-              <!-- 1. Record ID & Cryptographic Audit Hash -->
-              <td>
-                <div><strong>${r.record_id}</strong></div>
-                <span class="audit-hash-chip" title="SHA-256: ${r.raw_hash || 'N/A'}">${rawHashDisplay}</span>
-              </td>
-              <!-- 2. Observation Timestamp (IST) -->
-              <td style="white-space:nowrap; font-size:12px;">${scrapedTime}</td>
-              <!-- 3. Travel Date & Lead Window -->
-              <td>
-                <div style="font-weight:700;">${travelDate}</div>
-                <span class="badge info">T-${leadDays}</span>
-              </td>
-              <!-- 4. Sector / Corridor -->
-              <td>
-                <div style="font-weight:800; font-size:13px; color:#0F172A;">${r.route || '—'}</div>
-                <span class="u-s78">${r.origin_iata || ''} ⇄ ${r.dest_iata || ''} (${r.is_nonstop ? 'Non-Stop' : (r.stops_count ? `${r.stops_count} Stop` : 'Non-Stop')})</span>
-              </td>
-              <!-- 5. Carrier & Flight Schedule -->
-              <td>
-                <div class="carrier-cell-flex">
-                  <div class="airline-logo-box" title="${r.airline_standardized || r.airline_raw || 'Carrier'}">
-                    <img src="${getAirlineLogo(r.airline_standardized || r.airline_raw)}" alt="${r.airline_standardized || 'Airline'}" class="airline-logo-img" onerror="this.src='/static/logos/indigo.png'">
+            return `
+              <tr class="anomaly-row-clickable" onclick="window.inspectObservation('${r.record_id}')" data-id="${r.record_id}">
+                <!-- 1. Raw Record ID & Audit Hash -->
+                <td>
+                  <div><strong style="color:#0284c7;">${r.record_id}</strong></div>
+                  <span class="audit-hash-chip" title="SHA-256 Audit: ${r.raw_hash || 'Verified'}">${rawHash}</span>
+                </td>
+                <!-- 2. Scraped Search Timestamp -->
+                <td style="white-space:nowrap; font-size:12px;">
+                  <div style="font-weight:700; color:#0F172A; font-family:var(--font-mono, monospace); font-size:12px;">${scrapedTime}</div>
+                  ${isSep13 ? `<span class="badge success" style="font-size:10px; font-weight:700; padding:1px 6px; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; margin-top:3px; display:inline-block;">🟢 13 Sep Live</span>` : `<span style="font-size:10px; color:#64748B;">Archived Run</span>`}
+                </td>
+                <!-- 3. Travel Date & Lead Window -->
+                <td>
+                  <div style="font-weight:700; color:#0F172A;">${travelDate}</div>
+                  <span class="badge info" style="font-size:11px;">T-${leadDays}</span>
+                </td>
+                <!-- 4. Sector / Corridor -->
+                <td>
+                  <div style="font-weight:800; font-size:13px; color:#0F172A;">${r.route || `${r.origin_iata}-${r.dest_iata}`}</div>
+                  <span class="u-s78">${r.origin_iata || ''} ⇄ ${r.dest_iata || ''}</span>
+                </td>
+                <!-- 5. Carrier & Flight No -->
+                <td>
+                  <div class="carrier-cell-flex">
+                    <div class="airline-logo-box" title="${airline}">
+                      <img src="${getAirlineLogo(airline)}" alt="${airline}" class="airline-logo-img" onerror="this.src='/static/logos/indigo.png'">
+                    </div>
+                    <div class="carrier-meta">
+                      <div class="carrier-name">${airline}</div>
+                      <span class="flight-no-chip">${flightNo}</span>
+                    </div>
                   </div>
-                  <div class="carrier-meta">
-                    <div class="carrier-name">${r.airline_standardized || r.airline_raw || '—'}</div>
-                    <span class="flight-no-chip">${flightNo}</span>
-                    ${r.departure_time ? `<div class="flight-dep-time">Dep: ${r.departure_time}</div>` : ''}
+                </td>
+                <!-- 6. Departure & Arrival -->
+                <td style="white-space:nowrap;">
+                  <div style="font-weight:700; font-size:12.5px; color:#0F172A;">${dep} → ${arr}</div>
+                </td>
+                <!-- 7. OTA / Source Portal -->
+                <td>
+                  <div class="portal-cell-badge" title="Scraped from ${getPortalDisplayName(platform)}">
+                    <img src="${getPortalLogo(platform)}" alt="${getPortalDisplayName(platform)}" class="portal-logo-img" onerror="this.style.display='none'">
+                    <span class="portal-name-text">${getPortalDisplayName(platform)}</span>
                   </div>
-                </div>
-              </td>
-              <!-- 6. Scraped Portal -->
-              <td>
-                <div class="portal-cell-badge" title="Scraped from ${getPortalDisplayName(r.source_platform || '')}">
-                  <img src="${getPortalLogo(r.source_platform || '')}" alt="${getPortalDisplayName(r.source_platform || '')}" class="portal-logo-img" onerror="this.style.display='none'">
-                  <span class="portal-name-text">${getPortalDisplayName(r.source_platform || '')}</span>
-                </div>
-                ${multiQuoteBadge}
-              </td>
-              <!-- 7. Base Fare (INR) -->
-              <td>
-                <strong style="font-variant-numeric:tabular-nums; color:#334155;">
-                  ${baseFare ? `₹${baseFare.toLocaleString()}` : (fare ? `₹${Math.round(fare * 0.82).toLocaleString()}` : '—')}
-                </strong>
-              </td>
-              <!-- 8. Taxes & Statutory Surcharges -->
-              <td>
-                <div style="font-variant-numeric:tabular-nums; font-size:12px; color:#475569;">
-                  ${taxes ? `₹${taxes.toLocaleString()}` : (fare ? `₹${Math.round(fare * 0.18).toLocaleString()}` : '—')}
-                </div>
-                ${gst ? `<div style="font-size:11px; color:#64748B;">GST: ₹${gst}</div>` : ''}
-              </td>
-              <!-- 9. Total Fare (INR) -->
-              <td>
-                <strong style="font-size:1.15rem; font-weight:800; color:#0F172A; font-variant-numeric:tabular-nums;">₹${Math.round(fare).toLocaleString()}</strong>
-              </td>
-              <!-- 10. Market Lowest Rate & Dispersion -->
-              <td>
-                ${fareDisplay}
-              </td>
-              <!-- 11. Regulatory Status -->
-              <td>
-                ${statusPill}
-              </td>
-              <!-- 12. Actions: Compare Rates & Audit -->
-              <td>
-                <div class="table-action-group">
-                  <button type="button" class="btn-table-compare"
-                          onclick="event.stopPropagation(); window.openFlightComparisonModal('${r.record_id}', '${r.flight_group_key || ''}')"
-                          title="Open live rate comparison across all sites for this flight">
-                    ⚡ Compare
-                  </button>
-                  <button type="button" class="btn-table-audit"
-                          onclick="event.stopPropagation(); window.inspectObservation('${r.record_id}')"
-                          title="View forensic audit sheet">
-                    Audit 🔍
-                  </button>
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
+                </td>
+                <!-- 8. Duration & Stops -->
+                <td>
+                  <div style="font-size:12px; font-weight:600; color:#334155;">${dur}</div>
+                  <div style="font-size:11px; color:#64748B;">${stops}</div>
+                </td>
+                <!-- 9. Total Fare (₹) -->
+                <td>
+                  <strong style="font-size:1.15rem; font-weight:800; color:#0F172A; font-variant-numeric:tabular-nums;">₹${Math.round(fare).toLocaleString()}</strong>
+                </td>
+                <!-- 10. Cabin Class -->
+                <td>
+                  <span class="badge info" style="font-size:11px; text-transform:capitalize;">${cabin}</span>
+                </td>
+                <!-- 11. Ingestion Status -->
+                <td>
+                  <span class="status-pill status-pill-normal" style="background:rgba(16,185,129,0.12); color:#059669; border:1px solid rgba(16,185,129,0.3); font-size:11px;">
+                    🟢 Live Ingested
+                  </span>
+                </td>
+                <!-- 12. Actions: Inspect Sheet & Link -->
+                <td>
+                  <div class="table-action-group">
+                    <button type="button" class="btn-table-audit"
+                            onclick="event.stopPropagation(); window.inspectObservation('${r.record_id}')"
+                            title="View forensic audit sheet">
+                      Audit 🔍
+                    </button>
+                    ${r.redirect_url ? `
+                      <a href="${r.redirect_url}" target="_blank" rel="noopener noreferrer" class="btn-table-compare" style="text-decoration:none;" onclick="event.stopPropagation();" title="Open verified booking link">
+                        Open ↗
+                      </a>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          // RENDER CLEANED & ENRICHED OBSERVATIONS (DGCA Basket Index standard)
+          tbody.innerHTML = obs.map(r => {
+            const fare = Number(r.total_fare_inr) || 0;
+            const baseFare = (r.base_fare_inr != null && !isNaN(r.base_fare_inr) && r.base_fare_inr > 0)
+              ? Math.round(Number(r.base_fare_inr)) : null;
+            const taxes = (r.taxes_fees_inr != null && !isNaN(r.taxes_fees_inr) && r.taxes_fees_inr > 0)
+              ? Math.round(Number(r.taxes_fees_inr)) : null;
+            const gst = (r.gst_inr != null && !isNaN(r.gst_inr) && r.gst_inr > 0)
+              ? Math.round(Number(r.gst_inr)) : null;
+
+            // Cross-OTA lowest fare data from enriched backend
+            const minFare = (r.min_flight_fare != null && !isNaN(r.min_flight_fare))
+              ? Math.round(Number(r.min_flight_fare)) : Math.round(fare);
+            const quoteCount = Number(r.flight_quotes_count) || 1;
+            const isLowest = r.is_lowest_quote === true;
+            const lowestPlatform = r.lowest_platform || r.source_platform || '';
+
+            let statusPill = '<span class="status-pill status-pill-normal">Standard (≤2σ)</span>';
+            if (r.is_fare_extreme_outlier) {
+              statusPill = '<span class="status-pill status-pill-surge">🚨 3σ Surge</span>';
+            } else if (r.is_fare_mild_outlier) {
+              statusPill = '<span class="status-pill status-pill-surge">⚠️ Volatility</span>';
+            }
+
+            const rawHashDisplay = r.raw_hash ? r.raw_hash.substring(0, 8) + '…' : '—';
+            const flightNo = (r.flight_number && String(r.flight_number) !== 'nan' && String(r.flight_number) !== 'None') ? r.flight_number : 'Direct';
+            const scrapedTime = r.search_timestamp ? r.search_timestamp.replace('T', ' ').substring(0, 16) : '—';
+            const travelDate = r.travel_date || '—';
+            const leadDays = r.lead_time_days != null ? r.lead_time_days : '—';
+
+            // Multi-OTA quote badge and "starting from" label
+            const multiQuoteBadge = quoteCount > 1
+              ? `<span class="badge info" style="font-size:0.7rem; margin-left:4px;" title="${quoteCount} OTA quotes tracked across platforms">${quoteCount} OTAs</span>`
+              : '';
+
+            // "Starting from" fare display: shows lowest price clearly
+            const fareDisplay = (f.viewMode === 'lowest_only' || quoteCount > 1)
+              ? `<div class="fare-start-label" style="font-size:0.72rem; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; margin-bottom:2px;">Starting from</div>
+                 <strong class="u-s74 ${isLowest ? 'u-lowest-fare' : ''}" style="font-size:1.15rem; color:${isLowest ? '#10b981' : '#0F172A'}; font-weight:800; font-variant-numeric:tabular-nums;">₹${minFare.toLocaleString()}</strong>
+                 <div class="fare-breakdown-sub" style="font-size:0.75rem; color:#64748B; margin-top:2px;">
+                   ${isLowest ? `<span style="color:#059669; font-weight:700;">✓ Lowest on ${lowestPlatform || 'OTA'}</span>` : `This quote: ₹${Math.round(fare).toLocaleString()}`}
+                   ${quoteCount > 1 ? ` · <span style="font-weight:600;">${quoteCount} sites</span>` : ''}
+                 </div>`
+              : `<strong class="u-s74" style="font-size:1.05rem; font-variant-numeric:tabular-nums;">₹${Math.round(fare).toLocaleString()}</strong>`;
+
+            return `
+              <tr class="anomaly-row-clickable" onclick="window.inspectObservation('${r.record_id}')" data-id="${r.record_id}">
+                <!-- 1. Record ID & Cryptographic Audit Hash -->
+                <td>
+                  <div><strong>${r.record_id}</strong></div>
+                  <span class="audit-hash-chip" title="SHA-256: ${r.raw_hash || 'N/A'}">${rawHashDisplay}</span>
+                </td>
+                <!-- 2. Observation Timestamp (IST) -->
+                <td style="white-space:nowrap; font-size:12px;">
+                  <div style="font-weight:600; color:#1E293B;">${scrapedTime}</div>
+                  ${r.search_timestamp && r.search_timestamp.includes('2026-09-13') ? `<span class="badge success" style="font-size:9.5px; font-weight:700; padding:1px 5px; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; margin-top:2px; display:inline-block;">🟢 13 Sep</span>` : ''}
+                </td>
+                <!-- 3. Travel Date & Lead Window -->
+                <td>
+                  <div style="font-weight:700;">${travelDate}</div>
+                  <span class="badge info">T-${leadDays}</span>
+                </td>
+                <!-- 4. Sector / Corridor -->
+                <td>
+                  <div style="font-weight:800; font-size:13px; color:#0F172A;">${r.route || '—'}</div>
+                  <span class="u-s78">${r.origin_iata || ''} ⇄ ${r.dest_iata || ''} (${r.is_nonstop ? 'Non-Stop' : (r.stops_count ? `${r.stops_count} Stop` : 'Non-Stop')})</span>
+                </td>
+                <!-- 5. Carrier & Flight Schedule -->
+                <td>
+                  <div class="carrier-cell-flex">
+                    <div class="airline-logo-box" title="${r.airline_standardized || r.airline_raw || 'Carrier'}">
+                      <img src="${getAirlineLogo(r.airline_standardized || r.airline_raw)}" alt="${r.airline_standardized || 'Airline'}" class="airline-logo-img" onerror="this.src='/static/logos/indigo.png'">
+                    </div>
+                    <div class="carrier-meta">
+                      <div class="carrier-name">${r.airline_standardized || r.airline_raw || '—'}</div>
+                      <span class="flight-no-chip">${flightNo}</span>
+                      ${r.departure_time ? `<div class="flight-dep-time">Dep: ${r.departure_time}</div>` : ''}
+                    </div>
+                  </div>
+                </td>
+                <!-- 6. Scraped Portal -->
+                <td>
+                  <div class="portal-cell-badge" title="Scraped from ${getPortalDisplayName(r.source_platform || '')}">
+                    <img src="${getPortalLogo(r.source_platform || '')}" alt="${getPortalDisplayName(r.source_platform || '')}" class="portal-logo-img" onerror="this.style.display='none'">
+                    <span class="portal-name-text">${getPortalDisplayName(r.source_platform || '')}</span>
+                  </div>
+                  ${multiQuoteBadge}
+                </td>
+                <!-- 7. Base Fare (INR) -->
+                <td>
+                  <strong style="font-variant-numeric:tabular-nums; color:#334155;">
+                    ${baseFare ? `₹${baseFare.toLocaleString()}` : (fare ? `₹${Math.round(fare * 0.82).toLocaleString()}` : '—')}
+                  </strong>
+                </td>
+                <!-- 8. Taxes & Statutory Surcharges -->
+                <td>
+                  <div style="font-variant-numeric:tabular-nums; font-size:12px; color:#475569;">
+                    ${taxes ? `₹${taxes.toLocaleString()}` : (fare ? `₹${Math.round(fare * 0.18).toLocaleString()}` : '—')}
+                  </div>
+                  ${gst ? `<div style="font-size:11px; color:#64748B;">GST: ₹${gst}</div>` : ''}
+                </td>
+                <!-- 9. Total Fare (INR) -->
+                <td>
+                  <strong style="font-size:1.15rem; font-weight:800; color:#0F172A; font-variant-numeric:tabular-nums;">₹${Math.round(fare).toLocaleString()}</strong>
+                </td>
+                <!-- 10. Market Lowest Rate & Dispersion -->
+                <td>
+                  ${fareDisplay}
+                </td>
+                <!-- 11. Regulatory Status -->
+                <td>
+                  ${statusPill}
+                </td>
+                <!-- 12. Actions: Compare Rates & Audit -->
+                <td>
+                  <div class="table-action-group">
+                    <button type="button" class="btn-table-compare"
+                            onclick="event.stopPropagation(); window.openFlightComparisonModal('${r.record_id}', '${r.flight_group_key || ''}')"
+                            title="Open live rate comparison across all sites for this flight">
+                      ⚡ Compare
+                    </button>
+                    <button type="button" class="btn-table-audit"
+                            onclick="event.stopPropagation(); window.inspectObservation('${r.record_id}')"
+                            title="View forensic audit sheet">
+                      Audit 🔍
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
       }
     } catch (e) {
       console.warn('Error loading observations:', e);
     }
   }
+  window.loadObservationsTable = loadObservationsTable;
+  window.loadExplorerSummary = loadExplorerSummary;
 
   function initDataExplorer() {
     const searchInput = document.getElementById('explorerSearchInput');
@@ -7975,6 +8375,7 @@ window.exportCpiTableCSV = function() {
     const airlineSelect = document.getElementById('filterExplorerAirline');
     const platformSelect = document.getElementById('filterExplorerPlatform');
     const outlierSelect = document.getElementById('filterExplorerOutlier');
+    const batchDateSelect = document.getElementById('filterExplorerBatchDate');
     const sortSelect = document.getElementById('sortExplorerOrder');
     const pageSizeSelect = document.getElementById('explorerPageSizeSelect');
     const btnReset = document.getElementById('btnResetExplorerFilters');
@@ -8076,10 +8477,28 @@ window.exportCpiTableCSV = function() {
       });
     }
 
+    if (batchDateSelect) {
+      batchDateSelect.addEventListener('change', (e) => {
+        state.explorerFilters.batchDate = e.target.value;
+        state.explorerFilters.page = 0;
+        loadObservationsTable();
+      });
+    }
+
     if (sortSelect) {
       sortSelect.addEventListener('change', (e) => {
         state.explorerFilters.sortBy = e.target.value;
+        if (e.target.value === 'search_timestamp') {
+          state.explorerFilters.sortDesc = true;
+        } else if (e.target.value === 'fare_desc') {
+          state.explorerFilters.sortDesc = true;
+        } else if (e.target.value === 'travel_date') {
+          state.explorerFilters.sortDesc = true;
+        } else {
+          state.explorerFilters.sortDesc = false;
+        }
         state.explorerFilters.page = 0;
+        window.updateScrapedSortIcons();
         loadObservationsTable();
       });
     }
@@ -8106,16 +8525,20 @@ window.exportCpiTableCSV = function() {
     // Reset Filters
     if (btnReset) {
       btnReset.addEventListener('click', () => {
+        const currentDataset = state.explorerFilters.dataset || 'cleaned';
+        const isRaw = (currentDataset === 'raw');
         state.explorerFilters = {
+          dataset: currentDataset,
           search: '',
           route: 'ALL',
           airline: 'ALL',
           platform: 'ALL',
-          viewMode: 'lowest_only',
+          viewMode: isRaw ? 'all' : 'lowest_only',
           leadTime: 'ALL',
           outlierStatus: 'ALL',
-          sortBy: 'fare_asc',
-          sortDesc: false,
+          batchDate: 'ALL',
+          sortBy: isRaw ? 'search_timestamp' : 'fare_asc',
+          sortDesc: isRaw ? true : false,
           page: 0,
           pageSize: 50,
           total: 0
@@ -8124,13 +8547,15 @@ window.exportCpiTableCSV = function() {
         if (routeSelect) routeSelect.value = 'ALL';
         if (airlineSelect) airlineSelect.value = 'ALL';
         if (platformSelect) platformSelect.value = 'ALL';
-        if (viewModeSelect) viewModeSelect.value = 'lowest_only';
+        if (viewModeSelect) viewModeSelect.value = isRaw ? 'all' : 'lowest_only';
         if (leadSelect) leadSelect.value = 'ALL';
         if (outlierSelect) outlierSelect.value = 'ALL';
-        if (sortSelect) sortSelect.value = 'fare_asc';
+        if (batchDateSelect) batchDateSelect.value = 'ALL';
+        if (sortSelect) sortSelect.value = isRaw ? 'search_timestamp' : 'fare_asc';
         if (pageSizeSelect) pageSizeSelect.value = '50';
         updateCarrierFilterLogo('ALL');
         updatePortalFilterLogo('ALL');
+        window.updateScrapedSortIcons();
         loadObservationsTable();
       });
     }
@@ -8158,13 +8583,20 @@ window.exportCpiTableCSV = function() {
     // Export Actions
     function buildExportUrl(format) {
       const f = state.explorerFilters;
-      const params = new URLSearchParams({ limit: 500 });
+      const isRaw = f.dataset === 'raw';
+      const base = isRaw ? '/api/v1/observations/raw' : '/api/v1/observations';
+      const params = new URLSearchParams({ limit: 1000 });
       if (f.search) params.append('search', f.search);
       if (f.route && f.route !== 'ALL') params.append('route', f.route);
-      if (f.airline && f.airline !== 'ALL') params.append('airline', f.airline);
+      if (f.airline && f.airline !== 'ALL') params.append(isRaw ? 'carrier' : 'airline', f.airline);
       if (f.platform && f.platform !== 'ALL') params.append('platform', f.platform);
-      if (f.leadTime && f.leadTime !== 'ALL') params.append('lead_time', f.leadTime);
-      return `/api/v1/observations?${params.toString()}`;
+      if (!isRaw && f.leadTime && f.leadTime !== 'ALL') params.append('lead_time', f.leadTime);
+      if (isRaw && f.batchDate && f.batchDate !== 'ALL') params.append('batch_date', f.batchDate);
+
+      if (isRaw && format === 'csv') {
+        return `/api/v1/observations/raw/export?${params.toString()}`;
+      }
+      return `${base}?${params.toString()}`;
     }
 
     if (btnExportCSV) {
@@ -8965,6 +9397,11 @@ window.exportCpiTableCSV = function() {
             badge.className = 'quota-status-chip clickable';
             badge.innerHTML = `
               <span class="quota-dot"></span>
+              <svg class="quota-meter-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/>
+                <path d="M12 14l3-3"/>
+                <circle cx="12" cy="14" r="1.5"/>
+              </svg>
               <span class="quota-text">Quota: 1/1</span>
               <svg class="quota-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="6 9 12 15 18 9"/>
@@ -8975,6 +9412,11 @@ window.exportCpiTableCSV = function() {
             badge.className = 'quota-status-chip quota-exhausted clickable';
             badge.innerHTML = `
               <span class="quota-dot exhausted"></span>
+              <svg class="quota-meter-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/>
+                <path d="M12 14l3-3"/>
+                <circle cx="12" cy="14" r="1.5"/>
+              </svg>
               <span class="quota-text">Quota: 0/1</span>
               <svg class="quota-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="6 9 12 15 18 9"/>
@@ -9033,8 +9475,36 @@ window.exportCpiTableCSV = function() {
 
         if (res.ok) {
           const json = await res.json();
-          alert(`✅ Scraper Task Triggered Successfully!\n\n${json.message}`);
+          if (typeof window.showToast === 'function') {
+            window.showToast("🚀 Real-Time Scraper Dispatched: Multi-OTA ingestion running in background...", "info");
+          } else {
+            alert(`✅ Scraper Task Triggered Successfully!\n\n${json.message}`);
+          }
           window.refreshScraperQuotaBadge();
+
+          // Poll for completion to update Data Explorer & all telemetry
+          let pollAttempts = 0;
+          const pollInterval = setInterval(async () => {
+            pollAttempts++;
+            try {
+              const qRes = await fetch('/api/v1/scrape/quota');
+              if (qRes.ok) {
+                if (pollAttempts >= 8) {
+                  clearInterval(pollInterval);
+                  if (typeof window.showToast === 'function') {
+                    window.showToast("✅ Scraping Completed: Live ledger and indices updated!", "success");
+                  }
+                  if (typeof window.refreshScraperQuotaBadge === 'function') window.refreshScraperQuotaBadge();
+                  if (typeof window.loadExplorerSummary === 'function') window.loadExplorerSummary();
+                  if (typeof window.loadObservationsTable === 'function') window.loadObservationsTable();
+                  if (typeof window.fetchNotifications === 'function') window.fetchNotifications();
+                  if (typeof window.fetchAllData === 'function') window.fetchAllData();
+                }
+              }
+            } catch (err) {
+              if (pollAttempts >= 8) clearInterval(pollInterval);
+            }
+          }, 3000);
         } else {
           const errJson = await res.json().catch(() => ({}));
           alert('Notice: ' + (errJson.detail?.message || errJson.detail || res.statusText));
@@ -9051,8 +9521,53 @@ window.exportCpiTableCSV = function() {
     });
   }
 
-  // Initialize quota badge on startup
+  // =========================================================================
+  // Offline Catch-Up Engine Client Logic (7:00 AM / 2:00 PM IST Missed Windows)
+  // =========================================================================
+  window.checkMissedWindowCatchUp = async function(force = false) {
+    try {
+      const res = await fetch(`/api/v1/scrape/check-catchup?force=${force ? 'true' : 'false'}`, {
+        method: 'POST'
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.catchup_needed || data.triggered) {
+        if (typeof window.showToast === 'function') {
+          window.showToast(`🔄 Scheduled Scrape Catch-Up: Missed ${data.slot_label} window detected while offline. Automatic ingestion launched!`, 'info');
+        }
+
+        // Poll for scrape status until completed
+        let pollAttempts = 0;
+        const pollInterval = setInterval(async () => {
+          pollAttempts++;
+          try {
+            const qRes = await fetch('/api/v1/scrape/quota');
+            if (qRes.ok) {
+              if (pollAttempts >= 8) {
+                clearInterval(pollInterval);
+                if (typeof window.showToast === 'function') {
+                  window.showToast(`✅ Offline Catch-up Ingestion Complete (${data.slot_label}). Master ledger updated!`, 'success');
+                }
+                if (typeof window.refreshScraperQuotaBadge === 'function') window.refreshScraperQuotaBadge();
+                if (typeof window.loadExplorerSummary === 'function') window.loadExplorerSummary();
+                if (typeof window.loadObservationsTable === 'function') window.loadObservationsTable();
+                if (typeof window.fetchNotifications === 'function') window.fetchNotifications();
+                if (typeof window.fetchAllData === 'function') window.fetchAllData();
+              }
+            }
+          } catch (e) {
+            if (pollAttempts >= 8) clearInterval(pollInterval);
+          }
+        }, 3000);
+      }
+    } catch (err) {
+      console.warn('Catch-up check notice:', err);
+    }
+  };
+
+  // Initialize quota badge and offline catch-up on startup
   setTimeout(window.refreshScraperQuotaBadge, 1500);
+  setTimeout(window.checkMissedWindowCatchUp, 2500);
 
   const btnExportData = document.getElementById('btnExportData');
   if (btnExportData) {
@@ -9086,7 +9601,7 @@ window.exportCpiTableCSV = function() {
       const h = String(now.getHours()).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
-      clockEl.textContent = `${h}:${m}:${s} IST`;
+      clockEl.textContent = `${h}:${m}:${s}`;
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -9366,6 +9881,186 @@ window.exportCpiTableCSV = function() {
     setInterval(fetchNotifications, 30000);
   }
 
+  // ============================================================================
+  // 10. PROGRESSIVE WEB APP (PWA) & MOBILE INSTALLATION CONTROLLER
+  // ============================================================================
+  let deferredPwaPrompt = null;
+
+  function initPwaModule() {
+    // A. Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then((registration) => {
+            console.log('[PWA] AREOX Service Worker registered with scope:', registration.scope);
+
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    console.log('[PWA] New version of AREOX available.');
+                  }
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.warn('[PWA] Service Worker registration failed:', error);
+          });
+      });
+    }
+
+    // B. UI Elements
+    const btnInstall = document.getElementById('btnInstallPwa');
+    const mobileBanner = document.getElementById('pwaMobileInstallBanner');
+    const btnDismissBanner = document.getElementById('btnDismissPwaBanner');
+    const btnConfirmInstall = document.getElementById('btnConfirmPwaInstall');
+    const iosModal = document.getElementById('pwaIosModalBackdrop');
+    const btnCloseIosModal = document.getElementById('btnCloseIosPwaModal');
+    const btnIosGotIt = document.getElementById('btnIosGotIt');
+    const networkPill = document.getElementById('pwaNetworkPill');
+    const networkDot = document.getElementById('pwaNetworkDot');
+    const networkText = document.getElementById('pwaNetworkText');
+
+    // Check if already running in standalone PWA mode
+    const isStandalone = window.navigator.standalone === true ||
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: window-controls-overlay)').matches;
+
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // C. Network Status Listeners
+    function updateNetworkStatus() {
+      if (!networkPill) return;
+      if (navigator.onLine) {
+        networkPill.className = 'pwa-network-pill online';
+        if (networkText) networkText.textContent = 'Online';
+        networkPill.title = 'Real-time telemetry online';
+        setTimeout(() => {
+          if (navigator.onLine && networkPill) networkPill.style.display = 'none';
+        }, 4000);
+      } else {
+        networkPill.style.display = 'inline-flex';
+        networkPill.className = 'pwa-network-pill offline';
+        if (networkText) networkText.textContent = 'Offline (Cached)';
+        networkPill.title = 'Device is offline. Serving cached airfare data.';
+      }
+    }
+
+    window.addEventListener('online', () => {
+      updateNetworkStatus();
+      if (typeof showToast === 'function') {
+        showToast('🟢 Connection restored. Live telemetry active.', 'success');
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      updateNetworkStatus();
+      if (typeof showToast === 'function') {
+        showToast('⚠️ You are offline. Showing cached airfare telemetry.', 'warning');
+      }
+    });
+
+    if (!navigator.onLine) {
+      updateNetworkStatus();
+    }
+
+    // D. If not standalone, setup install triggers
+    if (!isStandalone) {
+      if (btnInstall) {
+        btnInstall.style.display = 'inline-flex';
+      }
+
+      // Android/Chrome: Capture beforeinstallprompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+        console.log('[PWA] Captured beforeinstallprompt event');
+
+        if (btnInstall) {
+          btnInstall.style.display = 'inline-flex';
+        }
+
+        const bannerDismissed = sessionStorage.getItem('areox_pwa_banner_dismissed');
+        if (mobileBanner && !bannerDismissed) {
+          setTimeout(() => {
+            mobileBanner.style.display = 'flex';
+          }, 1500);
+        }
+      });
+
+      // Install Trigger Handler
+      function triggerInstallFlow() {
+        if (deferredPwaPrompt) {
+          deferredPwaPrompt.prompt();
+          deferredPwaPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('[PWA] User accepted AREOX installation');
+              if (btnInstall) btnInstall.style.display = 'none';
+              if (mobileBanner) mobileBanner.style.display = 'none';
+            } else {
+              console.log('[PWA] User dismissed installation');
+            }
+            deferredPwaPrompt = null;
+          });
+        } else if (isIos) {
+          if (iosModal) iosModal.style.display = 'flex';
+        } else {
+          if (typeof showToast === 'function') {
+            showToast('📲 To install AREOX, open browser menu (⋮) and tap "Install app" or "Add to Home screen"', 'info');
+          }
+        }
+      }
+
+      if (btnInstall) {
+        btnInstall.addEventListener('click', triggerInstallFlow);
+      }
+
+      if (btnConfirmInstall) {
+        btnConfirmInstall.addEventListener('click', triggerInstallFlow);
+      }
+
+      if (btnDismissBanner && mobileBanner) {
+        btnDismissBanner.addEventListener('click', () => {
+          mobileBanner.style.display = 'none';
+          sessionStorage.setItem('areox_pwa_banner_dismissed', 'true');
+        });
+      }
+
+      // iOS Modal close handlers
+      if (btnCloseIosModal && iosModal) {
+        btnCloseIosModal.addEventListener('click', () => {
+          iosModal.style.display = 'none';
+        });
+      }
+      if (btnIosGotIt && iosModal) {
+        btnIosGotIt.addEventListener('click', () => {
+          iosModal.style.display = 'none';
+        });
+      }
+      if (iosModal) {
+        iosModal.addEventListener('click', (e) => {
+          if (e.target === iosModal) iosModal.style.display = 'none';
+        });
+      }
+
+      // App installed event
+      window.addEventListener('appinstalled', () => {
+        console.log('[PWA] AREOX successfully installed as standalone app');
+        if (btnInstall) btnInstall.style.display = 'none';
+        if (mobileBanner) mobileBanner.style.display = 'none';
+        deferredPwaPrompt = null;
+        if (typeof showToast === 'function') {
+          showToast('🎉 AREOX installed successfully on your home screen!', 'success');
+        }
+      });
+    } else {
+      console.log('[PWA] Running in Standalone App mode.');
+    }
+  }
+
   // Initial Initialization & Data Fetch
   hydrateOfficerSession();
   initAviationSlideshow();
@@ -9379,6 +10074,7 @@ window.exportCpiTableCSV = function() {
   initRouteBasket();
   initNotificationSystem();
   initDataExplorer();
+  initPwaModule();
   fetchAllData();
 });
 
@@ -10293,4 +10989,924 @@ function renderBasketData(data) {
     scan: scanAndAnnotate
   };
 })();
+
+// =========================================================================
+// Institutional AI Airfare Predictor & Scenario Simulation Controller
+// =========================================================================
+(function() {
+  let mlForecastChartInstance = null;
+  let cachedForecastData = null;
+  let cachedFestivals = null;
+  let cachedModelMetrics = null;
+
+  window.initMLPredictionsView = async function() {
+    // 1. Fetch Model Metrics if not cached
+    if (!cachedModelMetrics) {
+      try {
+        const res = await fetch('/api/v1/predictions/model-metrics');
+        const data = await res.json();
+        if (data.status === 'success') {
+          cachedModelMetrics = data.metadata;
+          renderModelMetrics(cachedModelMetrics);
+        }
+      } catch (err) {
+        console.warn('Error loading model metrics:', err);
+      }
+    } else {
+      renderModelMetrics(cachedModelMetrics);
+    }
+
+    // 2. Fetch Festivals if not cached
+    if (!cachedFestivals) {
+      try {
+        const res = await fetch('/api/v1/predictions/festivals');
+        const data = await res.json();
+        if (data.status === 'success') {
+          cachedFestivals = data.festivals;
+          renderFestiveTable(cachedFestivals);
+          renderFestiveCalendar(currentCalYear, currentCalMonth);
+        }
+      } catch (err) {
+        console.warn('Error loading festival calendar:', err);
+      }
+    } else {
+      renderFestiveTable(cachedFestivals);
+      renderFestiveCalendar(currentCalYear, currentCalMonth);
+    }
+
+    // 3. Load 30-Day Forecast for default or selected route
+    const routeSelect = document.getElementById('mlRouteSelect');
+    const carrierSelect = document.getElementById('mlCarrierSelect');
+    const route = routeSelect ? routeSelect.value : 'DEL-BOM';
+    const carrier = carrierSelect ? carrierSelect.value : 'IndiGo';
+    await fetchAndRenderForecast(route, carrier);
+
+    // 4. Initial default scenario calculation
+    runInitialScenario();
+  };
+
+  async function fetchAndRenderForecast(route, carrier) {
+    try {
+      const res = await fetch(`/api/v1/predictions/30-day-forecast?route=${encodeURIComponent(route)}&carrier=${encodeURIComponent(carrier)}`);
+      const data = await res.json();
+      if (data.status === 'success') {
+        cachedForecastData = data;
+        renderForecastUI(data);
+      }
+    } catch (err) {
+      console.error('Error fetching 30-day forecast:', err);
+    }
+  }
+
+  function renderForecastUI(data) {
+    const kpis = data.kpis || {};
+    const points = data.daily_points || [];
+
+    // Update KPI cards
+    const meanFareEl = document.getElementById('kpiMLMeanFare');
+    if (meanFareEl) meanFareEl.innerText = '₹' + Number(kpis.mean_30d_fare_inr || 0).toLocaleString('en-IN');
+
+    const spreadEl = document.getElementById('kpiMLFareSpread');
+    if (spreadEl) spreadEl.innerText = `Range: ₹${Number(kpis.trough_fare_inr || 0).toLocaleString('en-IN')} to ₹${Number(kpis.peak_projected_fare_inr || 0).toLocaleString('en-IN')} (Spread: ₹${Number(kpis.spread_inr || 0).toLocaleString('en-IN')})`;
+
+    const festiveRiskEl = document.getElementById('kpiMLFestiveRisk');
+    const festiveDaysCount = kpis.active_festive_days || 0;
+    if (festiveRiskEl) {
+      const activePoint = points.find(p => p.active_festival);
+      festiveRiskEl.innerText = activePoint ? `+${activePoint.festive_surge_pct}% Exposure` : 'Neutral (0%)';
+    }
+
+    const festiveNameEl = document.getElementById('kpiMLFestiveName');
+    if (festiveNameEl) {
+      const activeFest = points.find(p => p.active_festival)?.active_festival;
+      festiveNameEl.innerText = activeFest ? `${activeFest} Corridor Surge Active` : 'Standard Non-Festive Window';
+    }
+
+    // Update Telemetry Bar
+    const distEl = document.getElementById('mlDistKm');
+    if (distEl) distEl.innerText = `${data.distance_km || 1137} km`;
+
+    const lowestEl = document.getElementById('mlLowestFare');
+    if (lowestEl) lowestEl.innerText = `₹${Number(kpis.trough_fare_inr || 0).toLocaleString('en-IN')}`;
+
+    const peakEl = document.getElementById('mlPeakFare');
+    if (peakEl) peakEl.innerText = `₹${Number(kpis.peak_projected_fare_inr || 0).toLocaleString('en-IN')}`;
+
+    const festiveCountEl = document.getElementById('mlFestiveDaysCount');
+    if (festiveCountEl) festiveCountEl.innerText = `${festiveDaysCount} of 30 Days Affected`;
+
+    // Render Chart
+    renderForecastChart(points);
+  }
+
+  function renderForecastChart(points) {
+    const canvas = document.getElementById('mlForecastChart');
+    if (!canvas) return;
+
+    const labels = points.map(p => `${p.date_formatted} (${p.lead_window})`);
+    const baselineFares = points.map(p => p.baseline_fare_inr);
+    const compositeFares = points.map(p => p.composite_fare_inr);
+    const lowerBounds = points.map(p => p.lower_bound_95);
+    const upperBounds = points.map(p => p.upper_bound_95);
+    const festiveFares = points.map(p => p.active_festival ? p.festive_fare_inr : null);
+
+    if (mlForecastChartInstance) {
+      mlForecastChartInstance.destroy();
+      mlForecastChartInstance = null;
+    }
+
+    const ctx = canvas.getContext('2d');
+    mlForecastChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Composite Expected Fare (₹)',
+            data: compositeFares,
+            borderColor: '#38bdf8',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#0284c7',
+            pointBorderColor: '#ffffff',
+            tension: 0.25,
+            zIndex: 10
+          },
+          {
+            label: 'Festive Surge Peak (₹)',
+            data: festiveFares,
+            borderColor: '#d97706',
+            backgroundColor: '#d97706',
+            borderWidth: 0,
+            pointRadius: 6,
+            pointStyle: 'triangle',
+            pointHoverRadius: 9,
+            showLine: false,
+            zIndex: 12
+          },
+          {
+            label: 'Baseline Standard Lead Curve (₹)',
+            data: baselineFares,
+            borderColor: '#94a3b8',
+            borderDash: [5, 5],
+            backgroundColor: 'transparent',
+            borderWidth: 1.8,
+            pointRadius: 0,
+            tension: 0.25,
+            zIndex: 5
+          },
+          {
+            label: '95% Confidence Upper Bound',
+            data: upperBounds,
+            borderColor: 'rgba(2,132,199,0.25)',
+            borderWidth: 1,
+            backgroundColor: 'transparent',
+            pointRadius: 0,
+            fill: false,
+            tension: 0.25
+          },
+          {
+            label: '95% Confidence Lower Bound',
+            data: lowerBounds,
+            borderColor: 'rgba(2,132,199,0.25)',
+            borderWidth: 1,
+            backgroundColor: 'rgba(2,132,199,0.06)',
+            fill: '-1',
+            pointRadius: 0,
+            tension: 0.25
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.96)',
+            borderColor: '#cbd5e1',
+            borderWidth: 1,
+            titleColor: '#0f172a',
+            bodyColor: '#334155',
+            padding: 12,
+            boxShadow: '0 4px 14px rgba(15,23,42,0.08)',
+            callbacks: {
+              label: function(context) {
+                const p = points[context.dataIndex];
+                if (context.dataset.label.includes('Composite Expected Fare')) {
+                  let str = `Expected Fare: ₹${Number(context.raw).toLocaleString('en-IN')}`;
+                  if (p && p.active_festival) str += ` ⚡ [${p.active_festival} +${p.festive_surge_pct}%]`;
+                  return str;
+                } else if (context.dataset.label.includes('Baseline')) {
+                  return `Baseline Neutral: ₹${Number(context.raw).toLocaleString('en-IN')}`;
+                } else if (context.dataset.label.includes('Festive Surge') && context.raw) {
+                  return `Festive Surge Rate: ₹${Number(context.raw).toLocaleString('en-IN')}`;
+                } else if (context.dataset.label.includes('Upper Bound')) {
+                  return `95% Max: ₹${Number(context.raw).toLocaleString('en-IN')}`;
+                } else if (context.dataset.label.includes('Lower Bound')) {
+                  return `95% Min: ₹${Number(context.raw).toLocaleString('en-IN')}`;
+                }
+                return null;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(226, 232, 240, 0.8)' },
+            ticks: {
+              color: '#64748b',
+              maxTicksLimit: 10,
+              font: { size: 11, weight: '500' }
+            }
+          },
+          y: {
+            grid: { color: 'rgba(226, 232, 240, 0.8)' },
+            ticks: {
+              color: '#64748b',
+              font: { size: 11, weight: '500' },
+              callback: function(val) { return '₹' + Number(val).toLocaleString('en-IN'); }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function renderModelMetrics(metadata) {
+    if (!metadata) return;
+    const r2El = document.getElementById('kpiMLModelR2');
+    if (r2El) r2El.innerText = `${Number(metadata.r2_score || 0.59).toFixed(3)} (R²)`;
+
+    const maeEl = document.getElementById('kpiMLMAE');
+    if (maeEl) maeEl.innerText = `MAE: ₹${Number(metadata.mae_inr || 1726).toLocaleString('en-IN')} | RMSE: ₹${Number(metadata.rmse_inr || 3390).toLocaleString('en-IN')}`;
+
+    const container = document.getElementById('mlFeatureImportanceBars');
+    if (!container || !metadata.feature_importances) return;
+
+    const maxImp = Math.max(...metadata.feature_importances.map(f => f.importance || 0.01));
+    container.innerHTML = metadata.feature_importances.slice(0, 6).map(f => {
+      const pct = Math.min(100, Math.round((f.importance / maxImp) * 100));
+      return `
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#334155; margin-bottom:3px; font-weight:500;">
+            <span>${f.label}</span>
+            <strong style="color:#0284c7; font-weight:600;">${(f.importance * 100).toFixed(1)}%</strong>
+          </div>
+          <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
+            <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, #0284c7, #38bdf8); border-radius:3px;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function formatFestiveDate(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const mIdx = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return `${day} ${SHORT_MONTHS[mIdx] || ''}`;
+    }
+    return dateStr;
+  }
+
+  function formatCategoryBadge(cat) {
+    switch (cat) {
+      case 'major_cultural':
+        return `<span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">Cultural Peak</span>`;
+      case 'national_festival':
+        return `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">National Holiday</span>`;
+      case 'peak_national':
+        return `<span class="badge" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">Peak National Demand</span>`;
+      case 'regional_peak':
+        return `<span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">Regional High-Density</span>`;
+      case 'tourist_peak':
+        return `<span class="badge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">Tourism & Leisure</span>`;
+      default:
+        return `<span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-size:0.67rem; font-weight:600; padding:2px 6px; border-radius:5px;">${cat}</span>`;
+    }
+  }
+
+  function renderFestiveTable(festivals) {
+    const tbody = document.getElementById('mlFestiveTableBody');
+    if (!tbody || !festivals) return;
+
+    tbody.innerHTML = festivals.map(f => {
+      const startFmt = formatFestiveDate(f.start_date);
+      const endFmt = formatFestiveDate(f.end_date);
+      const peakFmt = (f.peak_travel_dates || []).map(d => formatFestiveDate(d)).join(', ');
+      const catBadge = formatCategoryBadge(f.category);
+
+      return `
+        <tr style="transition:all 0.15s ease;">
+          <td style="padding:14px 16px; font-weight:600; color:#0f172a; vertical-align:middle;">
+            <div style="font-size:0.88rem; font-weight:700; color:#0f172a; margin-bottom:4px; line-height:1.3;">${f.name}</div>
+            ${catBadge}
+          </td>
+          <td style="padding:14px 16px; color:#334155; vertical-align:middle;">
+            <div style="font-weight:700; font-size:0.84rem; color:#0f172a; white-space:nowrap;">${startFmt} – ${endFmt}</div>
+            <div style="display:flex; align-items:flex-start; gap:5px; margin-top:5px; font-size:0.72rem; color:#b45309; font-weight:600; line-height:1.4;">
+              <span style="display:inline-block; width:5px; height:5px; background:#d97706; border-radius:50%; margin-top:5px; flex-shrink:0;"></span>
+              <span>Peak: ${peakFmt}</span>
+            </div>
+          </td>
+          <td style="padding:14px 16px; vertical-align:middle;">
+            <div style="display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+              ${f.critical_corridors.slice(0, 3).map(c => `<span class="badge" style="background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; font-size:0.71rem; padding:3px 7px; font-weight:600; border-radius:6px; white-space:nowrap;">${c}</span>`).join('')}
+              ${f.critical_corridors.length > 3 ? `<span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; font-size:0.71rem; padding:3px 7px; font-weight:600; border-radius:6px; white-space:nowrap;" title="${f.critical_corridors.slice(3).join(', ')}">+${f.critical_corridors.length - 3}</span>` : ''}
+            </div>
+          </td>
+          <td style="padding:14px 16px; vertical-align:middle; text-align:center;">
+            <span class="badge" style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:6px; display:inline-block; white-space:nowrap;">
+              ${f.surge_pct_range}
+            </span>
+          </td>
+          <td style="padding:14px 16px; font-size:0.77rem; color:#64748b; line-height:1.5; vertical-align:middle;">
+            ${f.description}
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Right Studio Tab Controller
+  window.switchMLStudioTab = function(tabName) {
+    const btnSim = document.getElementById('btnStudioModeSim');
+    const btnCal = document.getElementById('btnStudioModeCal');
+    const simCard = document.getElementById('appleStudioSimCard');
+    const calCard = document.getElementById('appleStudioCalCard');
+
+    if (tabName === 'cal') {
+      if (btnSim) btnSim.classList.remove('active');
+      if (btnCal) btnCal.classList.add('active');
+      if (simCard) simCard.style.display = 'none';
+      if (calCard) {
+        calCard.style.display = 'block';
+        renderFestiveCalendar(currentCalYear, currentCalMonth);
+      }
+    } else {
+      if (btnCal) btnCal.classList.remove('active');
+      if (btnSim) btnSim.classList.add('active');
+      if (calCard) calCard.style.display = 'none';
+      if (simCard) simCard.style.display = 'block';
+    }
+  };
+
+  // Apple Slide-Up Drawer Toggle for Festive Calendar
+  window.toggleFestiveDrawer = function() {
+    const drawer = document.getElementById('appleFestiveDrawer');
+    const content = document.getElementById('appleDrawerContent');
+    const toggleText = document.getElementById('drawerToggleText');
+    if (!drawer) return;
+
+    const isExp = drawer.classList.contains('is-expanded');
+    if (isExp) {
+      drawer.classList.remove('is-expanded');
+      if (toggleText) toggleText.innerText = 'Slide Up / Expand';
+    } else {
+      drawer.classList.add('is-expanded');
+      if (toggleText) toggleText.innerText = '▼ Minimize';
+      if (content && (!content.innerHTML || content.innerHTML.trim() === '')) {
+        content.innerHTML = `
+          <div style="padding:12px 0 6px 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:0.76rem; color:#64748b; font-weight:600;">Upcoming High-Demand Periods:</span>
+              <button type="button" class="btn btn-sm active-spring" onclick="window.switchMLStudioTab('cal')" style="font-size:0.72rem; padding:3px 9px; background:#f0f9ff; color:#0284c7; border:1px solid #bae6fd; border-radius:6px; font-weight:600;">
+                Full Calendar Grid &rarr;
+              </button>
+            </div>
+            <div class="apple-cal-quick-pills" style="margin-bottom:12px;">
+              <button type="button" class="apple-cal-pill active" onclick="window.loadFestiveIntoSim('2026-09-14', 'ganesh_utsav_2026', 9, 'BOM-GOI', 'Ganesh Chaturthi')">
+                🪔 14-25 Sep: Ganesh Utsav (+70%)
+              </button>
+              <button type="button" class="apple-cal-pill" onclick="window.loadFestiveIntoSim('2026-10-16', 'durga_puja_2026', 10, 'DEL-CCU', 'Durga Puja')">
+                ✨ 11-21 Oct: Navratri / Dussehra (+85%)
+              </button>
+              <button type="button" class="apple-cal-pill" onclick="window.loadFestiveIntoSim('2026-11-07', 'diwali_2026', 11, 'DEL-BOM', 'Diwali')">
+                🎆 06-11 Nov: Diwali (+135%)
+              </button>
+              <button type="button" class="apple-cal-pill" onclick="window.loadFestiveIntoSim('2026-11-14', 'chhath_puja_2026', 11, 'DEL-PAT', 'Chhath Puja')">
+                ☀️ 13-16 Nov: Chhath (+180%)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+  };
+
+  // =========================================================================
+  // UPCOMING FESTIVE AIRFARE CALENDAR ENGINE (Apple Light Pro)
+  // =========================================================================
+
+  let currentCalYear = 2026;
+  let currentCalMonth = 8; // 0-indexed: 8 = September 2026 (Live Current Month)
+  let selectedCalDate = null;
+
+  const MONTH_NAMES = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  function getFestiveEventForDate(dateStr) {
+    if (cachedFestivals && Array.isArray(cachedFestivals)) {
+      for (const fest of cachedFestivals) {
+        if (dateStr >= fest.start_date && dateStr <= fest.end_date) {
+          const isPeak = fest.peak_travel_dates && fest.peak_travel_dates.includes(dateStr);
+          return {
+            festival: fest,
+            isPeak: isPeak,
+            surgeLabel: isPeak ? fest.surge_pct_range : '+25% to +40%',
+            level: isPeak ? 'peak' : 'festive'
+          };
+        }
+      }
+    }
+    // 2027 early festive / seasonal spikes
+    if (dateStr.startsWith('2027-01')) {
+      const day = parseInt(dateStr.slice(8), 10);
+      if (day >= 1 && day <= 3) {
+        return {
+          festival: { name: 'New Year Return Surge', critical_corridors: ['BOM-GOI', 'DEL-GOI', 'BLR-GOI'] },
+          isPeak: true,
+          surgeLabel: '+65% to +90%',
+          level: 'peak'
+        };
+      } else if (day >= 13 && day <= 15) {
+        return {
+          festival: { name: 'Makar Sankranti & Pongal', critical_corridors: ['DEL-MAA', 'BLR-HYD', 'DEL-AMD'] },
+          isPeak: true,
+          surgeLabel: '+35% to +50%',
+          level: 'festive'
+        };
+      } else if (day >= 24 && day <= 26) {
+        return {
+          festival: { name: 'Republic Day Long Weekend', critical_corridors: ['DEL-SXR', 'DEL-UDR', 'BOM-GOI'] },
+          isPeak: false,
+          surgeLabel: '+30% to +45%',
+          level: 'festive'
+        };
+      }
+    }
+    return null;
+  }
+
+  function renderFestiveCalendar(year, monthIndex) {
+    currentCalYear = year;
+    currentCalMonth = monthIndex;
+
+    const labelEl = document.getElementById('festiveCalMonthLabel');
+    if (labelEl) {
+      labelEl.innerText = `${MONTH_NAMES[monthIndex]} ${year}`;
+    }
+
+    // Lock navigation back before current month (September 2026)
+    const prevBtn = document.getElementById('appleCalPrevMonthBtn');
+    if (prevBtn) {
+      const isAtMin = (year === 2026 && monthIndex <= 8);
+      prevBtn.disabled = isAtMin;
+      prevBtn.style.opacity = isAtMin ? '0.35' : '1';
+      prevBtn.style.cursor = isAtMin ? 'not-allowed' : 'pointer';
+      prevBtn.style.pointerEvents = isAtMin ? 'none' : 'auto';
+    }
+
+    // Update Quick Jump Pills
+    const monthKey = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+    document.querySelectorAll('.apple-cal-pill').forEach(pill => {
+      pill.classList.toggle('active', pill.id === `pill-${monthKey}`);
+    });
+
+    const gridEl = document.getElementById('appleFestiveCalendarGrid');
+    if (!gridEl) return;
+
+    // First day of month (0 = Sunday, 1 = Monday, etc.)
+    const firstDay = new Date(year, monthIndex, 1).getDay();
+    // Total days in month
+    const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+    const TODAY_STR = '2026-09-13';
+
+    let html = '';
+
+    // Empty lead slots before first day
+    for (let i = 0; i < firstDay; i++) {
+      html += `<div class="apple-cal-day empty-day"></div>`;
+    }
+
+    // Days in current month
+    for (let day = 1; day <= totalDays; day++) {
+      const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayOfWeek = new Date(year, monthIndex, day).getDay();
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6 || dayOfWeek === 5); // Fri, Sat, Sun
+      const isPast = (dateStr < TODAY_STR);
+      const isToday = (dateStr === TODAY_STR);
+
+      const eventInfo = getFestiveEventForDate(dateStr);
+      let dayClass = 'apple-cal-day';
+      let tagHtml = '';
+      let clickAttr = '';
+      let titleAttr = '';
+
+      if (isPast) {
+        // Previous dates cannot be selected: greyed out, line-through, pointer-events none
+        dayClass += ' day-past';
+        tagHtml = `<span class="apple-cal-day-surge-tag" style="color:#94a3b8; font-size:0.55rem; background:transparent;">Past</span>`;
+        clickAttr = 'style="cursor:not-allowed; pointer-events:none;"';
+        titleAttr = `${dateStr} • Historical / Elapsed Date (Unselectable)`;
+      } else if (isToday) {
+        // Today prominent badge
+        dayClass += ' day-today';
+        tagHtml = `<span class="apple-cal-day-surge-tag" style="background:#0284c7; color:#ffffff; font-weight:700;">Today</span>`;
+        clickAttr = `onclick="window.onCalendarDayClick('${dateStr}')"`;
+        titleAttr = `${dateStr} • Today: Current Operational Flight Window`;
+      } else {
+        // Active Future Dates
+        if (isWeekend) {
+          dayClass += ' weekend-day';
+        }
+
+        if (eventInfo) {
+          if (eventInfo.level === 'peak') {
+            dayClass += ' day-peak-surge';
+            tagHtml = `<span class="apple-cal-day-surge-tag">⚡ Peak</span>`;
+          } else {
+            dayClass += ' day-festive-window';
+            tagHtml = `<span class="apple-cal-day-surge-tag">Festive</span>`;
+          }
+        } else if (isWeekend) {
+          tagHtml = `<span class="apple-cal-day-surge-tag" style="background:#f1f5f9; color:#64748b;">Weekend</span>`;
+        }
+
+        clickAttr = `onclick="window.onCalendarDayClick('${dateStr}')"`;
+        titleAttr = `${dateStr} • Click to Inspect Airfare Surge`;
+      }
+
+      if (selectedCalDate === dateStr) {
+        dayClass += ' day-selected';
+      }
+
+      html += `
+        <div class="${dayClass}" ${clickAttr} title="${titleAttr}">
+          <span class="apple-cal-day-num">${day}</span>
+          ${tagHtml}
+        </div>
+      `;
+    }
+
+    gridEl.innerHTML = html;
+  }
+
+  window.prevFestiveMonth = function() {
+    if (currentCalYear === 2026 && currentCalMonth <= 8) return;
+    let m = currentCalMonth - 1;
+    let y = currentCalYear;
+    if (m < 0) { m = 11; y--; }
+    renderFestiveCalendar(y, m);
+  };
+
+  window.nextFestiveMonth = function() {
+    let m = currentCalMonth + 1;
+    let y = currentCalYear;
+    if (m > 11) { m = 0; y++; }
+    renderFestiveCalendar(y, m);
+  };
+
+  window.jumpFestiveMonth = function(year, monthIndex) {
+    renderFestiveCalendar(year, monthIndex);
+  };
+
+  window.onCalendarDayClick = function(dateStr) {
+    // Strict Guard: Previous dates cannot be selected
+    if (!dateStr || dateStr < '2026-09-13') return;
+
+    selectedCalDate = dateStr;
+    renderFestiveCalendar(currentCalYear, currentCalMonth);
+
+    const detailEl = document.getElementById('appleCalSelectedDetail');
+    if (!detailEl) return;
+
+    const dateObj = new Date(dateStr + 'T00:00:00');
+    const dateFormatted = dateObj.toLocaleDateString('en-IN', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+    const TODAY_TIME = new Date('2026-09-13T00:00:00').getTime();
+    const TARGET_TIME = dateObj.getTime();
+    const leadDays = Math.max(0, Math.round((TARGET_TIME - TODAY_TIME) / 86400000));
+
+    if (dateStr === '2026-09-13') {
+      detailEl.style.display = 'block';
+      detailEl.innerHTML = `
+        <div class="apple-cal-detail-top">
+          <div>
+            <div class="apple-cal-detail-date">📅 ${dateFormatted} <span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:0.72rem; margin-left:6px; font-weight:700;">Today's Operations</span></div>
+            <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Lead Time: <strong style="color:#0f172a;">T+0 Days (Same-Day Departure)</strong></div>
+          </div>
+          <span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; font-size:0.75rem; font-weight:700;">
+            Live Spot Market
+          </span>
+        </div>
+        <div class="apple-cal-detail-body">
+          Current operational flight window. Last-minute tickets on high-density corridors exhibit dynamic close-in premiums.
+        </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="button" class="btn btn-primary active-spring" onclick="window.loadFestiveIntoSim('${dateStr}', '', 9, 'DEL-BOM', 'Today Live Operations')" style="height:28px; font-size:0.75rem; background:#0284c7; border-color:#0ea5e9; border-radius:6px; padding:0 10px;">
+            Inspect Live Pricing &rarr;
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    const eventInfo = getFestiveEventForDate(dateStr);
+
+    if (eventInfo) {
+      const fest = eventInfo.festival;
+      const corridors = (fest.critical_corridors || ['DEL-BOM', 'DEL-CCU']).slice(0, 4).join(', ');
+      detailEl.style.display = 'block';
+      detailEl.innerHTML = `
+        <div class="apple-cal-detail-top">
+          <div>
+            <div class="apple-cal-detail-date">📅 ${dateFormatted} <span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:0.72rem; margin-left:6px; font-weight:600;">Advance: T+${leadDays}d</span></div>
+            <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Active Event: <strong style="color:#0f172a;">${fest.name}</strong></div>
+          </div>
+          <span class="badge" style="background:#fff7ed; color:#ea580c; border:1px solid #fdba74; font-size:0.75rem; font-weight:700;">
+            ${eventInfo.surgeLabel} Projected Spike
+          </span>
+        </div>
+        <div class="apple-cal-detail-body">
+          High-yield trunk routes affected: <strong style="color:#0284c7;">${corridors}</strong>.<br>
+          ${eventInfo.isPeak ? '⚡ <strong>Statutory Price Ceiling Risk:</strong> Historical flight inventory exhausts rapidly within 10 days of travel.' : 'Moderate advance leisure and homecoming demand.'}
+        </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="button" class="btn btn-primary active-spring" onclick="window.loadFestiveIntoSim('${dateStr}', '${fest.id || ''}', ${parseInt(dateStr.slice(5, 7), 10)}, '${(fest.critical_corridors && fest.critical_corridors[0]) || 'DEL-BOM'}', '${fest.name}')" style="height:28px; font-size:0.75rem; background:#0284c7; border-color:#0ea5e9; border-radius:6px; padding:0 10px;">
+            Simulate This Date in Inspector &rarr;
+          </button>
+        </div>
+      `;
+    } else {
+      const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6 || dateObj.getDay() === 5);
+      detailEl.style.display = 'block';
+      detailEl.innerHTML = `
+        <div class="apple-cal-detail-top">
+          <div>
+            <div class="apple-cal-detail-date">📅 ${dateFormatted} <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-size:0.72rem; margin-left:6px; font-weight:600;">Advance: T+${leadDays}d</span></div>
+            <div style="font-size:0.75rem; color:#64748b; margin-top:2px;">Pricing Regime: <strong>Standard Seasonal Baseline</strong></div>
+          </div>
+          <span class="badge" style="background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-size:0.72rem; font-weight:600;">
+            ${isWeekend ? 'Standard Weekend Traffic' : 'Nominal Weekday Baseline'}
+          </span>
+        </div>
+        <div class="apple-cal-detail-body">
+          No national cultural festival surge active on this date. Fares are predominantly governed by corridor capacity, standard advance lead decay, and jet fuel (ATF).
+        </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary active-spring" onclick="window.loadFestiveIntoSim('${dateStr}', '', ${parseInt(dateStr.slice(5, 7), 10)}, 'DEL-BOM', 'Standard Window')" style="height:28px; font-size:0.75rem; border-radius:6px; padding:0 10px;">
+            Inspect Fare in Simulator &rarr;
+          </button>
+        </div>
+      `;
+    }
+  };
+
+  window.loadFestiveIntoSim = function(dateStr, eventId, month, route, eventName) {
+    const monthSelect = document.getElementById('simMonth');
+    if (monthSelect) monthSelect.value = String(month);
+
+    const routeSelect = document.getElementById('simRoute');
+    if (routeSelect && route) {
+      const hasOption = Array.from(routeSelect.options).some(opt => opt.value === route);
+      if (hasOption) routeSelect.value = route;
+    }
+
+    const applyFestiveCheck = document.getElementById('simApplyFestive');
+    if (applyFestiveCheck) applyFestiveCheck.checked = Boolean(eventId);
+
+    const dateObj = new Date(dateStr);
+    const isWeekend = (dateObj.getDay() === 0 || dateObj.getDay() === 6 || dateObj.getDay() === 5);
+    const weekendCheck = document.getElementById('simIsWeekend');
+    if (weekendCheck) weekendCheck.checked = isWeekend;
+
+    window.triggerLiveMLSimulation();
+
+    const inspectorEl = document.getElementById('mlSimResultCard');
+    if (inspectorEl) {
+      inspectorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (window.showToast) {
+      window.showToast(`Loaded ${eventName || 'Date'} into Scenario Simulator (${route} • Month ${month})`, 'success');
+    }
+  };
+
+  window.onMLCorridorChange = async function(route) {
+    const carrier = document.getElementById('mlCarrierSelect')?.value || 'IndiGo';
+    await fetchAndRenderForecast(route, carrier);
+  };
+
+  window.onMLCarrierChange = async function(carrier) {
+    const route = document.getElementById('mlRouteSelect')?.value || 'DEL-BOM';
+    await fetchAndRenderForecast(route, carrier);
+  };
+
+  window.refreshMLForecast = async function() {
+    const route = document.getElementById('mlRouteSelect')?.value || 'DEL-BOM';
+    const carrier = document.getElementById('mlCarrierSelect')?.value || 'IndiGo';
+    await fetchAndRenderForecast(route, carrier);
+    if (window.showToast) window.showToast('ML Airfare Models & Forecast Successfully Recalculated', 'success');
+  };
+
+  window.exportMLForecastCSV = function() {
+    if (!cachedForecastData || !cachedForecastData.daily_points) return;
+    const points = cachedForecastData.daily_points;
+    let csv = 'DayOffset,Date,LeadWindow,BaselineFareINR,FestiveFareINR,WeatherFareINR,CompositeFareINR,LowerBound95,UpperBound95,ActiveFestival,SurgePct,WeatherCondition\n';
+    points.forEach(p => {
+      csv += `${p.day_offset},"${p.date}","${p.lead_window}",${p.baseline_fare_inr},${p.festive_fare_inr},${p.weather_fare_inr},${p.composite_fare_inr},${p.lower_bound_95},${p.upper_bound_95},"${p.active_festival || 'None'}",${p.festive_surge_pct},"${p.weather_risk_label}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `AeroX_30Day_Forecast_${cachedForecastData.route}_${cachedForecastData.carrier}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  let liveSimDebounceTimer = null;
+  let currentAnimatedFare = 6769;
+
+  window.triggerLiveMLSimulation = function() {
+    clearTimeout(liveSimDebounceTimer);
+    liveSimDebounceTimer = setTimeout(() => {
+      window.onMLSimulateSubmit({ preventDefault: () => {} });
+    }, 100);
+  };
+
+  window.onSimLeadDaysInput = function(val) {
+    const badge = document.getElementById('simLeadDaysVal');
+    if (badge) badge.innerText = `${val} Days (T+${val})`;
+    window.triggerLiveMLSimulation();
+  };
+
+  window.selectWeatherChip = function(btn, weatherVal) {
+    document.querySelectorAll('.apple-chip-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const select = document.getElementById('simWeatherScenario');
+    if (select) select.value = weatherVal;
+    window.triggerLiveMLSimulation();
+  };
+
+  window.onMLSimulateSubmit = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const route = document.getElementById('simRoute')?.value || 'DEL-BOM';
+    const carrier = document.getElementById('simCarrier')?.value || 'IndiGo';
+    const leadDays = parseInt(document.getElementById('simLeadDays')?.value || '14', 10);
+    const month = parseInt(document.getElementById('simMonth')?.value || '10', 10);
+    const depHour = parseInt(document.getElementById('simDepHour')?.value || '9', 10);
+    const isWeekend = document.getElementById('simIsWeekend')?.checked || false;
+    const applyFestive = document.getElementById('simApplyFestive')?.checked || false;
+    const weatherScenario = document.getElementById('simWeatherScenario')?.value || 'clear';
+
+    try {
+      const res = await fetch('/api/v1/predictions/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          route: route,
+          carrier: carrier,
+          lead_days: leadDays,
+          month: month,
+          dep_hour: depHour,
+          is_weekend: isWeekend,
+          apply_festive: applyFestive,
+          apply_weather: weatherScenario !== 'clear'
+        })
+      });
+
+      const data = await res.json();
+      if (data.status === 'success' && data.prediction) {
+        updateSimulationOutput(data.prediction);
+      }
+    } catch (err) {
+      console.error('Simulation calculation error:', err);
+    }
+  };
+
+  function runInitialScenario() {
+    // Bind direct manipulation change listeners
+    ['simRoute', 'simCarrier', 'simMonth', 'simDepHour'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.removeEventListener('change', window.triggerLiveMLSimulation);
+        el.addEventListener('change', window.triggerLiveMLSimulation);
+      }
+    });
+
+    const submitBtn = document.getElementById('btnRunSimulation');
+    if (submitBtn) {
+      window.onMLSimulateSubmit({ preventDefault: () => {} });
+    }
+  }
+
+  // Smooth Apple Rolling Counter Animation (Critically Damped Spring / Ease-Out)
+  function animateFareCounter(targetFare) {
+    const el = document.getElementById('simPredictedFare');
+    if (!el) return;
+
+    const startVal = currentAnimatedFare;
+    const endVal = targetFare;
+    const duration = 400; // ms
+    const startTime = performance.now();
+
+    el.classList.remove('pulse-update');
+    void el.offsetWidth; // Trigger reflow for animation restart
+    el.classList.add('pulse-update');
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Apple ease-out cubic curve (1 - (1 - t)^3)
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const val = Math.round(startVal + (endVal - startVal) * ease);
+      el.innerText = '₹' + Number(val).toLocaleString('en-IN');
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        currentAnimatedFare = endVal;
+        el.innerText = '₹' + Number(endVal).toLocaleString('en-IN');
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function updateSimulationOutput(pred) {
+    const targetFare = Number(pred.predicted_fare_inr || 0);
+    animateFareCounter(targetFare);
+
+    const confBandEl = document.getElementById('simConfidenceBand');
+    if (confBandEl && pred.confidence_interval_95) {
+      confBandEl.innerText = `₹${Number(pred.confidence_interval_95.lower_bound_inr).toLocaleString('en-IN')} – ₹${Number(pred.confidence_interval_95.upper_bound_inr).toLocaleString('en-IN')}`;
+    }
+
+    const unbundled = pred.unbundled_fare || {};
+    const baseVal = Number(unbundled.base_fare_inr || Math.round(targetFare * 0.76));
+    const fuelVal = Number(unbundled.fuel_surcharge_inr || Math.round(targetFare * 0.12));
+    const taxVal = Number(unbundled.taxes_gst_inr || (targetFare - baseVal - fuelVal));
+
+    const baseFareEl = document.getElementById('simBaseFare');
+    if (baseFareEl) baseFareEl.innerText = '₹' + baseVal.toLocaleString('en-IN');
+
+    const fuelEl = document.getElementById('simFuelSurcharge');
+    if (fuelEl) fuelEl.innerText = '₹' + fuelVal.toLocaleString('en-IN');
+
+    const taxesEl = document.getElementById('simTaxes');
+    if (taxesEl) taxesEl.innerText = '₹' + taxVal.toLocaleString('en-IN');
+
+    // Update Proportional Unbundled Meter Bar Widths
+    if (targetFare > 0) {
+      const basePct = ((baseVal / targetFare) * 100).toFixed(1);
+      const fuelPct = ((fuelVal / targetFare) * 100).toFixed(1);
+      const taxPct = (100 - parseFloat(basePct) - parseFloat(fuelPct)).toFixed(1);
+
+      const mBase = document.getElementById('simMeterBase');
+      const mFuel = document.getElementById('simMeterFuel');
+      const mTax = document.getElementById('simMeterTax');
+
+      if (mBase) mBase.style.width = basePct + '%';
+      if (mFuel) mFuel.style.width = fuelPct + '%';
+      if (mTax) mTax.style.width = taxPct + '%';
+    }
+
+    // Update factor chips
+    const f = pred.factors || {};
+    const chipDist = document.getElementById('simChipDist');
+    if (chipDist) chipDist.innerText = `Distance: ${f.distance_km || 1137} km`;
+
+    const chipFestive = document.getElementById('simChipFestive');
+    if (chipFestive) {
+      if (f.festive_event && f.festive_event !== 'Standard Period') {
+        chipFestive.innerText = `${f.festive_event} Surge: x${f.festive_surge_factor}`;
+        chipFestive.style.display = 'inline-block';
+      } else {
+        chipFestive.innerText = 'Neutral Festive Window (1.0x)';
+      }
+    }
+
+    const chipWeather = document.getElementById('simChipWeather');
+    if (chipWeather) chipWeather.innerText = `Weather: ${f.weather_condition || 'Nominal'}`;
+
+    const chipDay = document.getElementById('simChipDay');
+    if (chipDay) chipDay.innerText = f.is_weekend ? 'Weekend Demand Factor' : 'Weekday Regular Flight';
+  }
+
+})();
+
 

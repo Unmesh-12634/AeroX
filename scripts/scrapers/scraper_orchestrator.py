@@ -181,54 +181,71 @@ class ScraperOrchestrator:
         df_batch.to_csv(batch_csv_path, index=False)
         print(f"\n[✓] Batch successfully saved: {batch_csv_path} ({len(df_batch)} records)")
 
-        # 2. Update live_scraped_master.csv
-        live_master_path = os.path.join(LIVE_DIR, "live_scraped_master.csv")
-        if os.path.exists(live_master_path):
-            df_existing = pd.read_csv(live_master_path)
-            df_combined = pd.concat([df_existing, df_batch], ignore_index=True)
-            df_combined.drop_duplicates(subset=['source_platform', 'travel_date', 'route', 'departure_time', 'airline_standardized', 'total_fare_inr'], keep='last', inplace=True)
-            df_combined.to_csv(live_master_path, index=False)
-        else:
-            df_batch.to_csv(live_master_path, index=False)
-        print(f"[✓] Cumulative Live Master updated: {live_master_path}")
+        # 2. Forward batch to Partitioned Scraping Ledger Manager (10,000 partition cap + chronological sorting)
+        try:
+            from backend.db.scraping_ledger import scraping_ledger
+            part_name, total_live = scraping_ledger.append_observations(data_dicts)
+            print(f"[✓] Partitioned Ledger updated: {part_name} (Total Live Records across partitions: {total_live:,})")
+        except Exception as e:
+            print(f"[-] Warning: Failed to update partitioned ledger: {e}")
 
-        # 3. Append to sih_master_airfare_observations_v2.csv
+        # 3. Append to sih_master_airfare_observations_v2.csv if present
         master_v2_path = os.path.join(CLEANED_DIR, "sih_master_airfare_observations_v2.csv")
         if os.path.exists(master_v2_path):
-            df_master = pd.read_csv(master_v2_path)
-            
-            df_append = pd.DataFrame()
-            df_append['record_id'] = df_batch['record_id']
-            df_append['dataset_tier'] = ['live_scraped_observation'] * len(df_batch)
-            df_append['source_file'] = df_batch['source_platform'].map(lambda x: f"live_scraper_{x}")
-            df_append['travel_date'] = df_batch['travel_date']
-            df_append['travel_year'] = pd.to_datetime(df_batch['travel_date']).dt.year.astype(str)
-            df_append['origin_iata'] = df_batch['origin_iata']
-            df_append['dest_iata'] = df_batch['dest_iata']
-            df_append['route'] = df_batch['route']
-            df_append['origin_raw'] = df_batch['origin_raw']
-            df_append['dest_raw'] = df_batch['dest_raw']
-            df_append['airline_standardized'] = df_batch['airline_standardized']
-            df_append['airline_raw'] = df_batch['airline_raw']
-            df_append['flight_number'] = df_batch['flight_number']
-            df_append['departure_time'] = df_batch['departure_time']
-            df_append['arrival_time'] = df_batch['arrival_time']
-            df_append['duration_minutes'] = df_batch['duration_minutes']
-            df_append['duration_raw'] = df_batch['duration_raw']
-            df_append['cabin_class'] = df_batch['cabin_class']
-            df_append['total_fare_inr'] = df_batch['total_fare_inr']
-            df_append['base_fare_inr'] = [None] * len(df_batch)
-            df_append['taxes_fees_inr'] = [None] * len(df_batch)
-            df_append['search_timestamp'] = df_batch['search_timestamp']
-            df_append['lead_time_days'] = df_batch['lead_time_days']
-            df_append['is_defunct_carrier'] = [False] * len(df_batch)
-            df_append['is_ambiguous_carrier'] = [False] * len(df_batch)
-            df_append['is_fare_mild_outlier'] = [False] * len(df_batch)
-            df_append['is_fare_extreme_outlier'] = [False] * len(df_batch)
-            
-            df_master_combined = pd.concat([df_master, df_append], ignore_index=True)
-            df_master_combined.to_csv(master_v2_path, index=False)
-            print(f"[✓] Main Project Master v2 updated: {master_v2_path} (Total Records: {len(df_master_combined):,})")
+            try:
+                df_master = pd.read_csv(master_v2_path, low_memory=False)
+                
+                df_append = pd.DataFrame()
+                df_append['record_id'] = df_batch['record_id']
+                df_append['dataset_tier'] = ['live_scraped_observation'] * len(df_batch)
+                df_append['source_file'] = df_batch['source_platform'].map(lambda x: f"live_scraper_{x}")
+                df_append['travel_date'] = df_batch['travel_date']
+                df_append['travel_year'] = pd.to_datetime(df_batch['travel_date']).dt.year.astype(str)
+                df_append['origin_iata'] = df_batch['origin_iata']
+                df_append['dest_iata'] = df_batch['dest_iata']
+                df_append['route'] = df_batch['route']
+                df_append['origin_raw'] = df_batch['origin_raw']
+                df_append['dest_raw'] = df_batch['dest_raw']
+                df_append['airline_standardized'] = df_batch['airline_standardized']
+                df_append['airline_raw'] = df_batch['airline_raw']
+                df_append['flight_number'] = df_batch['flight_number']
+                df_append['departure_time'] = df_batch['departure_time']
+                df_append['arrival_time'] = df_batch['arrival_time']
+                df_append['duration_minutes'] = df_batch['duration_minutes']
+                df_append['duration_raw'] = df_batch['duration_raw']
+                df_append['cabin_class'] = df_batch['cabin_class']
+                df_append['total_fare_inr'] = df_batch['total_fare_inr']
+                df_append['base_fare_inr'] = [None] * len(df_batch)
+                df_append['taxes_fees_inr'] = [None] * len(df_batch)
+                df_append['search_timestamp'] = df_batch['search_timestamp']
+                df_append['lead_time_days'] = df_batch['lead_time_days']
+                df_append['is_defunct_carrier'] = [False] * len(df_batch)
+                df_append['is_ambiguous_carrier'] = [False] * len(df_batch)
+                df_append['is_fare_mild_outlier'] = [False] * len(df_batch)
+                df_append['is_fare_extreme_outlier'] = [False] * len(df_batch)
+                
+                df_master_combined = pd.concat([df_master, df_append], ignore_index=True)
+                df_master_combined.to_csv(master_v2_path, index=False)
+                print(f"[✓] Main Project Master v2 updated: {master_v2_path} (Total Records: {len(df_master_combined):,})")
+            except Exception as e:
+                print(f"[-] Warning appending to master v2: {e}")
+
+        # 4. Instant Post-Scrape Index Recalculation (Jevons-Laspeyres Daily, Route, Carrier Indices)
+        try:
+            from scripts.index_engine.calculator import recalculate_all_indices
+            print("[+] Recalculating Jevons-Laspeyres APIx indices post-scrape...")
+            recalculate_all_indices()
+            print("[✓] Post-scrape index recalculation completed.")
+        except Exception as e:
+            print(f"[-] Warning during index recalculation: {e}")
+
+        # 5. Hot-Reload Data Repository Memory
+        try:
+            from backend.db.database import db
+            db.reload_data()
+            print(f"[✓] DataRepository memory hot-reloaded: {len(db.master_df):,} records in active ledger.")
+        except Exception as e:
+            print(f"[-] Warning reloading repository memory: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description="SIH26056 Real-Time Airfare Multi-Platform Scraper Engine")

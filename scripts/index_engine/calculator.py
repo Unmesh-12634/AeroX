@@ -115,15 +115,47 @@ class AirfareIndexEngine:
         master_path = os.path.join(CLEANED_DIR, 'sih_master_airfare_observations_v2.csv')
         cpi_path = os.path.join(CLEANED_DIR, 'cleaned_cpi_mospi_2024.csv')
         
-        if not os.path.exists(master_path):
+        dfs = []
+        if os.path.exists(master_path):
+            df_m = pd.read_csv(master_path, low_memory=False)
+            dfs.append(df_m)
+
+        # Include all live scraped partitions via ScrapingLedgerManager
+        try:
+            from backend.db.scraping_ledger import scraping_ledger
+            df_live = scraping_ledger.load_all_partitions()
+            if not df_live.empty:
+                dfs.append(df_live)
+        except Exception as e:
+            print(f"[-] Note: Could not load live partitions in index engine: {e}")
+
+        if not dfs:
             raise FileNotFoundError(f"Master dataset not found at {master_path}")
         
-        self.master_df = pd.read_csv(master_path, low_memory=False)
+        combined = pd.concat(dfs, ignore_index=True)
+        subset_cols = [c for c in ['route', 'travel_date', 'airline_standardized', 'departure_time', 'total_fare_inr'] if c in combined.columns]
+        if subset_cols:
+            combined = combined.drop_duplicates(subset=subset_cols, keep='last')
+        
+        # Sort chronologically
+        sort_cols = [c for c in ['search_timestamp', 'travel_date'] if c in combined.columns]
+        if sort_cols:
+            combined = combined.sort_values(by=sort_cols, ascending=True)
+            
+        if 'is_defunct_carrier' in combined.columns:
+            combined['is_defunct_carrier'] = combined['is_defunct_carrier'].fillna(False).astype(bool)
+        else:
+            combined['is_defunct_carrier'] = False
+
+        if 'cabin_class' in combined.columns:
+            combined['cabin_class'] = combined['cabin_class'].fillna('Economy')
+
+        self.master_df = combined.reset_index(drop=True)
         
         if os.path.exists(cpi_path):
             self.cpi_df = pd.read_csv(cpi_path)
             
-        print(f"[✓] Data loaded successfully: {len(self.master_df):,} master observations.")
+        print(f"[✓] Data loaded successfully: {len(self.master_df):,} master observations (including live partitions).")
 
     def establish_baselines(self, baseline_tier: str = '2022_real_observations'):
         """
@@ -453,9 +485,14 @@ class AirfareIndexEngine:
             f.write("\n".join(md))
         print(f"[✓] Explainability Report generated: {report_path}")
 
-def main():
+def recalculate_all_indices():
+    """Top-level pipeline hook to re-compute all APIx indices and save CSV/JSON ledgers."""
     engine = AirfareIndexEngine()
     engine.run_full_pipeline()
+    return engine
+
+def main():
+    recalculate_all_indices()
 
 if __name__ == "__main__":
     main()
