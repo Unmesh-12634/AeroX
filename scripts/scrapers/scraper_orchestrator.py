@@ -30,7 +30,9 @@ Default Lead Times:
 import os
 import sys
 import json
+import time
 import argparse
+import concurrent.futures
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import pandas as pd
@@ -113,10 +115,12 @@ class ScraperOrchestrator:
         platforms: List[str],
         routes: List[tuple],
         lead_times: List[int],
-        cabin_class: str = "Economy"
+        cabin_class: str = "Economy",
+        max_workers: int = 3
     ) -> List[ScrapedFlightObservation]:
         all_observations: List[ScrapedFlightObservation] = []
         today = datetime.now().date()
+        overall_start = time.time()
         
         # Expand platform shortcuts
         resolved_platforms = []
@@ -129,35 +133,76 @@ class ScraperOrchestrator:
         resolved_platforms = list(dict.fromkeys(resolved_platforms)) # deduplicate preserving order
 
         print("=" * 65)
-        print("SIH26056: REAL-TIME AIRFARE SCRAPER & LIVE INGESTION ENGINE")
+        print("SIH26056: HIGH-THROUGHPUT CONCURRENT AIRFARE SCRAPER ENGINE")
         print(f"Start Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Target Platforms ({len(resolved_platforms)}): {', '.join(resolved_platforms)}")
         print(f"Target Corridors ({len(routes)}): {[f'{o}-{d}' for o, d in routes]}")
         print(f"Target Lead Times: {[f'T+{lt}' for lt in lead_times]}")
+        print(f"Concurrency Workers: {min(max_workers, max(1, len(resolved_platforms)))}")
         print("=" * 65)
 
-        for p_name in resolved_platforms:
+        # Build route queries
+        route_queries = []
+        for origin, dest in routes:
+            for lt in lead_times:
+                travel_date = (today + timedelta(days=lt)).strftime("%Y-%m-%d")
+                route_queries.append({
+                    "origin_iata": origin,
+                    "dest_iata": dest,
+                    "travel_date_str": travel_date,
+                    "lead_time_days": lt
+                })
+
+        def _worker_platform_task(p_name: str) -> List[ScrapedFlightObservation]:
             scraper = self.scrapers.get(p_name)
             if not scraper:
                 print(f"[!] Platform '{p_name}' not supported. Skipping.")
-                continue
+                return []
 
-            print(f"\n[+] Launching Platform Scraper: [{p_name.upper()}]")
-            for origin, dest in routes:
-                for lt in lead_times:
-                    travel_date = (today + timedelta(days=lt)).strftime("%Y-%m-%d")
-                    print(f"    --> Querying {origin}-{dest} on {travel_date} (Lead: T+{lt} days)...", end="", flush=True)
-                    try:
-                        obs_list = scraper.search_route(
-                            origin_iata=origin,
-                            dest_iata=dest,
-                            travel_date_str=travel_date,
-                            cabin_class=cabin_class
-                        )
-                        print(f" Found {len(obs_list)} real flights.")
-                        all_observations.extend(obs_list)
-                    except Exception as e:
-                        print(f" Error: {e}")
+            t_start = time.time()
+            print(f"\n[+] Launching Concurrent Platform Worker: [{p_name.upper()}] ({len(route_queries)} route queries)...")
+            platform_obs: List[ScrapedFlightObservation] = []
+
+            try:
+                if hasattr(scraper, "search_routes_batch"):
+                    platform_obs = scraper.search_routes_batch(route_queries, cabin_class=cabin_class)
+                else:
+                    for q in route_queries:
+                        try:
+                            obs_list = scraper.search_route(
+                                origin_iata=q["origin_iata"],
+                                dest_iata=q["dest_iata"],
+                                travel_date_str=q["travel_date_str"],
+                                cabin_class=cabin_class
+                            )
+                            platform_obs.extend(obs_list)
+                        except Exception as ex:
+                            print(f"[{p_name}] Error on {q['origin_iata']}-{q['dest_iata']}: {ex}")
+
+                dur = round(time.time() - t_start, 2)
+                print(f"[✓] [{p_name.upper()}] Worker completed in {dur}s with {len(platform_obs)} real observations.")
+                return platform_obs
+            except Exception as e:
+                print(f"[-] [{p_name.upper()}] Worker failure: {e}")
+                return []
+
+        # Execute platform workers concurrently
+        actual_workers = min(max_workers, max(1, len(resolved_platforms)))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=actual_workers) as executor:
+            futures = {executor.submit(_worker_platform_task, p): p for p in resolved_platforms}
+            for future in concurrent.futures.as_completed(futures):
+                plat_name = futures[future]
+                try:
+                    res = future.result()
+                    all_observations.extend(res)
+                except Exception as exc:
+                    print(f"[-] Worker for {plat_name} raised exception: {exc}")
+
+        total_duration = round(time.time() - overall_start, 2)
+        print("\n" + "=" * 65)
+        print(f"[✓] ALL WORKERS FINISHED in {total_duration}s (~{round(total_duration/60, 2)} mins).")
+        print(f"[✓] Total Live Flight Observations Extracted: {len(all_observations):,}")
+        print("=" * 65)
 
         # Persist and update master dataset
         if all_observations:
@@ -223,6 +268,8 @@ class ScraperOrchestrator:
                 df_append['is_ambiguous_carrier'] = [False] * len(df_batch)
                 df_append['is_fare_mild_outlier'] = [False] * len(df_batch)
                 df_append['is_fare_extreme_outlier'] = [False] * len(df_batch)
+                df_append['booking_url'] = df_batch['booking_url'] if 'booking_url' in df_batch.columns else [''] * len(df_batch)
+                df_append['airline_url'] = df_batch['airline_url'] if 'airline_url' in df_batch.columns else [''] * len(df_batch)
                 
                 df_master_combined = pd.concat([df_master, df_append], ignore_index=True)
                 df_master_combined.to_csv(master_v2_path, index=False)

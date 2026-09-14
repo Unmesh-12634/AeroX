@@ -33,7 +33,8 @@ try:
         normalize_airline,
         parse_price,
         parse_duration_to_mins,
-        OFFICIAL_IATA_MAP
+        OFFICIAL_IATA_MAP,
+        resolve_canonical_flight_number
     )
 except ImportError:
     from models import (
@@ -42,7 +43,8 @@ except ImportError:
         normalize_airline,
         parse_price,
         parse_duration_to_mins,
-        OFFICIAL_IATA_MAP
+        OFFICIAL_IATA_MAP,
+        resolve_canonical_flight_number
     )
 
 # Reverse IATA → City name for Google Flights query string
@@ -170,25 +172,171 @@ class GoogleFlightsScraper:
         query = f"Flights to {dest_city} from {origin_city} on {travel_date_str} oneway"
         return f"https://www.google.com/travel/flights?q={query.replace(' ', '%20')}&curr=INR&hl=en"
 
-    def search_route(
+    def _parse_page_items(
         self,
+        page: Page,
         origin_iata: str,
         dest_iata: str,
+        route_str: str,
         travel_date_str: str,
+        lead_time: int,
+        search_ts: str,
+        cabin_class: str
+    ) -> List[ScrapedFlightObservation]:
+        observations = []
+        try:
+            raw_cards = page.evaluate('''() => {
+                const selList = ['li.pIav2d', 'div.pIav2d', 'div[jsaction*="flight"]', 'div.yR1fYc'];
+                let els = [];
+                for (const s of selList) {
+                    const found = document.querySelectorAll(s);
+                    if (found.length > els.length) els = found;
+                }
+                return Array.from(els).map(el => {
+                    const text = el.innerText || '';
+                    const arias = Array.from(el.querySelectorAll('[aria-label]')).map(a => a.getAttribute('aria-label') || '').join(' ');
+                    return { text, arias };
+                });
+            }''')
+        except Exception:
+            raw_cards = []
+
+        for idx, card in enumerate(raw_cards):
+            try:
+                text_content = card.get("text", "")
+                aria_content = card.get("arias", "")
+                if not text_content or len(text_content.strip()) < 15:
+                    continue
+
+                # Price
+                price_val = _extract_price_from_text(text_content)
+                if not price_val and aria_content:
+                    aria_match = re.search(r'(?:₹|Rs\.?|INR)\s*([\d,]+)', aria_content)
+                    if aria_match:
+                        price_val = parse_price(aria_match.group(1))
+
+                # Only accept genuine scraped prices from the portal
+                if not price_val or price_val < 1800.0:
+                    continue
+
+                # Times — Google Flights uses en-dash: "06:00 – 08:15"
+                dep_time, arr_time = "08:30", "10:45"
+                time_match = re.search(
+                    r'(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)\s*[–\-—]\s*(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)',
+                    text_content
+                )
+                if time_match:
+                    dep_time = time_match.group(1).strip()
+                    arr_time = time_match.group(2).strip()
+                else:
+                    times = [t for t in re.findall(r'\b([012]?\d:[0-5]\d)\b', text_content) if t != "00:00"]
+                    if len(times) >= 2:
+                        dep_time, arr_time = times[0], times[1]
+                    elif len(times) == 1:
+                        dep_time = times[0]
+                        dh, dm = map(int, dep_time.split(':'))
+                        arr_time = f"{(dh + 2) % 24:02d}:{dm:02d}"
+
+                dep_time = dep_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
+                arr_time = arr_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
+
+                # Duration
+                dur_str = "2h 15m"
+                dur_match = re.search(r'(\d+\s*(?:hr|h)\s*(?:\d+\s*(?:min|m))?)', text_content, re.IGNORECASE)
+                if dur_match:
+                    dur_str = dur_match.group(1).strip()
+                dur_str = dur_str.replace('\u202f', ' ').replace('\xa0', ' ').strip()
+                duration_mins = parse_duration_to_mins(dur_str) or 135
+
+                # Airline (Air India Express checked BEFORE Air India)
+                full_card_text = f"{text_content} {aria_content}"
+                airline_raw = _detect_airline(full_card_text)
+                airline_std = normalize_airline(airline_raw)
+
+                # Stops
+                stops_count, stop_info, is_nonstop = 0, "Non-Stop", True
+                stop_match = re.search(r'\b([0-3])\s*stops?', text_content, re.IGNORECASE)
+                if not stop_match:
+                    stop_match = re.search(r'(\d+)\s*stops?', text_content, re.IGNORECASE)
+                if stop_match:
+                    raw_stops = int(stop_match.group(1))
+                    stops_count = raw_stops if raw_stops <= 3 else (raw_stops % 10 if (raw_stops % 10) in (1, 2, 3) else 1)
+                    is_nonstop = stops_count == 0
+                    ap_codes = re.findall(
+                        r'\b(DEL|BOM|BLR|HYD|MAA|CCU|AMD|GOI|GOX|PNQ|JAI|GAU|SXR|COK|PAT|LKO|IXC|IXB|IDR|NAG|BBI|VNS|TRV|ATQ|CJB|UDR)\b',
+                        text_content
+                    )
+                    via_codes = [c for c in ap_codes if c not in (origin_iata, dest_iata)]
+                    if via_codes:
+                        stop_info = f"{stops_count} Stop ({', '.join(dict.fromkeys(via_codes[:stops_count]))})"
+                    else:
+                        stop_info = f"{stops_count} Stop" if stops_count == 1 else f"{stops_count} Stops"
+                elif re.search(r'nonstop|non-stop|direct', text_content, re.IGNORECASE):
+                    is_nonstop, stops_count, stop_info = True, 0, "Non-Stop"
+                elif duration_mins and duration_mins > 240:
+                    is_nonstop, stops_count, stop_info = False, 1, "1 Stop"
+
+                # Flight number extraction
+                fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)\s*(\d{3,4})\b', full_card_text)
+                if fn_match:
+                    flight_no = f"{fn_match.group(1)} {fn_match.group(2)}"
+                else:
+                    flight_no = resolve_canonical_flight_number(
+                        airline=airline_std,
+                        origin=origin_iata,
+                        dest=dest_iata,
+                        departure_time=dep_time,
+                        is_nonstop=is_nonstop
+                    )
+
+                raw_hash = hashlib.md5(
+                    f"{route_str}_{travel_date_str}_{airline_std}_{dep_time}_{price_val}".encode()
+                ).hexdigest()[:12]
+
+                observations.append(ScrapedFlightObservation(
+                    record_id=f"SCR_GF_{int(time.time())}_{idx+1:03d}",
+                    search_timestamp=search_ts,
+                    travel_date=travel_date_str,
+                    lead_time_days=lead_time,
+                    source_platform=self.platform_name,
+                    origin_iata=origin_iata,
+                    dest_iata=dest_iata,
+                    route=route_str,
+                    origin_raw=origin_iata,
+                    dest_raw=dest_iata,
+                    airline_standardized=airline_std,
+                    airline_raw=airline_raw,
+                    flight_number=flight_no,
+                    departure_time=dep_time,
+                    arrival_time=arr_time,
+                    duration_minutes=duration_mins,
+                    duration_raw=dur_str,
+                    cabin_class=cabin_class,
+                    total_fare_inr=price_val,
+                    is_nonstop=is_nonstop,
+                    stops_count=stops_count,
+                    stop_info=stop_info,
+                    raw_hash=raw_hash
+                ))
+            except Exception:
+                continue
+        return observations
+
+    def search_routes_batch(
+        self,
+        route_queries: List[dict],
         cabin_class: str = "Economy"
     ) -> List[ScrapedFlightObservation]:
-        origin_iata = normalize_iata(origin_iata)
-        dest_iata   = normalize_iata(dest_iata)
-        route_str   = f"{origin_iata}-{dest_iata}"
+        """
+        High-throughput batch scraper: reuses a SINGLE Chromium browser instance across
+        multiple corridor queries, drastically reducing execution time and CPU overhead.
+        """
+        if not route_queries:
+            return []
 
-        search_ts   = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        all_observations: List[ScrapedFlightObservation] = []
+        search_ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         search_date = datetime.now().date()
-        travel_date_obj = datetime.strptime(travel_date_str, "%Y-%m-%d").date()
-        lead_time   = (travel_date_obj - search_date).days
-
-        url = self._build_url(origin_iata, dest_iata, travel_date_str)
-        observations: List[ScrapedFlightObservation] = []
-        intercepted_data: list = []
 
         try:
             with sync_playwright() as p:
@@ -207,206 +355,77 @@ class GoogleFlightsScraper:
                 context = browser.new_context(**ctx_args)
                 page = context.new_page()
                 _apply_stealth(page)
-                page.set_default_timeout(30000)
+                page.set_default_timeout(20000)
 
-                # ── Network Interception: Capture Google's internal flight JSON ──
-                def on_response(response):
+                consent_handled = False
+
+                for q in route_queries:
+                    origin_iata = normalize_iata(q["origin_iata"])
+                    dest_iata = normalize_iata(q["dest_iata"])
+                    travel_date_str = q["travel_date_str"]
+                    route_str = f"{origin_iata}-{dest_iata}"
+
                     try:
-                        if "travel/flights" in response.url and response.status == 200:
-                            ct = response.headers.get("content-type", "")
-                            if "json" in ct or "javascript" in ct:
-                                body = response.text()
-                                if body and "totalFare" in body:
-                                    intercepted_data.append(body)
+                        travel_date_obj = datetime.strptime(travel_date_str, "%Y-%m-%d").date()
+                        lead_time = (travel_date_obj - search_date).days
                     except Exception:
-                        pass
+                        lead_time = q.get("lead_time_days", 7)
 
-                page.on("response", on_response)
+                    url = self._build_url(origin_iata, dest_iata, travel_date_str)
 
-                # Navigate
-                try:
-                    page.goto(url, wait_until="domcontentloaded", timeout=25000)
-                except Exception as e:
-                    print(f" (nav warn: {e}) ", end="")
-
-                # Accept consent if shown (Google GDPR consent screen)
-                try:
-                    for btn_text in ["Accept all", "I agree", "Agree"]:
-                        btn = page.query_selector(f"button:has-text('{btn_text}')")
-                        if btn:
-                            btn.click()
-                            time.sleep(0.8)
-                            break
-                except Exception:
-                    pass
-
-                # Wait for flight results — try specific selectors first
-                loaded = False
-                for sel in GF_FLIGHT_ITEM_SELECTORS:
                     try:
-                        page.wait_for_selector(sel, timeout=8000)
-                        loaded = True
-                        break
-                    except Exception:
-                        continue
+                        page.goto(url, wait_until="domcontentloaded", timeout=18000)
 
-                if not loaded:
-                    time.sleep(4)  # Fallback wait
-
-                # Small human-like delay
-                time.sleep(random.uniform(1.5, 2.5))
-
-                # ── Phase 1: DOM Extraction ───────────────────────────────────────
-                flight_items = []
-                for sel in GF_FLIGHT_ITEM_SELECTORS:
-                    items = page.query_selector_all(sel)
-                    if items and len(items) > len(flight_items):
-                        flight_items = items
-
-                for idx, item in enumerate(flight_items):
-                    try:
-                        text_content = item.inner_text()
-                        if not text_content or len(text_content.strip()) < 15:
-                            continue
-
-                        # Price
-                        price_val = None
-                        for price_sel in GF_PRICE_SELECTORS:
-                            price_el = item.query_selector(price_sel)
-                            if price_el:
-                                p_text = price_el.inner_text()
-                                p_match = re.search(r'(?:₹|Rs\.?|INR)\s*([\d,]+)', p_text)
-                                if p_match:
-                                    parsed = parse_price(p_match.group(1))
-                                    if parsed and parsed >= 1800.0:
-                                        price_val = parsed
+                        if not consent_handled:
+                            try:
+                                for btn_text in ["Accept all", "I agree", "Agree"]:
+                                    btn = page.query_selector(f"button:has-text('{btn_text}')")
+                                    if btn:
+                                        btn.click()
+                                        time.sleep(0.5)
+                                        consent_handled = True
                                         break
+                            except Exception:
+                                pass
 
-                        if not price_val:
-                            price_val = _extract_price_from_text(text_content)
+                        # Wait for flight cards
+                        loaded = False
+                        for sel in GF_FLIGHT_ITEM_SELECTORS:
+                            try:
+                                page.wait_for_selector(sel, timeout=4500)
+                                loaded = True
+                                break
+                            except Exception:
+                                continue
 
-                        if not price_val:
-                            aria_texts = " ".join([el.get_attribute('aria-label') or "" for el in item.query_selector_all('[aria-label]')])
-                            aria_match = re.search(r'(?:₹|Rs\.?|INR)\s*([\d,]+)', aria_texts)
-                            if aria_match:
-                                price_val = parse_price(aria_match.group(1))
+                        if not loaded:
+                            time.sleep(1.5)
 
-                        # Only accept genuine scraped prices from the portal
-                        if not price_val or price_val < 1800.0:
-                            continue
+                        time.sleep(0.5) # Brief render buffer
 
-                        # Times — Google Flights uses en-dash: "06:00 – 08:15"
-                        dep_time, arr_time = "08:30", "10:45"
-                        time_match = re.search(
-                            r'(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)\s*[–\-—]\s*(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)',
-                            text_content
+                        extracted = self._parse_page_items(
+                            page, origin_iata, dest_iata, route_str,
+                            travel_date_str, lead_time, search_ts, cabin_class
                         )
-                        if time_match:
-                            dep_time = time_match.group(1).strip()
-                            arr_time = time_match.group(2).strip()
-                        else:
-                            times = [t for t in re.findall(r'\b([012]?\d:[0-5]\d)\b', text_content) if t != "00:00"]
-                            if len(times) >= 2:
-                                dep_time, arr_time = times[0], times[1]
-                            elif len(times) == 1:
-                                dep_time = times[0]
-                                dh, dm = map(int, dep_time.split(':'))
-                                arr_time = f"{(dh + 2) % 24:02d}:{dm:02d}"
-
-                        # Clean unicode narrow spaces from times
-                        dep_time = dep_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
-                        arr_time = arr_time.replace('\u202f', ' ').replace('\xa0', ' ').strip()
-
-                        # Duration
-                        dur_str = "2h 15m"
-                        dur_match = re.search(r'(\d+\s*(?:hr|h)\s*(?:\d+\s*(?:min|m))?)', text_content, re.IGNORECASE)
-                        if dur_match:
-                            dur_str = dur_match.group(1).strip()
-                        dur_str = dur_str.replace('\u202f', ' ').replace('\xa0', ' ').strip()
-                        duration_mins = parse_duration_to_mins(dur_str) or 135
-
-                        # Airline (Air India Express checked BEFORE Air India)
-                        airline_raw = _detect_airline(text_content)
-                        airline_std = normalize_airline(airline_raw)
-
-                        # Stops
-                        stops_count, stop_info, is_nonstop = 0, "Non-Stop", True
-                        stop_match = re.search(r'\b([0-3])\s*stops?', text_content, re.IGNORECASE)
-                        if not stop_match:
-                            stop_match = re.search(r'(\d+)\s*stops?', text_content, re.IGNORECASE)
-                        if stop_match:
-                            raw_stops = int(stop_match.group(1))
-                            stops_count = raw_stops if raw_stops <= 3 else (raw_stops % 10 if (raw_stops % 10) in (1, 2, 3) else 1)
-                            is_nonstop = stops_count == 0
-                            ap_codes = re.findall(
-                                r'\b(DEL|BOM|BLR|HYD|MAA|CCU|AMD|GOI|GOX|PNQ|JAI|GAU|SXR|COK|PAT|LKO|IXC|IXB|IDR|NAG|BBI|VNS|TRV|ATQ|CJB|UDR)\b',
-                                text_content
-                            )
-                            via_codes = [c for c in ap_codes if c not in (origin_iata, dest_iata)]
-                            if via_codes:
-                                stop_info = f"{stops_count} Stop ({', '.join(dict.fromkeys(via_codes[:stops_count]))})"
-                            else:
-                                stop_info = f"{stops_count} Stop" if stops_count == 1 else f"{stops_count} Stops"
-                        elif re.search(r'nonstop|non-stop|direct', text_content, re.IGNORECASE):
-                            is_nonstop, stops_count, stop_info = True, 0, "Non-Stop"
-                        elif duration_mins and duration_mins > 240:
-                            is_nonstop, stops_count, stop_info = False, 1, "1 Stop"
-
-                        # Flight number extraction
-                        fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)\s*(\d{3,4})\b', text_content)
-                        if fn_match:
-                            flight_no = f"{fn_match.group(1)} {fn_match.group(2)}"
-                        else:
-                            al_l = airline_std.lower()
-                            if 'air india express' in al_l:
-                                pfx = 'IX'
-                            elif 'air india' in al_l:
-                                pfx = 'AI'
-                            elif 'akasa' in al_l:
-                                pfx = 'QP'
-                            elif 'spicejet' in al_l:
-                                pfx = 'SG'
-                            elif 'vistara' in al_l:
-                                pfx = 'UK'
-                            else:
-                                pfx = '6E'
-                            flight_no = f"{pfx} (Direct)" if is_nonstop else f"{pfx} (Connecting)"
-
-                        raw_hash = hashlib.md5(
-                            f"{route_str}_{travel_date_str}_{airline_std}_{dep_time}_{price_val}".encode()
-                        ).hexdigest()[:12]
-
-                        observations.append(ScrapedFlightObservation(
-                            record_id=f"SCR_GF_{int(time.time())}_{idx+1:03d}",
-                            search_timestamp=search_ts,
-                            travel_date=travel_date_str,
-                            lead_time_days=lead_time,
-                            source_platform=self.platform_name,
-                            origin_iata=origin_iata,
-                            dest_iata=dest_iata,
-                            route=route_str,
-                            origin_raw=origin_iata,
-                            dest_raw=dest_iata,
-                            airline_standardized=airline_std,
-                            airline_raw=airline_raw,
-                            flight_number=flight_no,
-                            departure_time=dep_time,
-                            arrival_time=arr_time,
-                            duration_minutes=duration_mins,
-                            duration_raw=dur_str,
-                            cabin_class=cabin_class,
-                            total_fare_inr=price_val,
-                            is_nonstop=is_nonstop,
-                            stops_count=stops_count,
-                            stop_info=stop_info,
-                            raw_hash=raw_hash
-                        ))
-                    except Exception:
-                        continue
+                        all_observations.extend(extracted)
+                        print(f"[{route_str} T+{lead_time}] Extracted {len(extracted)} real flights.")
+                    except Exception as route_err:
+                        print(f"[{route_str} T+{lead_time}] Route extraction notice: {route_err}")
 
                 browser.close()
-
         except Exception as e:
-            print(f"[google_flights] Error on {route_str} ({travel_date_str}): {e}")
+            print(f"[google_flights_scraper] Batch session error: {e}")
 
-        return observations
+        return all_observations
+
+    def search_route(
+        self,
+        origin_iata: str,
+        dest_iata: str,
+        travel_date_str: str,
+        cabin_class: str = "Economy"
+    ) -> List[ScrapedFlightObservation]:
+        return self.search_routes_batch(
+            [{"origin_iata": origin_iata, "dest_iata": dest_iata, "travel_date_str": travel_date_str}],
+            cabin_class=cabin_class
+        )

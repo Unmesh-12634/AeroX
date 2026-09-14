@@ -313,5 +313,68 @@
     ],
     "observations_count": 10388,
     "error": null
+  },
+  {
+    "slot_id": "2026-09-14_07:00",
+    "slot_label": "07:00 AM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-14T11:19:52.028579+05:30",
+    "status": "COMPLETED",
+    "duration_seconds": 306.35,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 10846,
+    "error": null
+  },
+  {
+    "slot_id": "2026-09-14_02:00 PM IST",
+    "slot_label": "02:00 PM IST",
+    "is_catchup": false,
+    "timestamp": "2026-09-14T14:00:01.816314+05:30",
+    "status": "COMPLETED",
+    "duration_seconds": 310.53,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 11576,
+    "error": null
+  },
+  {
+    "slot_id": "2026-09-14_14:00",
+    "slot_label": "02:00 PM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-14T14:17:19.861160+05:30",
+    "status": "COMPLETED",
+    "duration_seconds": 334.68,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 11635,
+    "error": null
   }
 ]

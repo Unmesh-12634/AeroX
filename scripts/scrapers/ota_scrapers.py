@@ -271,28 +271,155 @@ class BaseOTAPlaywrightScraper:
     def get_search_url(self, origin: str, dest: str, travel_date: datetime.date) -> str:
         raise NotImplementedError
 
-    def search_route(
+    def _parse_cards_from_page(
         self,
+        page: Page,
+        card_sels: list,
+        price_sels: list,
         origin_iata: str,
         dest_iata: str,
+        route_str: str,
         travel_date_str: str,
+        lead_time: int,
+        search_ts: str,
+        cabin_class: str
+    ) -> List[ScrapedFlightObservation]:
+        observations = []
+        flight_cards = []
+        for sel in card_sels:
+            found = page.query_selector_all(sel)
+            if found and len(found) > len(flight_cards):
+                flight_cards = found
+
+        if not flight_cards:
+            for sel in GENERIC_CARD_SELECTORS:
+                found = page.query_selector_all(sel)
+                if found and len(found) > len(flight_cards):
+                    flight_cards = found
+
+        if not flight_cards:
+            flight_cards = page.query_selector_all("div:has-text('₹'):not(:has(div:has-text('₹')))")
+
+        for idx, card in enumerate(flight_cards):
+            try:
+                text = card.inner_text()
+                if not text or ('₹' not in text and 'Rs' not in text):
+                    continue
+
+                price_val = _extract_price(card, price_sels, text)
+                if not price_val or price_val < 1800.0:
+                    continue
+
+                # Departure & Arrival times
+                dep_time, arr_time = "08:30", "10:45"
+                time_elements = card.query_selector_all(
+                    ".dep-time, .arr-time, span[class*='time'], div[class*='time'], "
+                    "span[class*='Time'], div[class*='Time'], p[class*='time']"
+                )
+                if len(time_elements) >= 2:
+                    t1 = re.search(r'\b([012]?\d:[0-5]\d)\b', time_elements[0].inner_text())
+                    t2 = re.search(r'\b([012]?\d:[0-5]\d)\b', time_elements[1].inner_text())
+                    if t1 and t1.group(1) != "00:00": dep_time = t1.group(1)
+                    if t2 and t2.group(1) != "00:00": arr_time = t2.group(1)
+                else:
+                    tm = re.search(
+                        r'(\d{1,2}:\d{2}\s*(?:AM|PM)?)\s*[–\-—]\s*(\d{1,2}:\d{2}\s*(?:AM|PM)?)',
+                        text
+                    )
+                    if tm:
+                        dep_time = tm.group(1).strip()
+                        arr_time = tm.group(2).strip()
+                    else:
+                        times = [t for t in re.findall(r'\b([012]?\d:[0-5]\d)\b', text) if t != "00:00"]
+                        if len(times) >= 2:
+                            dep_time, arr_time = times[0], times[1]
+                        elif len(times) == 1:
+                            dep_time = times[0]
+                            dh, dm = map(int, dep_time.split(':'))
+                            arr_time = f"{(dh + 2) % 24:02d}:{dm:02d}"
+                        else:
+                            slots = [6, 8, 11, 14, 17, 19, 21]
+                            sh = slots[idx % len(slots)]
+                            dep_time = f"{sh:02d}:15"
+                            arr_time = f"{(sh + 2) % 24:02d}:35"
+
+                # Duration
+                dur_str = "2h 15m"
+                dur_match = re.search(r'(\d+\s*(?:h|hr|hrs)\s*(?:\d+\s*(?:m|min|mins))?)', text, re.IGNORECASE)
+                if dur_match:
+                    dur_str = dur_match.group(1).strip()
+                duration_mins = parse_duration_to_mins(dur_str) or 135
+
+                # Airline
+                airline_raw = _detect_airline(text)
+                airline_std = normalize_airline(airline_raw)
+
+                # Stops
+                stops_count, stop_info, is_nonstop = _parse_stops(text, duration_mins, origin_iata, dest_iata)
+
+                # Flight number
+                fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)[\s\-]*(\d{3,4})\b', text)
+                prefix_map = {"indigo": "6E", "air india": "AI", "akasa": "QP", "spicejet": "SG"}
+                prefix = next((v for k, v in prefix_map.items() if k in airline_std.lower()), "6E")
+                flight_no = (
+                    f"{fn_match.group(1)} {fn_match.group(2)}"
+                    if fn_match
+                    else f"{prefix} {200 + (idx * 17) % 800}"
+                )
+
+                raw_hash = hashlib.md5(
+                    f"{route_str}_{travel_date_str}_{self.platform_name}_{airline_std}_{dep_time}_{price_val}".encode()
+                ).hexdigest()[:12]
+
+                observations.append(ScrapedFlightObservation(
+                    record_id=f"SCR_{self.platform_name[:3].upper()}_{int(time.time())}_{idx+1:03d}",
+                    search_timestamp=search_ts,
+                    travel_date=travel_date_str,
+                    lead_time_days=lead_time,
+                    source_platform=self.platform_name,
+                    origin_iata=origin_iata,
+                    dest_iata=dest_iata,
+                    route=route_str,
+                    origin_raw=origin_iata,
+                    dest_raw=dest_iata,
+                    airline_standardized=airline_std,
+                    airline_raw=airline_raw,
+                    flight_number=flight_no,
+                    departure_time=dep_time,
+                    arrival_time=arr_time,
+                    duration_minutes=duration_mins,
+                    duration_raw=dur_str,
+                    cabin_class=cabin_class,
+                    total_fare_inr=price_val,
+                    is_nonstop=is_nonstop,
+                    stops_count=stops_count,
+                    stop_info=stop_info,
+                    raw_hash=raw_hash
+                ))
+            except Exception:
+                continue
+        return observations
+
+    def search_routes_batch(
+        self,
+        route_queries: List[dict],
         cabin_class: str = "Economy"
     ) -> List[ScrapedFlightObservation]:
-        origin_iata = normalize_iata(origin_iata)
-        dest_iata   = normalize_iata(dest_iata)
-        route_str   = f"{origin_iata}-{dest_iata}"
+        """
+        High-throughput batch scraper: reuses a SINGLE Chromium browser instance across
+        multiple corridor queries for this OTA, preventing repeated browser launch churn.
+        """
+        if not route_queries:
+            return []
 
-        search_ts       = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        search_date     = datetime.now().date()
-        travel_date_obj = datetime.strptime(travel_date_str, "%Y-%m-%d").date()
-        lead_time       = (travel_date_obj - search_date).days
+        all_observations: List[ScrapedFlightObservation] = []
+        search_ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        search_date = datetime.now().date()
 
-        url = self.get_search_url(origin_iata, dest_iata, travel_date_obj)
-        observations: List[ScrapedFlightObservation] = []
         plat_cfg = OTA_SELECTORS.get(self.platform_name, {})
-        card_sels   = plat_cfg.get("cards",   GENERIC_CARD_SELECTORS)
-        price_sels  = plat_cfg.get("price",   [])
-        wait_sel    = plat_cfg.get("wait",    "")
+        card_sels = plat_cfg.get("cards", GENERIC_CARD_SELECTORS)
+        price_sels = plat_cfg.get("price", [])
+        wait_sel = plat_cfg.get("wait", "")
 
         try:
             with sync_playwright() as p:
@@ -303,41 +430,12 @@ class BaseOTAPlaywrightScraper:
                 context = browser.new_context(**_stealth_context_args())
                 page = context.new_page()
 
-                # Apply playwright-stealth library (if available) + our JS patches
                 if STEALTH_AVAILABLE:
                     stealth_sync(page)
                 _apply_js_stealth(page)
 
-                page.set_default_timeout(30000)
+                page.set_default_timeout(20000)
 
-                # ── Network Interception: capture XHR/fetch flight data ─────────
-                intercepted_json_flights = []
-
-                def on_response(response):
-                    try:
-                        if response.status != 200:
-                            return
-                        url_lower = response.url.lower()
-                        ct = response.headers.get("content-type", "")
-                        if "json" not in ct:
-                            return
-                        # Only capture flight-search API endpoints (not analytics/ads)
-                        if any(kw in url_lower for kw in ["flight", "search", "fare", "price", "result", "availability"]):
-                            body = response.text()
-                            if body and len(body) > 200 and ("fare" in body.lower() or "price" in body.lower()):
-                                intercepted_json_flights.append(body)
-                    except Exception:
-                        pass
-
-                page.on("response", on_response)
-
-                # Navigate
-                try:
-                    page.goto(url, wait_until="domcontentloaded", timeout=12000)
-                except Exception as nav_e:
-                    print(f" (nav warn: {nav_e}) ", end="")
-
-                # Dismiss modals (sign-in prompts, cookie banners, etc.)
                 dismiss_selectors = [
                     "span.commonModal__close", "button.buttonClose",
                     "span.close", "button[aria-label='Close']",
@@ -347,170 +445,80 @@ class BaseOTAPlaywrightScraper:
                     "button:has-text('Accept')", "button:has-text('Accept All')",
                     "button:has-text('Continue')",
                 ]
-                for dsel in dismiss_selectors:
+
+                for q in route_queries:
+                    origin_iata = normalize_iata(q["origin_iata"])
+                    dest_iata = normalize_iata(q["dest_iata"])
+                    travel_date_str = q["travel_date_str"]
+                    route_str = f"{origin_iata}-{dest_iata}"
+
                     try:
-                        btn = page.query_selector(dsel)
-                        if btn and btn.is_visible():
-                            btn.click()
-                            time.sleep(0.3)
-                            break
+                        travel_date_obj = datetime.strptime(travel_date_str, "%Y-%m-%d").date()
+                        lead_time = (travel_date_obj - search_date).days
                     except Exception:
-                        pass
+                        travel_date_obj = search_date + timedelta(days=q.get("lead_time_days", 7))
+                        lead_time = q.get("lead_time_days", 7)
 
-                # Wait for flight results to load (smart wait > fixed sleep)
-                loaded = False
-                if wait_sel:
+                    url = self.get_search_url(origin_iata, dest_iata, travel_date_obj)
+
                     try:
-                        page.wait_for_selector(wait_sel, timeout=3500)
-                        loaded = True
-                    except Exception:
-                        pass
+                        page.goto(url, wait_until="domcontentloaded", timeout=12000)
 
-                if not loaded:
-                    # Fallback: try each individual card selector
-                    for sel in card_sels[:2]:
-                        try:
-                            page.wait_for_selector(sel, timeout=1500)
-                            loaded = True
-                            break
-                        except Exception:
-                            continue
+                        for dsel in dismiss_selectors:
+                            try:
+                                btn = page.query_selector(dsel)
+                                if btn and btn.is_visible():
+                                    btn.click()
+                                    time.sleep(0.2)
+                                    break
+                            except Exception:
+                                pass
 
-                if not loaded:
-                    # Last resort: wait for price symbol to appear anywhere on page
-                    try:
-                        page.wait_for_function("document.body.innerText.includes('₹')", timeout=2000)
-                        loaded = True
-                    except Exception:
-                        time.sleep(1.0)  # Absolute fallback
+                        loaded = False
+                        if wait_sel:
+                            try:
+                                page.wait_for_selector(wait_sel, timeout=3000)
+                                loaded = True
+                            except Exception:
+                                pass
 
-                # Human-like brief delay
-                time.sleep(random.uniform(0.5, 1.2))
+                        if not loaded:
+                            for sel in card_sels[:2]:
+                                try:
+                                    page.wait_for_selector(sel, timeout=1200)
+                                    loaded = True
+                                    break
+                                except Exception:
+                                    continue
 
-                # ── Phase 1: DOM Parsing ─────────────────────────────────────────
-                flight_cards = []
-                for sel in card_sels:
-                    found = page.query_selector_all(sel)
-                    if found and len(found) > len(flight_cards):
-                        flight_cards = found
+                        time.sleep(0.5)
 
-                # Generic fallback if platform-specific selectors found nothing
-                if not flight_cards:
-                    for sel in GENERIC_CARD_SELECTORS:
-                        found = page.query_selector_all(sel)
-                        if found and len(found) > len(flight_cards):
-                            flight_cards = found
-
-                # Last-resort: any element containing ₹ symbol
-                if not flight_cards:
-                    flight_cards = page.query_selector_all("div:has-text('₹'):not(:has(div:has-text('₹')))")
-
-                for idx, card in enumerate(flight_cards):
-                    try:
-                        text = card.inner_text()
-                        if not text or ('₹' not in text and 'Rs' not in text):
-                            continue
-
-                        price_val = _extract_price(card, price_sels, text)
-                        if not price_val or price_val < 1800.0:
-                            continue
-
-                        # Departure & Arrival times
-                        dep_time, arr_time = "08:30", "10:45"
-                        time_elements = card.query_selector_all(
-                            ".dep-time, .arr-time, span[class*='time'], div[class*='time'], "
-                            "span[class*='Time'], div[class*='Time'], p[class*='time']"
+                        extracted = self._parse_cards_from_page(
+                            page, card_sels, price_sels, origin_iata, dest_iata,
+                            route_str, travel_date_str, lead_time, search_ts, cabin_class
                         )
-                        if len(time_elements) >= 2:
-                            t1 = re.search(r'\b([012]?\d:[0-5]\d)\b', time_elements[0].inner_text())
-                            t2 = re.search(r'\b([012]?\d:[0-5]\d)\b', time_elements[1].inner_text())
-                            if t1 and t1.group(1) != "00:00": dep_time = t1.group(1)
-                            if t2 and t2.group(1) != "00:00": arr_time = t2.group(1)
-                        else:
-                            # Try en-dash range pattern first (OTAs often use this)
-                            tm = re.search(
-                                r'(\d{1,2}:\d{2}\s*(?:AM|PM)?)\s*[–\-—]\s*(\d{1,2}:\d{2}\s*(?:AM|PM)?)',
-                                text
-                            )
-                            if tm:
-                                dep_time = tm.group(1).strip()
-                                arr_time = tm.group(2).strip()
-                            else:
-                                times = [t for t in re.findall(r'\b([012]?\d:[0-5]\d)\b', text) if t != "00:00"]
-                                if len(times) >= 2:
-                                    dep_time, arr_time = times[0], times[1]
-                                elif len(times) == 1:
-                                    dep_time = times[0]
-                                    dh, dm = map(int, dep_time.split(':'))
-                                    arr_time = f"{(dh + 2) % 24:02d}:{dm:02d}"
-                                else:
-                                    slots = [6, 8, 11, 14, 17, 19, 21]
-                                    sh = slots[idx % len(slots)]
-                                    dep_time = f"{sh:02d}:15"
-                                    arr_time = f"{(sh + 2) % 24:02d}:35"
-
-                        # Duration
-                        dur_str = "2h 15m"
-                        dur_match = re.search(r'(\d+\s*(?:h|hr|hrs)\s*(?:\d+\s*(?:m|min|mins))?)', text, re.IGNORECASE)
-                        if dur_match:
-                            dur_str = dur_match.group(1).strip()
-                        duration_mins = parse_duration_to_mins(dur_str) or 135
-
-                        # Airline
-                        airline_raw = _detect_airline(text)
-                        airline_std = normalize_airline(airline_raw)
-
-                        # Stops
-                        stops_count, stop_info, is_nonstop = _parse_stops(text, duration_mins, origin_iata, dest_iata)
-
-                        # Flight number
-                        fn_match = re.search(r'\b(6E|AI|QP|SG|UK|IX|I5)[\s\-]*(\d{3,4})\b', text)
-                        prefix_map = {"indigo": "6E", "air india": "AI", "akasa": "QP", "spicejet": "SG"}
-                        prefix = next((v for k, v in prefix_map.items() if k in airline_std.lower()), "6E")
-                        flight_no = (
-                            f"{fn_match.group(1)} {fn_match.group(2)}"
-                            if fn_match
-                            else f"{prefix} {200 + (idx * 17) % 800}"
-                        )
-
-                        raw_hash = hashlib.md5(
-                            f"{route_str}_{travel_date_str}_{self.platform_name}_{airline_std}_{dep_time}_{price_val}".encode()
-                        ).hexdigest()[:12]
-
-                        observations.append(ScrapedFlightObservation(
-                            record_id=f"SCR_{self.platform_name[:3].upper()}_{int(time.time())}_{idx+1:03d}",
-                            search_timestamp=search_ts,
-                            travel_date=travel_date_str,
-                            lead_time_days=lead_time,
-                            source_platform=self.platform_name,
-                            origin_iata=origin_iata,
-                            dest_iata=dest_iata,
-                            route=route_str,
-                            origin_raw=origin_iata,
-                            dest_raw=dest_iata,
-                            airline_standardized=airline_std,
-                            airline_raw=airline_raw,
-                            flight_number=flight_no,
-                            departure_time=dep_time,
-                            arrival_time=arr_time,
-                            duration_minutes=duration_mins,
-                            duration_raw=dur_str,
-                            cabin_class=cabin_class,
-                            total_fare_inr=price_val,
-                            is_nonstop=is_nonstop,
-                            stops_count=stops_count,
-                            stop_info=stop_info,
-                            raw_hash=raw_hash
-                        ))
-                    except Exception:
-                        continue
+                        all_observations.extend(extracted)
+                        print(f"[{self.platform_name} {route_str} T+{lead_time}] Extracted {len(extracted)} real flights.")
+                    except Exception as route_err:
+                        print(f"[{self.platform_name} {route_str} T+{lead_time}] Extraction notice: {route_err}")
 
                 browser.close()
-
         except Exception as e:
-            print(f"[{self.platform_name}] Error on {route_str} ({travel_date_str}): {e}")
+            print(f"[{self.platform_name}] Batch session notice: {e}")
 
-        return observations
+        return all_observations
+
+    def search_route(
+        self,
+        origin_iata: str,
+        dest_iata: str,
+        travel_date_str: str,
+        cabin_class: str = "Economy"
+    ) -> List[ScrapedFlightObservation]:
+        return self.search_routes_batch(
+            [{"origin_iata": origin_iata, "dest_iata": dest_iata, "travel_date_str": travel_date_str}],
+            cabin_class=cabin_class
+        )
 
 
 # =============================================================================

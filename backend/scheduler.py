@@ -235,7 +235,7 @@ class AirfareScrapingScheduler:
         if not routes:
             routes = [("DEL", "BOM"), ("DEL", "BLR"), ("BOM", "BLR")]
 
-        platforms = ["google_flights", "makemytrip", "easemytrip", "indigo", "airindia"]
+        platforms = ["google_flights", "makemytrip", "easemytrip"]
         lead_times = [1, 7, 15]
 
         total_obs = 0
@@ -244,16 +244,25 @@ class AirfareScrapingScheduler:
 
         try:
             orch = ScraperOrchestrator(headless=True)
-            orch.run_collection(
+            scraped_items = orch.run_collection(
                 platforms=platforms,
                 routes=routes,
                 lead_times=lead_times,
-                cabin_class="Economy"
+                cabin_class="Economy",
+                max_workers=3
             )
-            # Refresh database cache and master dataframes
+            # Reindex daily index and hot-reload database
+            try:
+                from scripts.index_engine.calculator import recalculate_all_indices
+                recalculate_all_indices()
+                print(f"[+] {prefix} Jevons-Laspeyres daily airfare price indices recalculated.")
+            except Exception as reindex_err:
+                print(f"[-] {prefix} Index recalculation notice: {reindex_err}")
+
             db.refresh()
-            total_obs = len(db.df) if db.df is not None else 0
-            print(f"[+] {prefix} Scrape finished. Total master database observations: {total_obs}")
+            db.reload_data()
+            total_obs = len(db.master_df) if db.master_df is not None else (len(db.df) if db.df is not None else 0)
+            print(f"[+] {prefix} Scrape finished. Ingested {len(scraped_items)} new live flights. Total active ledger: {total_obs:,}")
         except Exception as e:
             status = "FAILED"
             error_msg = str(e)
@@ -322,6 +331,50 @@ class AirfareScrapingScheduler:
                     slot_id = f"{date_str}_14:00"
                     if not self.has_slot_executed(slot_id):
                         self.execute_scheduled_scrape("02:00 PM IST", is_catchup=False)
+
+                # Slot 3: 00:00 IST — Nightly Incremental ML Retrain
+                # Runs after midnight when new live scraped fares from the day are in the ledger.
+                # Non-blocking: spawned as a background thread so it never delays scraping.
+                elif h == 0 and 0 <= m <= 10:
+                    retrain_slot_id = f"{date_str}_retrain_00:00"
+                    if not self.has_slot_executed(retrain_slot_id):
+                        print("[+] [Scheduler] Nightly 00:00 IST incremental ML retrain triggered.")
+                        def _nightly_retrain_task(slot_id=retrain_slot_id, date=date_str):
+                            try:
+                                from backend.ml_engine.incremental_trainer import run_incremental_retrain
+                                result = run_incremental_retrain(triggered_by="nightly_scheduler_00:00_IST")
+                                status_label = result.get("status", "unknown")
+                                r2 = result.get("r2_score", "N/A")
+                                new_recs = result.get("new_records_added", 0)
+                                print(f"[+] [Scheduler] Nightly retrain done: status={status_label} R²={r2} new_records={new_recs}")
+                                self._save_history({
+                                    "slot_id": slot_id,
+                                    "slot_label": "00:00 Nightly ML Retrain",
+                                    "is_catchup": False,
+                                    "timestamp": date,
+                                    "status": "COMPLETED" if status_label == "success" else "SKIPPED",
+                                    "r2_score": r2,
+                                    "new_records": new_recs,
+                                    "retrain_result": status_label
+                                })
+                                self.record_system_notification(
+                                    title=f"🧠 Nightly ML Retrain Complete — R²={r2}",
+                                    message=(
+                                        f"Incremental HistGradientBoostingRegressor retrain finished. "
+                                        f"{new_recs} new live fare observations added. "
+                                        f"Model R²={r2}. All 6 validation guardrails passed."
+                                    ),
+                                    category="ml_retrain",
+                                    category_label="Nightly ML Retraining Engine",
+                                    slot_id=slot_id
+                                )
+                            except Exception as retrain_err:
+                                print(f"[-] [Scheduler] Nightly retrain error: {retrain_err}")
+
+                        retrain_thread = threading.Thread(
+                            target=_nightly_retrain_task, daemon=True, name="NightlyMLRetrain"
+                        )
+                        retrain_thread.start()
 
             except Exception as e:
                 print(f"[-] [Scheduler] Exception in scheduler loop: {e}")

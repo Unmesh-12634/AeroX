@@ -1934,6 +1934,25 @@
         margin-top: 8px !important;
       }
     }
+
+    /* ── Forecast Chart Skeleton Animations ─────────────────────────────── */
+    @keyframes skeletonPulse {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    @keyframes skeletonSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    /* Festive triangle marker glow effect */
+    #mlForecastChart ~ * .festive-marker,
+    canvas#mlForecastChart {
+      filter: none;
+    }
+    /* Skeleton fade transition */
+    #mlChartSkeleton {
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
   </style>
 </head>
 
@@ -6501,19 +6520,24 @@
                 <!-- Apple Legend Pill Row -->
                 <div class="apple-legend-pill-row">
                   <div class="apple-legend-item">
-                    <span class="apple-legend-dot" style="background:#0284c7;"></span>
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#0284c7; border:2px solid #fff; box-shadow:0 0 0 1px #0284c7;"></span>
                     <span><strong>Composite Expected Fare</strong> (ML Rate ₹)</span>
                   </div>
                   <div class="apple-legend-item">
-                    <span style="display:inline-block; width:14px; height:2px; background:#94a3b8; border-top:2px dashed #94a3b8;"></span>
+                    <span style="display:inline-block; width:18px; height:2px; background:transparent; border-top:2px dashed #94a3b8; vertical-align:middle;"></span>
                     <span><strong>Baseline Lead Curve</strong> (Neutral Season)</span>
                   </div>
                   <div class="apple-legend-item">
-                    <span style="display:inline-block; width:8px; height:8px; background:#d97706; transform:rotate(45deg);"></span>
-                    <span><strong>Festive Surge Impact</strong></span>
+                    <span style="display:inline-block; width:0; height:0;
+                      border-left:7px solid transparent;
+                      border-right:7px solid transparent;
+                      border-bottom:13px solid #f59e0b;
+                      filter: drop-shadow(0 1px 3px rgba(245,158,11,0.5));
+                      vertical-align:middle; margin-right:2px;"></span>
+                    <span><strong>Festive Surge Day</strong> — amber band + triangle marker</span>
                   </div>
                   <div class="apple-legend-item">
-                    <span style="display:inline-block; width:10px; height:10px; background:rgba(2,132,199,0.12); border:1px solid rgba(2,132,199,0.35); border-radius:2px;"></span>
+                    <span style="display:inline-block; width:12px; height:12px; background:rgba(2,132,199,0.10); border:1.5px solid rgba(2,132,199,0.30); border-radius:3px;"></span>
                     <span><strong>95% Confidence Band</strong></span>
                   </div>
                 </div>
@@ -7317,9 +7341,9 @@
               </div>
 
               <!-- Subtle Live Status Indicator (Replaces bulky redundant banner) -->
-              <div class="explorer-meta-inline" id="datasetMetaStatusPill" style="display:flex; align-items:center; gap:6px; font-size:11px; color:#94a3b8; padding:0 6px; white-space:nowrap; margin-left:auto;">
+              <div class="explorer-meta-inline" id="datasetMetaStatusPill" style="display:flex; align-items:center; gap:6px; font-size:11px; color:#64748B; padding:0 6px; white-space:nowrap; margin-left:auto;">
                 <span class="pulse-dot" style="width:6px; height:6px; background:#10b981; border-radius:50%; display:inline-block;"></span>
-                <span id="datasetActiveMetaText" style="font-size:11px; color:#94a3b8; font-weight:500;">Cleaned DGCA Ledger</span>
+                <span id="datasetActiveMetaText" style="font-size:11px; color:#64748B; font-weight:600;">Cleaned DGCA Ledger</span>
               </div>
             </div>
           </div>

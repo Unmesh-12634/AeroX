@@ -26,6 +26,7 @@ from backend.routers import (
     auth_router
 )
 from backend.routers.predictions import router as predictions_router
+from backend.routers.training import router as training_router
 
 
 app = FastAPI(
@@ -66,6 +67,7 @@ app.include_router(replay_router, prefix=settings.API_V1_PREFIX)
 app.include_router(backtest_router, prefix=settings.API_V1_PREFIX)
 app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
 app.include_router(predictions_router, prefix=settings.API_V1_PREFIX)
+app.include_router(training_router, prefix=settings.API_V1_PREFIX)
 
 # Static Frontend Mounts
 if settings.FRONTEND_DIR.exists():

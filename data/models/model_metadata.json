@@ -1,58 +1,58 @@
 {
   "model_name": "HistGradientBoostingRegressor (LightGBM Architecture)",
   "framework": "scikit-learn 1.9.0",
-  "training_samples": 17746,
-  "testing_samples": 4437,
-  "total_observations": 22183,
-  "r2_score": 0.575,
-  "r2_train": 0.674,
-  "rmse_inr": 3554.54,
-  "mae_inr": 1801.86,
-  "mean_fare_inr": 8528.64,
+  "training_samples": 7640,
+  "testing_samples": 1910,
+  "total_observations": 9550,
+  "r2_score": 0.731,
+  "r2_train": 0.808,
+  "rmse_inr": 1647.39,
+  "mae_inr": 1039.33,
+  "mean_fare_inr": 7593.96,
   "feature_importances": [
     {
       "feature": "route",
-      "importance": 0.5359,
+      "importance": 1.0097,
       "label": "Route"
     },
     {
       "feature": "carrier",
-      "importance": 0.3055,
+      "importance": 0.2859,
       "label": "Carrier"
     },
     {
-      "feature": "departure_hour",
-      "importance": 0.2025,
-      "label": "Departure Hour"
-    },
-    {
       "feature": "travel_month",
-      "importance": 0.1523,
+      "importance": 0.2214,
       "label": "Travel Month"
     },
     {
-      "feature": "lead_time_days",
-      "importance": 0.1346,
-      "label": "Lead Time Days"
-    },
-    {
       "feature": "day_of_week",
-      "importance": 0.1068,
+      "importance": 0.0901,
       "label": "Day Of Week"
     },
     {
+      "feature": "lead_time_days",
+      "importance": 0.0669,
+      "label": "Lead Time Days"
+    },
+    {
+      "feature": "departure_hour",
+      "importance": 0.0553,
+      "label": "Departure Hour"
+    },
+    {
       "feature": "weather_risk_score",
-      "importance": 0.0317,
+      "importance": 0.0305,
       "label": "Weather Risk Score"
     },
     {
       "feature": "festive_surge_factor",
-      "importance": 0.0061,
+      "importance": 0.0244,
       "label": "Festive Surge Factor"
     },
     {
       "feature": "distance_km",
-      "importance": 0.006,
+      "importance": 0.0059,
       "label": "Distance Km"
     },
     {
@@ -61,7 +61,18 @@
       "label": "Is Weekend"
     }
   ],
-  "training_duration_seconds": 11.34,
-  "trained_at": "2026-09-13T23:24:45.525412",
+  "training_duration_seconds": 37.58,
+  "trained_at": "2026-09-14T14:17:34.842745",
+  "incremental_run": true,
+  "triggered_by": "manual_test",
+  "new_records_added": 9550,
+  "guardrail_rejection_summary": {
+    "total_in": 25148,
+    "g1_fare_range": 0,
+    "g2_iqr_outlier": 1461,
+    "g3_promo_fare": 2243,
+    "g4_duplicate": 11894,
+    "total_out": 9550
+  },
   "status": "active"
 }

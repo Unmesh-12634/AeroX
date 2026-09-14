@@ -68,14 +68,15 @@ def train_and_save_model() -> Dict[str, Any]:
     # Categorical features specified by indices: [0, 1]
     model = HistGradientBoostingRegressor(
         categorical_features=[0, 1],
-        max_iter=250,
-        learning_rate=0.08,
-        max_leaf_nodes=31,
-        min_samples_leaf=20,
-        l2_regularization=1.5,
+        max_iter=600,
+        learning_rate=0.05,
+        max_leaf_nodes=63,
+        min_samples_leaf=10,
+        max_depth=8,
+        l2_regularization=0.5,
         early_stopping=True,
-        validation_fraction=0.15,
-        n_iter_no_change=15,
+        validation_fraction=0.12,
+        n_iter_no_change=25,
         random_state=42
     )
 

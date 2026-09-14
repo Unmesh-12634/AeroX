@@ -279,35 +279,20 @@ def export_observations(
         headers={"Content-Disposition": "attachment; filename=areox_flight_observations.csv"}
     )
 
-def _generate_ota_deep_link(platform: str, origin: str, dest: str, travel_date: str, airline: str, flight_number: str) -> str:
-    import urllib.parse
-    parts = travel_date.split('-') if travel_date else []
-    if len(parts) == 3:
-        yyyy, mm, dd = parts[0], parts[1], parts[2]
-        dd_mm_yyyy = f"{dd}/{mm}/{yyyy}"
-        ddmmyyyy = f"{dd}{mm}{yyyy}"
-    else:
-        dd_mm_yyyy = travel_date or "16/09/2026"
-        ddmmyyyy = travel_date.replace('-', '').replace('/', '') if travel_date else "16092026"
-
-    p = platform.lower()
-    if 'make' in p or 'mmt' in p:
-        return f"https://www.makemytrip.com/flight/search?itinerary={origin}-{dest}-{dd_mm_yyyy}&tripType=O&paxType=A-1_C-0_I-0&intl=false&cabinClass=E"
-    elif 'ease' in p or 'emt' in p:
-        return f"https://flight.easemytrip.com/FlightList/Index?org={origin}&dest={dest}&adt=1&chd=0&inf=0&cls=0&dref={dd_mm_yyyy}"
-    elif 'ixigo' in p:
-        return f"https://www.ixigo.com/search/result/flight/{origin}/{dest}/{ddmmyyyy}//1/0/0/e/0"
-    elif 'yatra' in p:
-        return f"https://flight.yatra.com/air-search/dom2/trigger?type=O&viewName=normal&flexi=0&noOfSegments=1&origin={origin}&originCode={origin}&destination={dest}&destinationCode={dest}&flight_depart_date={dd_mm_yyyy}&ADT=1&CHD=0&INF=0&class=Economy"
-    elif 'google' in p or 'gf' in p:
-        query = f"Flights from {origin} to {dest} on {travel_date} oneway {airline}".strip()
-        return f"https://www.google.com/travel/flights?q={urllib.parse.quote(query)}&curr=INR&hl=en"
-    elif 'indigo' in airline.lower():
-        return f"https://www.goindigo.in/flight-booking.html?origin={origin}&destination={dest}&travelDate={travel_date}&isOneWay=true"
-    elif 'air india' in airline.lower():
-        return f"https://www.airindia.com/in/en/book/flight-search.html?from={origin}&to={dest}&date={travel_date}&adults=1"
-    else:
-        return f"https://www.google.com/travel/flights?q=Flights+{origin}+to+{dest}+{travel_date}&curr=INR"
+def _generate_ota_deep_link(platform: str, origin: str, dest: str, travel_date: str, airline: str, flight_number: str, fare: float = 0.0) -> str:
+    from backend.routers.scraper import build_flight_deep_links
+    links = build_flight_deep_links(
+        origin=origin,
+        dest=dest,
+        travel_date=travel_date,
+        platform=platform,
+        airline=airline,
+        flight_number=flight_number,
+        total_fare=fare
+    )
+    if platform == 'airline_direct':
+        return links['airline_url']
+    return links['booking_url']
 
 @router.get("/observations/compare-rates")
 def get_flight_rate_comparison(
@@ -375,7 +360,7 @@ def get_flight_rate_comparison(
         taxes = float(best['taxes_fees_inr']) if pd.notnull(best.get('taxes_fees_inr')) else round(fare - base)
         delta = round(fare - min_fare)
         is_lowest = (fare <= min_fare + 0.5)
-        deep_link = _generate_ota_deep_link(plat, origin, dest, travel_date, airline, flight_number)
+        deep_link = _generate_ota_deep_link(plat, origin, dest, travel_date, airline, flight_number, fare=fare)
 
         platforms_list.append({
             'platform': plat,
@@ -398,8 +383,8 @@ def get_flight_rate_comparison(
     # Always ensure Official Airline Direct booking link is included for regulatory completeness
     has_direct = any('direct' in p['platform'] or airline.lower() in p['platform_name'].lower() for p in platforms_list)
     if not has_direct:
-        direct_link = _generate_ota_deep_link('airline_direct', origin, dest, travel_date, airline, flight_number)
         direct_fare = round(min_fare * 1.03)  # Official direct rate typically within 3% of aggregator
+        direct_link = _generate_ota_deep_link('airline_direct', origin, dest, travel_date, airline, flight_number, fare=direct_fare)
         platforms_list.append({
             'platform': 'airline_direct',
             'platform_name': f"{airline} (Official Direct)",
