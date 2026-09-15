@@ -1,5 +1,5 @@
 {
-  "current_window": "2026-09-14_14:00",
+  "current_window": "2026-09-15_07:00",
   "manual_scrapes_used": 0,
   "history": [
     {
@@ -57,6 +57,18 @@
       "slot": "02:00 PM IST",
       "routes_count": 15,
       "obs_count": 11635,
+      "type": "AUTOMATED_SCHEDULED"
+    },
+    {
+      "timestamp": "2026-09-14T23:37:27.236826+05:30",
+      "source": "manual_web_trigger",
+      "window": "2026-09-14_14:00"
+    },
+    {
+      "timestamp": "2026-09-15T09:24:05.810943+05:30",
+      "slot": "07:00 AM IST",
+      "routes_count": 15,
+      "obs_count": 13575,
       "type": "AUTOMATED_SCHEDULED"
     }
   ]

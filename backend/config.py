@@ -21,9 +21,9 @@ for directory in [DATA_DIR, RAW_DIR, CLEANED_DIR, INDEX_RESULTS_DIR, LOGS_DIR, R
     directory.mkdir(parents=True, exist_ok=True)
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "SIH26056 - Real-Time Airfare Price Index for India (APIx)"
-    VERSION: str = "3.0.0"
-    DESCRIPTION: str = "Ministry of Statistics (MoSPI) & DGCA High-Frequency Airfare Price Index & Analytics Engine"
+    PROJECT_NAME: str = "AeroX — Real-Time Airfare Price Index for India (APIx)"
+    VERSION: str = "3.0.0 (SIH 2026)"
+    DESCRIPTION: str = "SIH 2026 Problem Statement SIH26056: Real-Time Airfare Price Index for India (Smart Automation) | Team AeroX"
     API_V1_PREFIX: str = "/api/v1"
     
     # Statistical Baseline

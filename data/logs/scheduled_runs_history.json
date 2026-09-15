@@ -376,5 +376,206 @@
     ],
     "observations_count": 11635,
     "error": null
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_retrain_00:00",
+    "slot_label": "00:00 Nightly ML Retrain",
+    "is_catchup": false,
+    "timestamp": "2026-09-15",
+    "status": "SKIPPED",
+    "r2_score": "N/A",
+    "new_records": 0,
+    "retrain_result": "skipped"
+  },
+  {
+    "slot_id": "2026-09-15_07:00",
+    "slot_label": "07:00 AM IST",
+    "is_catchup": true,
+    "timestamp": "2026-09-15T09:18:13.643825+05:30",
+    "status": "COMPLETED",
+    "duration_seconds": 352.15,
+    "routes_count": 15,
+    "platforms": [
+      "google_flights",
+      "makemytrip",
+      "easemytrip"
+    ],
+    "lead_times": [
+      1,
+      7,
+      15
+    ],
+    "observations_count": 13575,
+    "error": null
   }
 ]

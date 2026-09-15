@@ -13005,54 +13005,98 @@ body {
   z-index: 10;
 }
 
-/* Enhanced Single-Line Government Seal Ribbon (All Logos in ONE Line, Zero Scrolling) */
+/* Continuous Moving Marquee Official Ministry & Partner Seals Ribbon */
+@keyframes govSealsSlide {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@-webkit-keyframes govSealsSlide {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+  100% {
+    -webkit-transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .landing-gov-header {
-  position: relative;
-  padding: 8px 24px;
-  background: #FFFFFF;
-  border-bottom: 1px solid #E2E8F0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-  z-index: 10;
+  position: relative !important;
+  padding: 8px 0 !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+  z-index: 10 !important;
   overflow: hidden !important;
   overflow-x: hidden !important;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%) !important;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%) !important;
 }
 
 .landing-gov-seals-cluster {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1420px;
-  margin: 0 auto;
-  gap: clamp(6px, 1.2vw, 14px);
+  display: flex !important;
+  flex-direction: row !important;
   flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: max-content !important;
+  max-width: none !important;
   min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  animation: govSealsSlide 28s linear infinite !important;
+  -webkit-animation: govSealsSlide 28s linear infinite !important;
+  will-change: transform !important;
+}
+
+.landing-gov-seals-cluster:hover,
+.landing-gov-seals-cluster:active,
+.landing-gov-seals-cluster:focus-within {
+  animation-play-state: paused !important;
+  -webkit-animation-play-state: paused !important;
 }
 
 .seal-divider {
-  height: 24px;
-  width: 1px;
-  background: #E2E8F0;
-  flex-shrink: 0;
+  height: 22px !important;
+  width: 1px !important;
+  background: #E2E8F0 !important;
+  flex-shrink: 0 !important;
 }
 
 .gov-seal-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
-  transition: transform 0.15s ease;
-  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+  white-space: nowrap !important;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+  user-select: none !important;
+  cursor: default !important;
 }
 
 .gov-seal-card:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1px) !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08) !important;
 }
+
+.gov-seal-card[aria-hidden="true"] {
+  display: inline-flex !important;
+}
+
 
 .gov-seal-card img,
 .gov-seal-img {
@@ -13133,39 +13177,20 @@ body {
 
 @media (max-width: 1280px) {
   .landing-gov-header {
-    padding: 8px 16px;
-    overflow-x: hidden !important;
+    padding: 7px 0;
   }
 
   .landing-gov-seals-cluster {
-    min-width: 0 !important;
-    gap: 8px;
-    justify-content: space-between;
-  }
-
-  .gov-seal-text .hindi-name {
-    font-size: 10px;
-  }
-
-  .gov-seal-text .en-name {
-    font-size: 8.5px;
+    gap: 12px !important;
   }
 }
 
 @media (max-width: 1024px) {
   .landing-gov-seals-cluster {
-    gap: 6px;
-  }
-
-  /* Compact mode: retain full emblem title, streamline partner agency labels to maintain single line without scroll */
-  .gov-seal-card:not(:first-child) .gov-seal-text {
-    display: none;
-  }
-
-  .seal-divider {
-    height: 18px;
+    gap: 10px !important;
   }
 }
+
 
 /* Live National Statistical Ticker Ribbon */
 .gov-statutory-ticker {
@@ -18685,10 +18710,11 @@ body {
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
 
-/* Desktop: Hide duplicated marquee seals */
+/* Universal: Keep duplicated marquee seals visible for seamless infinite loop */
 .gov-seal-card[aria-hidden="true"] {
-  display: none !important;
+  display: inline-flex !important;
 }
+
 
 /* Cross-Browser Continuous Marquee Animation for Mobile */
 @keyframes govSealsSlide {
@@ -20773,5 +20799,385 @@ body {
     gap: 4px !important;
     font-size: 10px !important;
     margin-top: 8px !important;
+  }
+}
+
+/* ==========================================================================
+   OFFICIAL GOVERNMENT OF INDIA CEREMONIAL ENTRY BANNER MODAL
+   (Ministry of Civil Aviation / DGCA National Portal Interstitial)
+   ========================================================================== */
+
+.gov-welcome-banner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+.gov-welcome-banner-overlay.closing {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.gov-welcome-banner-overlay.closing .gov-welcome-banner-container {
+  transform: scale(0.95) translateY(12px) !important;
+  opacity: 0 !important;
+}
+
+.gov-welcome-banner-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  cursor: pointer;
+}
+
+.gov-welcome-banner-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 940px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  animation: govBannerEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes govBannerEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Top Institutional Header Ribbon */
+.gov-banner-top-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.gov-banner-gov-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.gov-banner-emblem {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.gov-banner-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.gov-banner-brand-hi {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: 0.01em;
+}
+
+.gov-banner-brand-en {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+  letter-spacing: 0.02em;
+}
+
+/* Cross Option / Close Button (✕) */
+.gov-banner-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.gov-banner-close-btn:hover {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.gov-banner-close-btn .close-icon {
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* National Tricolor Line */
+.gov-banner-tricolor-line {
+  display: flex;
+  height: 4px;
+  width: 100%;
+}
+
+.gov-banner-tricolor-line .tri-saffron {
+  flex: 1;
+  background: #FF9933;
+}
+
+.gov-banner-tricolor-line .tri-white {
+  flex: 1;
+  background: #FFFFFF;
+}
+
+.gov-banner-tricolor-line .tri-green {
+  flex: 1;
+  background: #138808;
+}
+
+/* Media Frame for Banner Graphic */
+.gov-banner-media-frame {
+  position: relative;
+  width: 100%;
+  background: #0F172A;
+  line-height: 0;
+}
+
+.gov-banner-img {
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dedicated Clean Info Strip in Natural Document Flow (Zero Overlap Guaranteed) */
+.gov-banner-info-strip {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 2;
+}
+
+.gov-banner-scheme-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(251, 146, 60, 0.18);
+  border: 1px solid rgba(251, 146, 60, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  line-height: 1.4;
+}
+
+.gov-banner-scheme-badge .badge-emblem-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #FF9933;
+  box-shadow: 0 0 6px #FF9933;
+  flex-shrink: 0;
+}
+
+.gov-banner-scheme-badge .badge-hi {
+  color: #FED7AA;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.gov-banner-scheme-badge .badge-divider {
+  color: rgba(254, 215, 170, 0.4);
+  font-size: 10px;
+}
+
+.gov-banner-scheme-badge .badge-en {
+  color: #F1F5F9;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+.gov-banner-title-text {
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gov-banner-title-text .gov-apix-pill {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%);
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+}
+
+/* Bottom Action Strip */
+.gov-banner-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.gov-banner-motto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748B;
+  flex: 1;
+  min-width: 260px;
+}
+
+.gov-banner-motto .motto-hi {
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: 0.02em;
+}
+
+.gov-banner-motto .motto-sep {
+  color: #CBD5E1;
+}
+
+.gov-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-gov-enter-portal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  color: #FFFFFF;
+  font-size: 12.5px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-gov-enter-portal:hover {
+  background: linear-gradient(135deg, #0369A1 0%, #075985 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+}
+
+/* Re-open Button in Landing Page Header or Hero */
+.btn-reopen-gov-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  border-radius: 20px;
+  color: #C2410C;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.btn-reopen-gov-banner:hover {
+  background: #FFEDD5;
+  border-color: #FDBA74;
+  color: #9A3412;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .gov-welcome-banner-overlay {
+    padding: 10px;
+  }
+  .gov-welcome-banner-container {
+    border-radius: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .gov-banner-brand-en {
+    display: none;
+  }
+  .gov-banner-title-text {
+    font-size: 13.5px;
+  }
+  .gov-banner-motto {
+    font-size: 11px;
+  }
+  .gov-banner-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .btn-gov-enter-portal {
+    width: 100%;
+    justify-content: center;
   }
 }

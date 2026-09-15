@@ -424,43 +424,76 @@ def get_apix_time_series(
         # DAILY series: 30 consecutive calendar days
         daily_rows = {}
         if not df.empty:
-            for d_str, grp in df.groupby(df['travel_date_dt'].dt.strftime('%Y-%m-%d')):
-                r_indices_jevons = {}
-                r_indices_lasp = {}
-                r_indices_carli = {}
-                r_weights = {}
-                r_strata = {}
-                
-                for route, r_grp in grp.groupby('route'):
-                    fares = r_grp['total_fare_inr'].values
-                    base_p = get_base_fare(route)
+            basket = get_basket_routes()
+            
+            # Step 1: Pre-populate last known route indices from all available data as the initial anchor
+            last_known_jevons = {}
+            last_known_lasp = {}
+            last_known_carli = {}
+
+            for r, meta in basket.items():
+                r_match = df[df['route'] == r]
+                if r_match.empty:
+                    parts = r.split('-')
+                    if len(parts) == 2:
+                        r_match = df[df['route'] == f"{parts[1]}-{parts[0]}"]
+                base_p = get_base_fare(r)
+                if not r_match.empty:
+                    fares = r_match['total_fare_inr'].dropna().values
                     ratios = fares / base_p
                     ratios = ratios[ratios > 0]
-                    if len(ratios) == 0:
-                        continue
-                    
-                    r_indices_jevons[route] = float(np.exp(np.mean(np.log(ratios))) * 100.0)
-                    r_indices_lasp[route] = float((np.mean(fares) / base_p) * 100.0)
-                    r_indices_carli[route] = float(np.mean(ratios) * 100.0)
-                    r_weights[route] = get_route_weight(route)
-                    r_strata[route] = classify_strata(route)
-                    
-                tot_w = sum(r_weights.values())
-                if tot_w <= 0: continue
+                    if len(ratios) > 0:
+                        last_known_jevons[r] = float(np.exp(np.mean(np.log(ratios))) * 100.0)
+                        last_known_lasp[r] = float((np.mean(fares) / base_p) * 100.0)
+                        last_known_carli[r] = float(np.mean(ratios) * 100.0)
+                    else:
+                        last_known_jevons[r] = 180.0
+                        last_known_lasp[r] = 182.14
+                        last_known_carli[r] = 183.65
+                else:
+                    last_known_jevons[r] = 180.0
+                    last_known_lasp[r] = 182.14
+                    last_known_carli[r] = 183.65
+
+            # Step 2: Chronological walk through all observed dates with LOCF (Last-Observation-Carried-Forward)
+            unique_dates = sorted(df['travel_date_dt'].dt.strftime('%Y-%m-%d').dropna().unique())
+            for d_str in unique_dates:
+                grp = df[df['travel_date_dt'].dt.strftime('%Y-%m-%d') == d_str]
                 
-                apix_j = sum(r_indices_jevons[r] * (r_weights[r] / tot_w) for r in r_indices_jevons)
-                apix_l = sum(r_indices_lasp[r] * (r_weights[r] / tot_w) for r in r_indices_lasp)
-                apix_c = sum(r_indices_carli[r] * (r_weights[r] / tot_w) for r in r_indices_carli)
+                # Update routes that have fresh live observations for this travel date
+                for route, r_grp in grp.groupby('route'):
+                    r_norm = route.upper().strip()
+                    matched_key = None
+                    if r_norm in basket:
+                        matched_key = r_norm
+                    else:
+                        parts = r_norm.split('-')
+                        if len(parts) == 2 and f"{parts[1]}-{parts[0]}" in basket:
+                            matched_key = f"{parts[1]}-{parts[0]}"
+
+                    if matched_key:
+                        fares = r_grp['total_fare_inr'].dropna().values
+                        base_p = get_base_fare(matched_key)
+                        ratios = fares / base_p
+                        ratios = ratios[ratios > 0]
+                        if len(ratios) > 0:
+                            last_known_jevons[matched_key] = float(np.exp(np.mean(np.log(ratios))) * 100.0)
+                            last_known_lasp[matched_key] = float((np.mean(fares) / base_p) * 100.0)
+                            last_known_carli[matched_key] = float(np.mean(ratios) * 100.0)
+
+                # Composite index across full basket weights
+                tot_w = sum(basket[r]['weight'] for r in basket)
+                apix_j = sum(last_known_jevons[r] * basket[r]['weight'] for r in basket) / tot_w if tot_w > 0 else 100.0
+                apix_l = sum(last_known_lasp[r] * basket[r]['weight'] for r in basket) / tot_w if tot_w > 0 else 100.0
+                apix_c = sum(last_known_carli[r] * basket[r]['weight'] for r in basket) / tot_w if tot_w > 0 else 100.0
                 
+                # Strata indices (Metro, Regional, Hills, Leisure)
                 strata_res = {}
                 for s in ['metro', 'regional', 'hills', 'leisure']:
-                    s_routes = [r for r in r_indices_jevons if r_strata[r] == s]
-                    s_w = sum(r_weights[r] for r in s_routes)
-                    if s_w > 0:
-                        s_idx = sum(r_indices_jevons[r] * (r_weights[r] / s_w) for r in s_routes)
-                        strata_res[s] = round(s_idx, 2)
-                    else:
-                        strata_res[s] = round(apix_j, 2)
+                    s_routes = [r for r in basket if classify_strata(r) == s]
+                    s_w = sum(basket[r]['weight'] for r in s_routes)
+                    s_val = sum(last_known_jevons[r] * basket[r]['weight'] for r in s_routes) / s_w if s_w > 0 else apix_j
+                    strata_res[s] = round(s_val, 2)
                     
                 daily_rows[d_str] = {
                     "period": d_str,

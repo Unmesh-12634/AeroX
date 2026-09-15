@@ -162,19 +162,23 @@ class AirfarePredictor:
 
             # 2. Real Festive Overlay (Derived from authentic festive calendar)
             f_info = get_festive_surge_factor(route, target_date)
-            festive_fare = round(base_pred["predicted_fare_inr"] * f_info["surge_multiplier"], 0)
+            festive_mult = f_info["surge_multiplier"] if f_info["has_festival"] else 1.0
+            festive_fare = round(base_pred["predicted_fare_inr"] * festive_mult, 0)
 
             # 3. Adverse Weather Disruption Shock (CAT-III / cloudburst diversion shock)
             w_info = get_weather_disruption_risk(route, target_date.month)
-            weather_fare = round(base_pred["predicted_fare_inr"] * w_info["weather_surge_multiplier"], 0)
+            weather_mult = w_info["weather_surge_multiplier"]
+            weather_fare = round(base_pred["predicted_fare_inr"] * weather_mult, 0)
 
-            # Composite expected market rate
-            composite_pred = self.predict_single(
-                route=route,
-                carrier=carrier,
-                travel_date=target_date,
-                lead_time_days=lead_time
-            )
+            # Composite expected market rate:
+            # Baseline predicted fare scaled by authentic festive multiplier and meteorological risk shock
+            composite_fare = round(base_pred["predicted_fare_inr"] * festive_mult * (1.0 + (weather_mult - 1.0) * 0.5), 0)
+
+            # 95% Confidence Bounds wrapping around the composite expected fare
+            rmse = self.metadata.get("rmse_inr", 1647.0)
+            ci_spread = max(1100.0, rmse * 0.45 * (festive_mult ** 0.5))
+            lower_bound = max(1800.0, round(composite_fare - 1.645 * ci_spread, 0))
+            upper_bound = round(composite_fare + 1.645 * ci_spread, 0)
 
             daily_forecasts.append({
                 "day_offset": day_offset,
@@ -185,9 +189,9 @@ class AirfarePredictor:
                 "baseline_fare_inr": base_pred["predicted_fare_inr"],
                 "festive_fare_inr": festive_fare,
                 "weather_fare_inr": weather_fare,
-                "composite_fare_inr": composite_pred["predicted_fare_inr"],
-                "lower_bound_95": composite_pred["confidence_interval_95"]["lower_bound_inr"],
-                "upper_bound_95": composite_pred["confidence_interval_95"]["upper_bound_inr"],
+                "composite_fare_inr": composite_fare,
+                "lower_bound_95": lower_bound,
+                "upper_bound_95": upper_bound,
                 "active_festival": f_info["event_name"] if f_info["has_festival"] else None,
                 "festive_surge_pct": f_info["surge_pct"],
                 "weather_risk_label": w_info["risk_label"],

@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon.png">
+  <link rel="icon" type="image/jpeg" href="/logos/Aero-X.jpeg">
 
   <!-- Apple System Font &amp; Inter Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,7 +61,108 @@
     });
   </script>
 
-  <link rel="stylesheet" href="/static/style.css?v=10.7">
+  <link rel="stylesheet" href="/static/style.css?v=11.0">
+  <style id="landing-seals-marquee-global">
+    @keyframes govSealsSlide {
+      0% {
+        transform: translate3d(0, 0, 0);
+      }
+      100% {
+        transform: translate3d(-50%, 0, 0);
+      }
+    }
+    @-webkit-keyframes govSealsSlide {
+      0% {
+        -webkit-transform: translate3d(0, 0, 0);
+      }
+      100% {
+        -webkit-transform: translate3d(-50%, 0, 0);
+      }
+    }
+    .landing-gov-header {
+      position: relative !important;
+      width: 100% !important;
+      overflow: hidden !important;
+      overflow-x: hidden !important;
+      padding: 8px 0 !important;
+      background: #FFFFFF !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      display: flex !important;
+      align-items: center !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
+      z-index: 10 !important;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%) !important;
+      mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%) !important;
+    }
+    .landing-gov-seals-cluster {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      gap: 14px !important;
+      width: max-content !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      padding: 0 10px !important;
+      animation: govSealsSlide 28s linear infinite !important;
+      -webkit-animation: govSealsSlide 28s linear infinite !important;
+      will-change: transform !important;
+    }
+    .landing-gov-seals-cluster:hover,
+    .landing-gov-seals-cluster:active,
+    .landing-gov-seals-cluster:focus-within {
+      animation-play-state: paused !important;
+      -webkit-animation-play-state: paused !important;
+    }
+    .gov-seal-card {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      background: #F8FAFC !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 8px !important;
+      padding: 6px 14px !important;
+      flex-shrink: 0 !important;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+      white-space: nowrap !important;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+      user-select: none !important;
+      cursor: default !important;
+    }
+    .gov-seal-card:hover {
+      transform: translateY(-1px) !important;
+      background: #FFFFFF !important;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08) !important;
+    }
+    .gov-seal-card[aria-hidden="true"] {
+      display: inline-flex !important;
+    }
+    .gov-seal-card .gov-seal-text {
+      display: flex !important;
+      flex-direction: column !important;
+      line-height: 1.15 !important;
+    }
+    .gov-seal-card .hindi-name {
+      font-size: 10.5px !important;
+      font-weight: 700 !important;
+      color: #0F172A !important;
+      white-space: nowrap !important;
+    }
+    .gov-seal-card .en-name {
+      font-size: 9px !important;
+      font-weight: 600 !important;
+      color: #64748B !important;
+      white-space: nowrap !important;
+    }
+    .seal-divider {
+      height: 22px !important;
+      width: 1px !important;
+      background: #E2E8F0 !important;
+      flex-shrink: 0 !important;
+    }
+  </style>
   <style id="mobile-portal-critical-override">
     @media (max-width: 768px) {
       /* ======================================================================
@@ -1957,6 +2058,77 @@
 </head>
 
 <body>
+  <!-- ====================================================================
+       Official Government of India Ceremonial Welcome Banner Modal
+       (Ministry of Civil Aviation / DGCA National Portal Interstitial)
+       ==================================================================== -->
+  <div class="gov-welcome-banner-overlay active" id="govWelcomeBannerModal" role="dialog" aria-modal="true" aria-labelledby="govBannerTitle">
+    <div class="gov-welcome-banner-backdrop" onclick="window.closeGovWelcomeBanner()"></div>
+    <div class="gov-welcome-banner-container">
+      <!-- Top Institutional Ribbon -->
+      <div class="gov-banner-top-ribbon">
+        <div class="gov-banner-gov-brand">
+          <img src="/logos/emblem_india.png" alt="State Emblem of India" class="gov-banner-emblem" height="38" width="auto">
+          <div class="gov-banner-brand-text">
+            <span class="gov-banner-brand-hi">भारत सरकार &bull; नागर विमानन मंत्रालय</span>
+            <span class="gov-banner-brand-en">Government of India &bull; Ministry of Civil Aviation (DGCA)</span>
+          </div>
+        </div>
+        <!-- Cross Option (✕) Button -->
+        <button type="button" class="gov-banner-close-btn" id="btnGovBannerClose" onclick="window.closeGovWelcomeBanner()" title="Close / Skip to Main Portal (Esc)" aria-label="Close Welcome Banner">
+          <span class="close-label">Skip to Portal</span>
+          <span class="close-icon">&times;</span>
+        </button>
+      </div>
+
+      <!-- National Tricolor Line -->
+      <div class="gov-banner-tricolor-line">
+        <span class="tri-saffron"></span>
+        <span class="tri-white"></span>
+        <span class="tri-green"></span>
+      </div>
+
+      <!-- Main Banner Image Frame (Clean Unobstructed Photo) -->
+      <div class="gov-banner-media-frame" style="position: relative; width: 100%; line-height: 0; background: #0F172A; overflow: hidden;">
+        <img src="/static/pm_banner.jpg" alt="Hon'ble Prime Minister Narendra Modi - Indian Civil Aviation Connectivity & Airfare Transparency Initiative" class="gov-banner-img" style="width: 100%; height: auto; display: block; max-height: 400px; object-fit: cover;">
+      </div>
+
+      <!-- Dedicated Clean Title & Scheme Ribbon (Zero Overlap Guaranteed in Natural Document Flow) -->
+      <div class="gov-banner-info-strip" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); padding: 14px 22px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span class="gov-banner-scheme-badge" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(251, 146, 60, 0.18); border: 1px solid rgba(251, 146, 60, 0.55); padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 700; color: #FED7AA; letter-spacing: 0.02em;">
+            <span class="badge-emblem-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #FF9933; box-shadow: 0 0 6px #FF9933; display: inline-block;"></span>
+            <span class="badge-hi" style="color: #FED7AA; font-weight: 700;">उड़े देश का आम नागरिक (UDAN)</span>
+            <span class="badge-divider" style="color: rgba(254, 215, 170, 0.4);">&bull;</span>
+            <span class="badge-en" style="color: #F1F5F9; font-weight: 600;">National Airfare Transparency Initiative</span>
+          </span>
+          <span style="display: inline-flex; align-items: center; background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.45); padding: 3px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; color: #38BDF8; letter-spacing: 0.03em;">
+            MoCA / DGCA &bull; SIH26056
+          </span>
+        </div>
+        <h2 id="govBannerTitle" class="gov-banner-title-text" style="margin: 0; color: #FFFFFF; font-size: 17.5px; font-weight: 800; letter-spacing: -0.015em; line-height: 1.35; display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <span>Civil Aviation Real-Time Surveillance &amp; Regulatory Price Index</span>
+          <span class="gov-apix-pill" style="display: inline-block; background: linear-gradient(135deg, #0284C7, #2563EB); color: #FFFFFF; font-size: 12px; font-weight: 800; padding: 2px 9px; border-radius: 6px; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.25);">APIx</span>
+        </h2>
+      </div>
+
+      <!-- Bottom Action Strip -->
+      <div class="gov-banner-action-bar">
+        <div class="gov-banner-motto">
+          <span class="motto-hi">सत्यमेव जयते</span>
+          <span class="motto-sep">&bull;</span>
+          <span class="motto-desc">Empirical Fare Indexation for Transparent &amp; Affordable Aviation in India</span>
+        </div>
+        <div class="gov-banner-actions">
+          <button type="button" class="btn-gov-enter-portal" onclick="window.closeGovWelcomeBanner()">
+            <span>Enter AREOX Portal / मुख्य पोर्टल</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-container landing-mode">
 
     <!-- ====================================================================
@@ -2126,7 +2298,7 @@
             </svg>
           </button>
           <div class="mobile-brand-wrap">
-            <img src="/logos/emblem_india.png" alt="Emblem of India" class="mobile-brand-emblem" height="22" width="auto">
+            <img src="/logos/Aero-X.jpeg" alt="AeroX" class="mobile-brand-emblem" height="22" width="auto" style="border-radius: 4px; object-fit: contain;">
             <span class="mobile-brand-text">AeroX</span>
           </div>
 
@@ -2388,13 +2560,12 @@
             <!-- Authentic National Tricolor Ribbon -->
             <div class="goi-national-tricolor"></div>
 
-            <!-- Single-Line Official Ministry Header Strip (All 7 Logos in ONE Line, Zero Scrolling) -->
+            <!-- Continuous Moving Marquee Official Logo Bar: 1. Gov Logo -> 2. SIH Logo -> 3. AeroX Logo -> Partners -->
             <div class="landing-gov-header">
               <div class="landing-gov-seals-cluster">
-                <!-- 1. State Emblem of India -->
+                <!-- 1. State Emblem of India (Govt of India) -->
                 <div class="gov-seal-card" title="Government of India">
-                  <img class="gov-seal-img seal-emblem" src="/logos/emblem_india.png"
-                    alt="State Emblem of India" height="38" width="auto">
+                  <img class="gov-seal-img seal-emblem" src="/logos/emblem_india.png" alt="State Emblem of India" height="36" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">भारत सरकार</span>
                     <span class="en-name">Govt of India</span>
@@ -2403,22 +2574,9 @@
 
                 <div class="seal-divider"></div>
 
-                <!-- 2. MoSPI -->
-                <div class="gov-seal-card" title="Ministry of Statistics &amp; Programme Implementation">
-                  <img class="gov-seal-img seal-mospi" src="/logos/mospi.png" alt="MoSPI" height="34"
-                    width="auto">
-                  <div class="gov-seal-text">
-                    <span class="hindi-name">सांख्यिकी मंत्रालय</span>
-                    <span class="en-name">MoSPI</span>
-                  </div>
-                </div>
-
-                <div class="seal-divider"></div>
-
-                <!-- 3. MoCA -->
+                <!-- 2. Ministry of Civil Aviation (MoCA) -->
                 <div class="gov-seal-card" title="Ministry of Civil Aviation">
-                  <img class="gov-seal-img seal-moca" src="/logos/moca.png" alt="MoCA" height="32"
-                    width="auto">
+                  <img class="gov-seal-img seal-moca" src="/logos/moca.png" alt="MoCA" height="30" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">नागर विमानन</span>
                     <span class="en-name">Civil Aviation</span>
@@ -2427,10 +2585,9 @@
 
                 <div class="seal-divider"></div>
 
-                <!-- 4. DGCA -->
+                <!-- 3. DGCA -->
                 <div class="gov-seal-card" title="Directorate General of Civil Aviation">
-                  <img class="gov-seal-img seal-dgca" src="/logos/dgca.png" alt="DGCA" height="30"
-                    width="auto">
+                  <img class="gov-seal-img seal-dgca" src="/logos/dgca_clean.png" alt="DGCA" height="28" width="auto" onerror="this.src='/logos/dgca.png'">
                   <div class="gov-seal-text">
                     <span class="hindi-name">डीजीसीए</span>
                     <span class="en-name">DGCA</span>
@@ -2439,9 +2596,42 @@
 
                 <div class="seal-divider"></div>
 
-                <!-- 5. UDAAN -->
+                <!-- 4. Smart India Hackathon 2026 -->
+                <div class="gov-seal-card" title="Smart India Hackathon 2026 (Problem Statement SIH26056)">
+                  <img class="gov-seal-img seal-sih" src="/logos/sih_clean.png" alt="Smart India Hackathon 2026" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">स्मार्ट इंडिया हैकाथॉन</span>
+                    <span class="en-name">SIH 2026</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider"></div>
+
+                <!-- 5. AEROX Platform (Team AeroX) -->
+                <div class="gov-seal-card" title="AEROX — Real-Time Airfare Price Index for India">
+                  <img class="gov-seal-img seal-aerox" src="/logos/Aero-X.jpeg" alt="AEROX" height="30" width="auto" style="border-radius: 4px; object-fit: contain;">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">एरो-एक्स प्लेटफॉर्म</span>
+                    <span class="en-name">Team AeroX</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider"></div>
+
+                <!-- 6. MoSPI -->
+                <div class="gov-seal-card" title="Ministry of Statistics &amp; Programme Implementation">
+                  <img class="gov-seal-img seal-mospi" src="/logos/mospi.png" alt="MoSPI" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">सांख्यिकी मंत्रालय</span>
+                    <span class="en-name">MoSPI</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider"></div>
+
+                <!-- 7. UDAAN -->
                 <div class="gov-seal-card" title="Bharat UDAAN Initiative">
-                  <img class="gov-seal-img seal-udaan" src="/logos/udaan_logo.png" alt="UDAAN" height="30" width="auto">
+                  <img class="gov-seal-img seal-udaan" src="/logos/udaan_logo.png" alt="UDAAN" height="28" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">उड़ान</span>
                     <span class="en-name">UDAAN</span>
@@ -2450,10 +2640,9 @@
 
                 <div class="seal-divider"></div>
 
-                <!-- 6. Digital India -->
+                <!-- 8. Digital India -->
                 <div class="gov-seal-card" title="Digital India">
-                  <img class="gov-seal-img seal-digital-india" src="/logos/digital_india.png"
-                    alt="Digital India" height="28" width="auto">
+                  <img class="gov-seal-img seal-digital-india" src="/logos/digital_india.png" alt="Digital India" height="26" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">डिजिटल भारत</span>
                     <span class="en-name">Digital India</span>
@@ -2462,60 +2651,109 @@
 
                 <div class="seal-divider"></div>
 
-                <!-- 7. NIC Cloud Grid -->
+                <!-- 9. NIC Cloud Grid -->
                 <div class="gov-seal-card" title="NIC Cloud Grid">
-                  <img class="gov-seal-img seal-nic" src="/logos/nic_logo.png" alt="NIC Cloud Grid" height="28" width="auto">
+                  <img class="gov-seal-img seal-nic" src="/logos/nic_logo.png" alt="NIC Cloud Grid" height="26" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">एनआईसी ग्रिड</span>
                     <span class="en-name">NIC Cloud</span>
                   </div>
                 </div>
 
-                <!-- Duplicated items for continuous infinite sliding animation on mobile -->
+                <div class="seal-divider"></div>
+
+                <!-- ================= DUPLICATE SET FOR INFINITE SEAMLESS MARQUEE LOOP ================= -->
+                <!-- 1. State Emblem of India (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-emblem" src="/logos/emblem_india.png" alt="State Emblem of India" height="38" width="auto">
+                  <img class="gov-seal-img seal-emblem" src="/logos/emblem_india.png" alt="State Emblem of India" height="36" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">भारत सरकार</span>
                     <span class="en-name">Govt of India</span>
                   </div>
                 </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 2. Ministry of Civil Aviation (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-mospi" src="/logos/mospi.png" alt="MoSPI" height="34" width="auto">
-                  <div class="gov-seal-text">
-                    <span class="hindi-name">सांख्यिकी मंत्रालय</span>
-                    <span class="en-name">MoSPI</span>
-                  </div>
-                </div>
-                <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-moca" src="/logos/moca.png" alt="MoCA" height="32" width="auto">
+                  <img class="gov-seal-img seal-moca" src="/logos/moca.png" alt="MoCA" height="30" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">नागर विमानन</span>
                     <span class="en-name">Civil Aviation</span>
                   </div>
                 </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 3. DGCA (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-dgca" src="/logos/dgca.png" alt="DGCA" height="30" width="auto">
+                  <img class="gov-seal-img seal-dgca" src="/logos/dgca_clean.png" alt="DGCA" height="28" width="auto" onerror="this.src='/logos/dgca.png'">
                   <div class="gov-seal-text">
                     <span class="hindi-name">डीजीसीए</span>
                     <span class="en-name">DGCA</span>
                   </div>
                 </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 4. Smart India Hackathon 2026 (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-udaan" src="/logos/udaan_logo.png" alt="UDAAN" height="30" width="auto">
+                  <img class="gov-seal-img seal-sih" src="/logos/sih_clean.png" alt="Smart India Hackathon 2026" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">स्मार्ट इंडिया हैकाथॉन</span>
+                    <span class="en-name">SIH 2026</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 5. AEROX Platform (Duplicate) -->
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-aerox" src="/logos/Aero-X.jpeg" alt="AEROX" height="30" width="auto" style="border-radius: 4px; object-fit: contain;">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">एरो-एक्स प्लेटफॉर्म</span>
+                    <span class="en-name">Team AeroX</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 6. MoSPI (Duplicate) -->
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-mospi" src="/logos/mospi.png" alt="MoSPI" height="30" width="auto">
+                  <div class="gov-seal-text">
+                    <span class="hindi-name">सांख्यिकी मंत्रालय</span>
+                    <span class="en-name">MoSPI</span>
+                  </div>
+                </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 7. UDAAN (Duplicate) -->
+                <div class="gov-seal-card" aria-hidden="true">
+                  <img class="gov-seal-img seal-udaan" src="/logos/udaan_logo.png" alt="UDAAN" height="28" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">उड़ान</span>
                     <span class="en-name">UDAAN</span>
                   </div>
                 </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 8. Digital India (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-digital-india" src="/logos/digital_india.png" alt="Digital India" height="28" width="auto">
+                  <img class="gov-seal-img seal-digital-india" src="/logos/digital_india.png" alt="Digital India" height="26" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">डिजिटल भारत</span>
                     <span class="en-name">Digital India</span>
                   </div>
                 </div>
+
+                <div class="seal-divider" aria-hidden="true"></div>
+
+                <!-- 9. NIC Cloud Grid (Duplicate) -->
                 <div class="gov-seal-card" aria-hidden="true">
-                  <img class="gov-seal-img seal-nic" src="/logos/nic_logo.png" alt="NIC Cloud Grid" height="28" width="auto">
+                  <img class="gov-seal-img seal-nic" src="/logos/nic_logo.png" alt="NIC Cloud Grid" height="26" width="auto">
                   <div class="gov-seal-text">
                     <span class="hindi-name">एनआईसी ग्रिड</span>
                     <span class="en-name">NIC Cloud</span>
@@ -2523,6 +2761,7 @@
                 </div>
               </div>
             </div>
+
 
             <!-- Panoramic Full-Width Hero Section with Dynamic Aviation Slideshow -->
             <div class="landing-hero-panorama" id="aviationHeroPanorama">
@@ -2543,6 +2782,9 @@
                     <span>INSIGHTS</span>
                     <span class="tag-plane-icon">✈</span>
                     <span>ACCESSIBLE AIR TRAVEL</span>
+                    <button type="button" class="btn-reopen-gov-banner" onclick="window.openGovWelcomeBanner()" title="Open Government of India Welcome Banner">
+                      <span>🇮🇳 PM Vision Banner</span>
+                    </button>
                   </div>
 
                   <h1 class="hero-panorama-title">

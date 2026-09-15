@@ -1,1 +1,19 @@
 {"ts": "2026-09-14T14:17:34.842745", "status": "success", "triggered_by": "manual_test", "r2_test": 0.731, "r2_train": 0.808, "r2_delta": 0.09099999999999997, "rmse_inr": 1647.39, "mae_inr": 1039.33, "total_records": 9550, "new_records": 9550, "duration_seconds": 37.66, "guardrail_stats": {"total_in": 25148, "g1_fare_range": 0, "g2_iqr_outlier": 1461, "g3_promo_fare": 2243, "g4_duplicate": 11894, "total_out": 9550}}
+{"ts": "2026-09-15T00:01:59.526882", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:02:29.556637", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:02:59.585998", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:03:29.618572", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:03:59.640421", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:04:29.655370", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:04:59.734449", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:05:29.767633", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:05:59.806421", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:06:29.831122", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:06:59.854882", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:07:29.890322", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:07:59.913610", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:08:29.942309", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:08:59.967388", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:09:29.997728", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:10:00.029639", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}
+{"ts": "2026-09-15T00:10:30.055930", "status": "skipped", "reason": "Only 2 new records (threshold=30). Skipping retrain.", "new_records": 2, "triggered_by": "nightly_scheduler_00:00_IST"}

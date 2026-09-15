@@ -12378,6 +12378,43 @@ function renderBasketData(data) {
     if (chipDay) chipDay.innerText = f.is_weekend ? 'Weekend Demand Factor' : 'Weekday Regular Flight';
   }
 
+  // =========================================================================
+  // Official Government of India Ceremonial Welcome Banner Modal Controller
+  // =========================================================================
+  window.closeGovWelcomeBanner = function() {
+    const banner = document.getElementById('govWelcomeBannerModal');
+    if (!banner) return;
+    banner.classList.add('closing');
+    setTimeout(() => {
+      banner.style.display = 'none';
+      banner.classList.remove('active', 'closing');
+      // Ensure landing page hero is smoothly positioned
+      const hero = document.getElementById('aviationHeroPanorama');
+      if (hero) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 320);
+  };
+
+  window.openGovWelcomeBanner = function() {
+    const banner = document.getElementById('govWelcomeBannerModal');
+    if (!banner) return;
+    banner.style.display = 'flex';
+    banner.classList.remove('closing');
+    void banner.offsetWidth; // trigger reflow for animation
+    banner.classList.add('active');
+  };
+
+  // Keyboard accessibility: ESC key dismisses the Government welcome banner
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const banner = document.getElementById('govWelcomeBannerModal');
+      if (banner && (banner.classList.contains('active') || banner.style.display === 'flex')) {
+        window.closeGovWelcomeBanner();
+      }
+    }
+  });
+
 })();
 
 

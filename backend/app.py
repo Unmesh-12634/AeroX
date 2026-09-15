@@ -29,13 +29,47 @@ from backend.routers.predictions import router as predictions_router
 from backend.routers.training import router as training_router
 
 
+from fastapi.openapi.utils import get_openapi
+from backend.docs_config import OPENAPI_TAGS, API_DESCRIPTION, generate_redoc_page
+
+
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description=settings.DESCRIPTION,
-    version=settings.VERSION,
+    title="AEROX — Real-Time Airfare Price Index for India (APIx)",
+    description=API_DESCRIPTION,
+    version="3.0.0 (SIH 2026 Edition)",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url=None,  # Custom ReDoc rendered at /redoc
+    openapi_tags=OPENAPI_TAGS,
+    contact={
+        "name": "Team AeroX • Smart India Hackathon 2026 (SIH26056)",
+        "url": "http://localhost:8000",
+        "email": "team.aerox.sih@gmail.com",
+    },
+    license_info={
+        "name": "Ministry of Civil Aviation (MoCA) & DGCA Domain — SIH26056 Specification",
+        "url": "https://www.dgca.gov.in",
+    },
+    terms_of_service="https://sih.gov.in"
 )
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        tags=app.openapi_tags,
+        terms_of_service=app.terms_of_service,
+        contact=app.contact,
+        license_info=app.license_info,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
+
 
 # Middleware
 app.add_middleware(
@@ -129,6 +163,14 @@ def serve_index():
         "status": "OPERATIONAL",
         "docs": "/docs"
     })
+
+@app.get("/redoc", include_in_schema=False)
+def serve_custom_redoc():
+    return generate_redoc_page(
+        openapi_url="/openapi.json",
+        title="AEROX API Documentation | Team AeroX — SIH 2026 (SIH26056)"
+    )
+
 
 from backend.scheduler import scheduler
 

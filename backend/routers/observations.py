@@ -531,7 +531,11 @@ def get_raw_scraped_observations(
         "observations": sliced.to_dict(orient="records")
     }
 
-@router.get("/observations/raw/export")
+@router.get(
+    "/observations/raw/export",
+    summary="Export Raw Scraped Flight Ledger",
+    description="Exports raw flight observations filtered by route, airline, platform, or search term in CSV (with UTF-8 BOM) or JSON."
+)
 def export_raw_scraped_observations(
     search: Optional[str] = None,
     route: Optional[str] = None,
@@ -541,11 +545,14 @@ def export_raw_scraped_observations(
     batch_date: Optional[str] = None,
     sort_by: str = "search_timestamp",
     sort_desc: bool = True,
-    format: str = Query("csv", regex="^(csv|json)$")
+    format: str = Query("csv", pattern="^(csv|json)$"),
+    limit: int = Query(25000, ge=1, le=50000)
 ):
     from backend.config import settings
     from backend.db.scraping_ledger import scraping_ledger
     from fastapi.responses import Response
+    from datetime import datetime
+    import io
 
     try:
         df = scraping_ledger.load_all_partitions()
@@ -555,6 +562,9 @@ def export_raw_scraped_observations(
                 df = pd.read_csv(raw_path, dtype=str)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+    if df.empty:
+        return Response(content="No raw data available", media_type="text/plain", status_code=204)
 
     if "total_fare_inr" in df.columns:
         df["total_fare_inr"] = pd.to_numeric(df["total_fare_inr"], errors="coerce")
@@ -567,8 +577,9 @@ def export_raw_scraped_observations(
         cond = (
             df["route"].astype(str).str.lower().str.contains(s, na=False) |
             df["airline_standardized"].astype(str).str.lower().str.contains(s, na=False) |
-            df["record_id"].astype(str).str.lower().str.contains(s, na=False) |
-            df["flight_number"].astype(str).str.lower().str.contains(s, na=False)
+            df.get("record_id", pd.Series(dtype=str)).astype(str).str.lower().str.contains(s, na=False) |
+            df.get("flight_number", pd.Series(dtype=str)).astype(str).str.lower().str.contains(s, na=False) |
+            df.get("source_platform", pd.Series(dtype=str)).astype(str).str.lower().str.contains(s, na=False)
         )
         df = df[cond]
 
@@ -595,62 +606,16 @@ def export_raw_scraped_observations(
     elif sort_by in df.columns:
         df = df.sort_values(by=sort_by, ascending=not sort_desc, na_position="last")
 
+    df = df.iloc[:limit]
+
     if format == "json":
         json_str = df.to_json(orient="records", indent=2)
-        return Response(content=json_str, media_type="application/json", headers={"Content-Disposition": "attachment; filename=raw_scraped_observations.json"})
-
-    csv_str = df.to_csv(index=False)
-    return Response(content=csv_str, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=raw_scraped_observations.csv"})
-
-@router.get("/observations/raw/export")
-def export_raw_scraped_observations(
-    search: Optional[str] = None,
-    route: Optional[str] = None,
-    airline: Optional[str] = None,
-    platform: Optional[str] = None,
-    batch_date: Optional[str] = None,
-    format: str = Query("csv"),
-    limit: int = Query(10000, ge=1, le=50000)
-):
-    """Exports raw scraped flight observations in CSV with UTF-8 BOM."""
-    from backend.config import settings
-    from datetime import datetime
-    import io
-    raw_path = settings.DATA_DIR / "live_scraped" / "live_scraped_master.csv"
-    if not raw_path.exists():
-        return Response(content="No raw data available", media_type="text/plain", status_code=204)
-
-    df = pd.read_csv(raw_path, dtype=str)
-    if "total_fare_inr" in df.columns:
-        df["total_fare_inr"] = pd.to_numeric(df["total_fare_inr"], errors="coerce")
-
-    if search:
-        s = search.lower().strip()
-        cond = (
-            df["route"].str.lower().str.contains(s, na=False) |
-            df["airline_standardized"].str.lower().str.contains(s, na=False) |
-            df["flight_number"].astype(str).str.lower().str.contains(s, na=False) |
-            df["source_platform"].str.lower().str.contains(s, na=False)
+        return Response(
+            content=json_str,
+            media_type="application/json",
+            headers={"Content-Disposition": f"attachment; filename=raw_scraped_observations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"}
         )
-        df = df[cond]
 
-    if route and route != "ALL":
-        parts = route.upper().split("-")
-        if len(parts) == 2:
-            df = df[(df["route"].str.upper() == f"{parts[0]}-{parts[1]}") | (df["route"].str.upper() == f"{parts[1]}-{parts[0]}")]
-        else:
-            df = df[df["route"].str.upper() == route.upper()]
-
-    if airline and airline != "ALL":
-        df = df[df["airline_standardized"].str.lower() == airline.lower()]
-
-    if platform and platform != "ALL":
-        df = df[df["source_platform"].str.lower() == platform.lower()]
-
-    if batch_date and batch_date != "ALL":
-        df = df[df["travel_date"] == batch_date]
-
-    df = df.iloc[:limit]
     buf = io.StringIO()
     buf.write("\ufeff")  # UTF-8 BOM
     df.to_csv(buf, index=False)
@@ -661,3 +626,4 @@ def export_raw_scraped_observations(
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=raw_scraped_observations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"}
     )
+
